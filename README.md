@@ -1,6 +1,6 @@
 ## CS 18000 GLD Project 4
 
-** Project Members **
+**Project Members**
 - Colin Wu
 - Andrei Deaconescu
 - Dakota Baldwin
