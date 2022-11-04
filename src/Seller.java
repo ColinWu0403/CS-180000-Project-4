@@ -1,3 +1,6 @@
+import java.io.*;
+import java.nio.Buffer;
+
 /**
  *  The Seller class and all the variables and methods they may use.
  *
@@ -20,9 +23,29 @@ public class Seller implements User {
         return null;
     }
 
-//    public void publishItem(Item item, Store store) {
-//       // unable to implement until Item and Store classes available
-//    }
+    public void publishItem(String item, String store) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("marketplace.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("marketpalce.txt"));
+
+        StringBuilder fileContents = new StringBuilder();
+
+        // appends all the contents of the marketplace file to a StringBuilder object
+        String line;
+        do {
+            line = reader.readLine();
+            if (line != null) {
+                fileContents.append(line).append("\n");
+                // if statement to not append the last line of the file which is blank
+            }
+        } while (line != null);
+
+        // append the new item line to the file contents
+        String toAppend = store + ";" + item; // store name in front of item as per formatting guidelines
+        fileContents.append(toAppend);
+
+        // write the new file back to the main marketplace text file
+        writer.write(fileContents.toString());
+    }
 
 //    public void createStore(Store store) {
 //        stores.add(store); // method not compiling until Store class created
