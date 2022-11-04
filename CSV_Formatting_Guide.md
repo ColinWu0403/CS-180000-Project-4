@@ -6,7 +6,7 @@
 
 ### All Credentials are in a single csv, titled "FMCredentials"
 LOGIN CREDENTIALS: Email,Username,password,buyer/seller
-> Ex:"JohnSmith@gmail.com","SmithChairs17","123456","buyer"
+> Ex: "JohnSmith@gmail.com","SmithChairs17","123456","buyer"
 
 ### All Stores are in a single CSV, titled "FMStores"
 STORES: storeName,ownerID
