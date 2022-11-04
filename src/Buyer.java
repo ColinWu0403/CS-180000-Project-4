@@ -6,14 +6,14 @@ import java.util.ArrayList;
  * @author Colin Wu
  * @version 2022-3-11
  */
-public class Buyers {
+public class Buyer {
     private String name; // Buyer username
     private String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password
     private ArrayList<String> purchaseHistory; // Products bought or purchase history
     private ArrayList<String> shoppingCart; // Shopping cart with stuff to buy
 
-    public Buyers (String name, String email, String password) { // Construct Buyers Object
+    public Buyer (String name, String email, String password) { // Construct Buyers Object
         this.name = name;
         this.email = email;
         this.password = password;
