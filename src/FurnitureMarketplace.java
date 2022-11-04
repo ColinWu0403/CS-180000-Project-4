@@ -17,10 +17,10 @@ public class FurnitureMarketplace {
         System.out.println("(2) Create an account");
 
         String loginResponse = "";  //User response to account options
-        String buyerSellerResponse = "";
+        String buyerSellerResponse = "";    //User response to whether account is buyer or seller
 
-        String signInEmail = "";
-        String signInPassword = "";
+        String signInEmail = "";            //User inputted email when signing in to an account
+        String signInPassword = "";         //User inputted password when signing in to an account
 
         String newUsername = "";            //Username created by the user
         String newEmail = "";               //Email created by the user
@@ -92,7 +92,8 @@ public class FurnitureMarketplace {
             }
 
             try {                                   //writes the new user's account to the csv file
-                PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("FMCredentials.csv", true)));
+                PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("FMCredentials.csv"
+                        , true)));
                 printWriter.println(newEmail + "," + newUsername + "," + newPassword + "," + newBuyerOrSeller);
                 printWriter.flush();
                 printWriter.close();
@@ -110,7 +111,7 @@ public class FurnitureMarketplace {
     @param String email : string with the user inputted email
     @param String username : string with the user inputted username
     @param String purpose : contains a string with "newAccount" or "signIn"*/
-    public static String existingCredentials(String email, String username, String purpose) {
+    public static String existingCredentials(String email, String usernameOrPassword, String purpose) {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
             String line = "";
@@ -118,13 +119,13 @@ public class FurnitureMarketplace {
                 String[] currentLine = line.split(",");
 
                 if (purpose.equals("signIn")) {
-                    if (currentLine[0].equals(email) && currentLine[1].equals(username)) {
+                    if (currentLine[0].equals(email) && currentLine[1].equals(usernameOrPassword)) {
                         return "valid";
                     }
                 } else if (purpose.equals("newAccount")) {
                     if (currentLine[0].equals(email)) {
                         return "DuplicateEmail";
-                    } else if (currentLine[1].equals(username)) {
+                    } else if (currentLine[1].equals(usernameOrPassword)) {
                         return "DuplicateUsername";
                     }
                 }
