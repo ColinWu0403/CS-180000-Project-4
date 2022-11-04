@@ -19,7 +19,7 @@ PRODUCT: storeName,itemName,description,quantityAvailable,price
 ### The name of the CSV below will follow the naming convention of concatenating "PurchaseListing.csv" to the store name. Note that Both Purchase and Listing are capitalized
 Follow this convention so the program can open the correct file
 > Ex: ChairStorePurchaseListing.csv
-*When you need to get the total number of unique items sold to a customer, you will have to count the occurences of that customers name index 1 for every line in the file.*
+When you need to get the total number of unique items sold to a customer, you will have to count the occurences of that customers name index 1 for every line in the file.
 SELLER STATISTICS: storeName,customerSoldTo,itemName,quantityOfItem,price
 > Ex: "John's Chairs","ChairLover@gmail.com,"awesome chair","3","39.99"
 
