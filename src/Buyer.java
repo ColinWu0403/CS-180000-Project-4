@@ -6,14 +6,14 @@ import java.util.ArrayList;
  * @author Colin Wu
  * @version 2022-3-11
  */
-public class Buyer {
+public class Buyer implements User{
     private String name; // Buyer username
     private String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password
     private ArrayList<String> purchaseHistory; // Products bought or purchase history
     private ArrayList<String> shoppingCart; // Shopping cart with stuff to buy
 
-    public Buyer (String name, String email, String password) { // Construct Buyers Object
+    public Buyer(String name, String email, String password) { // Construct Buyers Object
         this.name = name;
         this.email = email;
         this.password = password;
@@ -41,14 +41,17 @@ public class Buyer {
         return purchaseHistory;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -57,6 +60,7 @@ public class Buyer {
         this.purchaseHistory = purchaseHistory;
     }
 
+    @Override
     public void setName(String Name) {
         this.name = name;
     }
@@ -65,7 +69,23 @@ public class Buyer {
         this.email = email;
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public void sendMessage(String message) {
+
+    }
+
+    @Override
+    public String checkMessage() {
+        return null;
+    }
+
+    @Override
+    public void deleteAccount() {
+
     }
 }
