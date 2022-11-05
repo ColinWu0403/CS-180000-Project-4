@@ -60,7 +60,8 @@ public class FurnitureMarketplace {
                 System.out.println("Error: Ensure username, email, and password are entered");
             } else if (checkExistingCredentials(newEmail, newUsername, "newAccount").equals("DuplicateEmail")) {
                 System.out.println("Error: Email already exists");
-            } else if (checkExistingCredentials(newEmail, newUsername, "newAccount").equals("DuplicateEmail")) {
+            } else if (checkExistingCredentials(newEmail, newUsername,
+                    "newAccount").equals("DuplicateUsername")) {
                 System.out.println("Error: Username already exists");
             } else {
                 creatingCredentials = false;
