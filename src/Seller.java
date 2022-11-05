@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.Buffer;
+import java.util.ArrayList;
 
 /**
  *  The Seller class and all the variables and methods they may use.
@@ -11,7 +12,7 @@ public class Seller implements User {
     private String name; // the user's name
     private final String email; // the user's email (cannot be changed)
     private String password; // the user's password
-//    private ArrayList<Store> stores; // a list of stores the seller owns (Store class not created yet)
+    private ArrayList<Store> stores; // a list of stores the seller owns
 
     public Seller(String name, String email, String password) {
         this.name = name;
@@ -23,9 +24,9 @@ public class Seller implements User {
         return null;
     }
 
-    public void publishItem(String item, String store) throws IOException {
+    public Item publishItem(String item, String store) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("marketplace.txt"));
-        BufferedWriter writer = new BufferedWriter(new FileWriter("marketpalce.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("marketplace.txt"));
 
         StringBuilder fileContents = new StringBuilder();
 
@@ -35,7 +36,7 @@ public class Seller implements User {
             line = reader.readLine();
             if (line != null) {
                 fileContents.append(line).append("\n");
-                // if statement to not append the last line of the file which is blank
+                // if statement not to append the last line of the file which is blank
             }
         } while (line != null);
 
@@ -45,11 +46,19 @@ public class Seller implements User {
 
         // write the new file back to the main marketplace text file
         writer.write(fileContents.toString());
+
+        // create a new Item object and return it
+        String name = item.split(",")[0];
+        String description = item.split(",")[1];
+        int quantity = Integer.parseInt(item.split(",")[2]);
+        double price = Double.parseDouble(item.split(",")[3]);
+
+        return new Item(store, name, description, quantity, price);
     }
 
-//    public void createStore(Store store) {
-//        stores.add(store); // method not compiling until Store class created
-//    }
+    public void createStore(Store store) {
+        stores.add(store);
+    }
 
     @Override
     public String getEmail() {
