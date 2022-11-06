@@ -124,7 +124,7 @@ public class Seller implements User {
             line = bfrOne.readLine();
             while (line != null) {
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
-                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line);
+                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
                 line = bfrOne.readLine();
             }
             bfrOne.close();
@@ -142,7 +142,7 @@ public class Seller implements User {
             while (line != null) {
                 // Only saves stores that don't use this users email
                 String shortLine = line.substring(line.indexOf(","));
-                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) storesFile.append(line);
+                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) storesFile.append(line).append("\n");
                 line = bfrTwo.readLine();
             }
             bfrTwo.close();
@@ -166,7 +166,7 @@ public class Seller implements User {
                         break;
                     }
                 }
-                if (keep) itemsFile.append(line);
+                if (keep) itemsFile.append(line).append("\n");
                 line = bfrThree.readLine();
             }
             bfrThree.close();
