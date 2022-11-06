@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -33,7 +34,31 @@ public class FurnitureMarketplace {
         }
 
         if (currentUser instanceof Buyer) {
+            Item[] itemList;
+            itemList = createItemList();
+            printInitialDashboard(itemList);
 
+            System.out.println("(1) Select Product\n(2) View Cart\n(3) Search\n(4) Sort\n(5) Review Purchase " +
+                    "History\n(6) Manage Account\n(7) Sign Out");
+            String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
+            String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
+
+            switch (userChoiceFromDashboard) {
+                case "1" ->         //User selects Product
+                        System.out.println("Placeholder");  //Product code here
+                case "2" ->         //User Looks at their cart
+                        System.out.println("Placeholder"); // Cart code here
+                case "3" ->         //User Narrows their search results
+                        System.out.println("Placeholder"); // Search code here
+                case "4" ->         //User Sorts by price or quantity
+                        System.out.println("Placeholder"); // Sort code here
+                case "5" ->         //User Reviews their purchase history
+                        System.out.println("Placeholder"); // Statistics code here
+                case "6" ->         //User Manages their account
+                        System.out.println("Placeholder"); // Management code here
+                case "7" ->         //User Logs out
+                        System.out.println("Placeholder"); // Logout Logic here
+            }
         } else if (currentUser instanceof Seller) {
 
         }
@@ -108,8 +133,8 @@ public class FurnitureMarketplace {
             System.out.print("Enter Password: ");
             signInPassword = scanner.nextLine();
             String accountSearch = checkExistingCredentials(signInEmail, signInPassword, "signIn");
-            accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
             if (!accountSearch.equals("noAccount")) {
+                accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
                 String[] accountDetails = accountSearch.split(", ");
                 if (accountDetails[3].equals("buyer")) {
                     return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2]);
@@ -164,6 +189,56 @@ public class FurnitureMarketplace {
                 }
             }
             System.out.println("Please enter a valid option");
+        }
+    }
+
+
+    /**
+     * Returns a list of Item objects to be accessed throughout the program.
+     */
+    public static Item[] createItemList() {
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));
+
+            String store;
+            String name;
+            String description;
+            int quantity;
+            double price;
+            Item item;
+            ArrayList<Item> itemListing = new ArrayList<>();
+
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                String[] splitLine = line.split(",");
+                store = splitLine[0];
+                name = splitLine[1];
+                description = splitLine[2];
+                //It shouldn't be possible for incorrect data to exist in the csv
+                quantity = Integer.parseInt(splitLine[3]);
+                price = Double.parseDouble(splitLine[4]);
+                item = new Item(store, name, description, quantity, price);
+                itemListing.add(item);
+            }
+            Item[] itemList = new Item[itemListing.size()];
+            for (int i = 0; i < itemListing.size(); i++) {
+                itemList[i] = itemListing.get(i);
+            }
+            return itemList;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Prints Dashboard for buyer to view after logging in.
+     *
+     * @param itemList The Item list obtained from the createItemList method.
+     */
+    public static void printInitialDashboard(Item[] itemList) {
+        System.out.println("(1) Select Product");
+        for (int i = 0; i < itemList.length && i < 10; i++) {
+            itemList[i].printItem();
         }
     }
 }
