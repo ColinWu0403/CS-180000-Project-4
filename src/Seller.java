@@ -18,6 +18,21 @@ public class Seller implements User {
         this.name = name;
         this.email = email;
         this.password = password;
+        File f = new File("FMStores.csv");
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(f));
+            String line = bfr.readLine();
+            while (line != null) {
+                String [] splitLine = line.split(",");
+                if (splitLine[1].equals(email)) {
+                    stores.add(new Store(splitLine[1], splitLine[0]));
+                }
+                bfr.readLine();
+            }
+            bfr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String createItem() {
