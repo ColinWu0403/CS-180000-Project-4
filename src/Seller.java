@@ -14,10 +14,16 @@ public class Seller implements User {
     private String password; // the user's password
     private ArrayList<Store> stores; // a list of stores the seller owns
 
-    public Seller(String name, String email, String password) {
+    public Seller(String name, String email, String password) throws IOException {
         this.name = name;
         this.email = email;
         this.password = password;
+
+        // write login credentials to FMCredentais.csv
+        BufferedWriter writer = new BufferedWriter(new FileWriter("FMCredentials.csv"));
+        String credentials = email + ";" + password + ";" + "seller" + "\n";
+        writer.write(credentials);
+        writer.close();
     }
 
     public String createItem() {
