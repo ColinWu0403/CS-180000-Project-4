@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -6,39 +7,108 @@ import java.util.ArrayList;
  * @author Colin Wu
  * @version 2022-3-11
  */
-public class Buyer implements User{
+public class Buyer implements User {
     private String name; // Buyer username
     private String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password
     private ArrayList<String> purchaseHistory; // Products bought or purchase history
-    private ArrayList<String> shoppingCart; // Shopping cart with stuff to buy
+    private final String shoppingCartName; // Name of shopping cart CSV file
 
     public Buyer(String name, String email, String password) { // Construct Buyers Object
         this.name = name;
         this.email = email;
         this.password = password;
+        this.shoppingCartName = setCartFileName(email);
     }
 
-//    public void createShoppingCart(Item shoppingCart) { // initialize shopping cart
-//        this.shoppingCart = shoppingCart;
-//    }
+    public void createShoppingCart() { // initialize shopping cart + store into array
+        try {
+            File shoppingCartCSV = new File(getShoppingCartName()); // Create new shopping cart file
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-//    public void addItem(Item item) { // add item to shopping cart
-//        shoppingCart.add(item);
-//    }
+    public String setCartFileName(String email) { // Sets shopping cart filename
+        return email + "Cart.csv";
+    }
 
-//    public void removeShoppingCart(int itemID) { // remove item from shopping cart
-//        shoppingCart.remove(itemID);
-//    }
+    public void addItem(String itemToAdd) { // add item to shopping cart
+        /** NOTE: right now String itemToAdd would be the entire line of the shopping cart to add
+         * (Ex: "1,John's Chairs",awesome chair","3","39.99").
+         * Later in the main interface we'll have to make a parseItem method to first access the specific search Item object
+         * and turn it into a string. Not sure if toString() would work? **/
+        try {
+            File shoppingCartCSV = new File(getShoppingCartName());
 
-//    public void checkOut() { // Checkout all items from shopping cart / set shopping cart to empty
-//        for (int i = 0; i < shoppingCart.size(); i++) {
-//            shoppingCart.remove(i);
-//        }
-//    }
+            // Append added item to shopping cart
+            FileOutputStream fos = new FileOutputStream(shoppingCartCSV, true);
+            PrintWriter cartWriter = new PrintWriter(fos);
+
+            cartWriter.println(itemToAdd);
+
+            cartWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeShoppingCartItem(int itemID) { // remove item from shopping cart
+        try {
+            // Read through CSV file
+            BufferedReader cartReader = new BufferedReader(new FileReader(getShoppingCartName()));
+
+            ArrayList<String> shoppingCart = new ArrayList<>(); // shopping cart ArrayList
+
+            // Add existing items to ArrayList;
+            String line = cartReader.readLine();
+            while (line != null) {
+                shoppingCart.add(line);
+                line = cartReader.readLine();
+            }
+
+            for (int i = 0; i < shoppingCart.size(); i++) { // If itemID matches, remove item from Arraylist;
+                int shoppingCartID = Integer.parseInt(shoppingCart.get(i).substring(0,1));
+                if (itemID == shoppingCartID) {
+                    shoppingCart.remove(i);
+                }
+            }
+
+            // Write updated shopping cart to CSV file
+            FileOutputStream fos = new FileOutputStream(getShoppingCartName(), false);
+            PrintWriter cartWriter = new PrintWriter(fos);
+
+            for (String s : shoppingCart) { // Update file
+                cartWriter.println(s);
+                cartWriter.flush();
+            }
+
+            cartReader.close();
+            cartWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkOut() { // Checkout all items from shopping cart / set shopping cart to empty
+        try {
+            FileOutputStream fos = new FileOutputStream(getShoppingCartName(), false);
+            PrintWriter cartWriter = new PrintWriter(fos);
+
+            cartWriter.println(""); // Remove all cart items
+
+            cartWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public ArrayList<String> getPurchaseHistory() {
         return purchaseHistory;
+    }
+
+    public String getShoppingCartName() {
+        return shoppingCartName;
     }
 
     @Override
@@ -76,16 +146,16 @@ public class Buyer implements User{
 
     @Override
     public void sendMessage(String message) {
-
+        // Not sure if this is needed
     }
 
     @Override
     public String checkMessage() {
-        return null;
+        return null; // Not sure if this is needed
     }
 
     @Override
     public void deleteAccount() {
-
+        // Not sure if this is needed
     }
 }
