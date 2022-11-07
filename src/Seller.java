@@ -102,7 +102,34 @@ public class Seller implements User {
     }
 
     @Override
-    public void deleteAccount() {
+    public void deleteAccount() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("FMCredentials.csv"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("FMCredentials.csv"));
 
+        ArrayList<String> lines = new ArrayList<>();
+
+        // add all lines in FMCredentials.csv to ArrayList
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+
+        // search and remove login credentials for user to delete
+        for (int i = 0; i < lines.size(); i++) {
+            if(lines.get(i).split(",")[0].equals(this.email) &&
+                    lines.get(i).split(",")[1].equals(this.password)) {
+                lines.remove(i);
+                break;
+            }
+        }
+
+        // rewrite the ArrayList to the FMCredentials.csv file
+        for (String s : lines) {
+            writer.write(s + "\n");
+            writer.flush();
+        }
+
+        reader.close();
+        writer.close();
     }
 }
