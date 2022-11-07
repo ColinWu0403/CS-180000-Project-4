@@ -57,4 +57,14 @@ public class Store {
     public void viewItem(int itemNumber) {
         items.get(itemNumber - 1).printItemInfo();
     }
+    // Method to save sale information for seller
+    public void saveSale(String buyerName, Item item, int amountSold) {
+        try {
+            PrintWriter pw = new PrintWriter(new FileOutputStream(storeName + ".csv", true));
+            pw.printf("%s,%s,%s,%d,%f", buyerName, item.getName(), item.getDescription(), amountSold, item.getPrice());
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
