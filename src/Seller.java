@@ -14,10 +14,17 @@ public class Seller implements User {
     private String password; // the user's password
     private ArrayList<Store> stores; // a list of stores the seller owns
 
-    public Seller(String name, String email, String password) {
+    public Seller(String name, String email, String password) throws IOException {
         this.name = name;
         this.email = email;
         this.password = password;
+
+        // write login credentials to FMCredentais.csv
+        BufferedWriter writer = new BufferedWriter(new FileWriter("FMCredentials.csv"));
+        String credentials = email + ";" + password + ";" + "seller" + "\n";
+        writer.write(credentials);
+        writer.close();
+
         stores = new ArrayList<>();
         File f = new File("FMStores.csv");
         // Initialize store objects that this seller has created
@@ -113,69 +120,34 @@ public class Seller implements User {
     }
 
     @Override
-    public void deleteAccount() {
+    public void deleteAccount() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("FMCredentials.csv"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("FMCredentials.csv"));
+
+        ArrayList<String> lines = new ArrayList<>();
+
+        // add all lines in FMCredentials.csv to ArrayList
         String line;
-        StringBuilder credentialsFile = new StringBuilder();
-        StringBuilder storesFile = new StringBuilder();
-        StringBuilder itemsFile = new StringBuilder();
-        try {
-            // First remove user from credentials file
-            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
-            line = bfrOne.readLine();
-            while (line != null) {
-                // Only saves account to reprint to the file if they don't have the email belonging to this account
-                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
-                line = bfrOne.readLine();
-            }
-            bfrOne.close();
-            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
-            pwOne.println(credentialsFile);
-            pwOne.close();
-        } catch (Exception e) {
-            System.out.println("Error deleting user credentials!");
-            e.printStackTrace();
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
         }
-        try {
-            // Second, remove all stores belonging to this owner from stores file
-            BufferedReader bfrTwo = new BufferedReader(new FileReader("FMStores.csv"));
-            line = bfrTwo.readLine();
-            while (line != null) {
-                // Only saves stores that don't use this users email
-                String shortLine = line.substring(line.indexOf(","));
-                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) storesFile.append(line).append("\n");
-                line = bfrTwo.readLine();
+
+        // search and remove login credentials for user to delete
+        for (int i = 0; i < lines.size(); i++) {
+            if(lines.get(i).split(",")[0].equals(this.email) &&
+                    lines.get(i).split(",")[1].equals(this.password)) {
+                lines.remove(i);
+                break;
             }
-            bfrTwo.close();
-            PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStores.csv", false));
-            pwTwo.println(storesFile);
-            pwTwo.close();
-        } catch (Exception e) {
-            System.out.println("Error deleting user stores!");
-            e.printStackTrace();
         }
-        try {
-            // Third, remove all items belonging to this owner's stores from items file
-            BufferedReader bfrThree = new BufferedReader(new FileReader("FMItems.csv"));
-            line = bfrThree.readLine();
-            while (line != null) {
-                boolean keep = true;
-                // Only saves items whose store doesn't match any of this owner's stores
-                for (int i = 0; i < stores.size(); i++) {
-                    if (stores.get(i).getStoreName().equals(line.substring(line.indexOf(",")))) {
-                        keep = false;
-                        break;
-                    }
-                }
-                if (keep) itemsFile.append(line).append("\n");
-                line = bfrThree.readLine();
-            }
-            bfrThree.close();
-            PrintWriter pwThree = new PrintWriter(new FileOutputStream("FMItems.csv", false));
-            pwThree.println(itemsFile);
-            pwThree.close();
-        } catch (Exception e) {
-            System.out.println("Error deleting user items!");
-            e.printStackTrace();
+
+        // rewrite the ArrayList to the FMCredentials.csv file
+        for (String s : lines) {
+            writer.write(s + "\n");
+            writer.flush();
         }
+
+        reader.close();
+        writer.close();
     }
 }

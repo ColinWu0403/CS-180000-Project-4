@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public interface User {
     String getEmail();
     //Email cannot be changed.
@@ -15,7 +17,7 @@ public interface User {
     //Both sellers and buyers need to be able to message each other. This will be implemented with csv files
     //See Formatting Documentation for more info
 
-    void deleteAccount();
+    void deleteAccount() throws IOException;
     // Deletes User From Credentials list
     //
     // If Seller, all stores owned by that seller will be deleted from csv file, as well as the items
