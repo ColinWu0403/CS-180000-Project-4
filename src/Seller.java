@@ -24,6 +24,24 @@ public class Seller implements User {
         String credentials = email + ";" + password + ";" + "seller" + "\n";
         writer.write(credentials);
         writer.close();
+
+        stores = new ArrayList<>();
+        File f = new File("FMStores.csv");
+        // Initialize store objects that this seller has created
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(f));
+            String line = bfr.readLine();
+            while (line != null) {
+                String [] splitLine = line.split(",");
+                if (splitLine[1].equals(email)) {
+                    stores.add(new Store(splitLine[1], splitLine[0]));
+                }
+                line = bfr.readLine();
+            }
+            bfr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String createItem() {
