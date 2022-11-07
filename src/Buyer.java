@@ -66,6 +66,38 @@ public class Buyer implements User {
         }
     }
 
+    // returns a list of stores by the products purchased by that particular customer.
+    public ArrayList<String> storesFromPurchasedProducts(String storeName) {
+        try {
+            // Read through CSV file
+            BufferedReader storeReader = new BufferedReader(new FileReader(getPurchaseHistoryName()));
+
+            ArrayList<String> selectedStores = new ArrayList<>(); // stores found ArrayList
+
+            // Add existing items to ArrayList;
+            String line = storeReader.readLine();
+            while (line != null) {
+                selectedStores.add(line);
+                line = storeReader.readLine();
+            }
+
+            for (int i = 0; i < selectedStores.size(); i++) {
+                // If purchased history line does not contain store name, remove from arrayList
+                String[] storeArr = selectedStores.get(i).split(",");
+                String historyStoreName = storeArr[0]; // Gets the store name (first index)
+                if (!historyStoreName.equals(storeName)) {
+                    selectedStores.remove(i);
+                }
+            }
+
+            return selectedStores;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void createShoppingCart() { // create shopping cart
         try {
             File shoppingCartCSV = new File(getShoppingCartName()); // Create new shopping cart file
@@ -76,7 +108,7 @@ public class Buyer implements User {
 
     public void addItem(String itemToAdd) { // add item to shopping cart
         /** NOTE: right now String itemToAdd would be the entire line of the shopping cart to add
-         * (Ex: "1,John's Chairs",awesome chair","3","39.99").
+         * (Ex: "John's Chairs",awesome chair","3","39.99").
          * Later in the main interface we'll have to make a parseItem method to first access the specific search Item object
          * and turn it into a string. Not sure if toString() would work? **/
         try {
@@ -95,6 +127,14 @@ public class Buyer implements User {
     }
 
     public void removeShoppingCartItem(int itemID) { // remove item from shopping cart
+        // TODO: Code not finalized
+        /** NOTE: not sure about how exactly to remove an item from the cart
+         * Current file formatting (Ex: "John's Chairs",awesome chair","3","39.99").
+         * Items may have the same store or item name, so we would need a unique identifier for each item in the cart
+         * Maybe we can change the formatting to: "1","John's Chairs",awesome chair","3","39.99"
+         * with an item ID that allows the user to just input an integer to remove an item from the cart?
+         * Otherwise, I'll change the code to remove by item name I guess.
+         * **/
         try {
             // Read through CSV file
             BufferedReader cartReader = new BufferedReader(new FileReader(getShoppingCartName()));
