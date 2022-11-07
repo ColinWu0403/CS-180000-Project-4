@@ -36,31 +36,50 @@ public class FurnitureMarketplace {
         if (currentUser instanceof Buyer) {
             Item[] itemList;
             itemList = createItemList();
-            printInitialDashboard(itemList);
 
-            System.out.println("(1) Select Product\n(2) View Cart\n(3) Search\n(4) Sort\n(5) Review Purchase " +
-                    "History\n(6) Manage Account\n(7) Sign Out");
+            printBuyerDashboard(itemList);
+
             String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
             String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
 
             switch (userChoiceFromDashboard) {
-                case "1" ->         //User selects Product
+                case "1" ->         //Buyer selects Product
                         System.out.println("Placeholder");  //Product code here
-                case "2" ->         //User Looks at their cart
+                case "2" ->         //Buyer Looks at their cart
                         System.out.println("Placeholder"); // Cart code here
-                case "3" ->         //User Narrows their search results
+                case "3" ->         //Buyer Narrows their search results
                         System.out.println("Placeholder"); // Search code here
-                case "4" ->         //User Sorts by price or quantity
+                case "4" ->         //Buyer Sorts by price or quantity
                         System.out.println("Placeholder"); // Sort code here
-                case "5" ->         //User Reviews their purchase history
+                case "5" ->         //Buyer Reviews their purchase history
                         System.out.println("Placeholder"); // Statistics code here
-                case "6" ->         //User Manages their account
+                case "6" ->         //Buyer Manages their account
                         System.out.println("Placeholder"); // Management code here
-                case "7" ->         //User Logs out
+                case "7" ->         //Buyer Logs out
                         System.out.println("Placeholder"); // Logout Logic here
             }
         } else if (currentUser instanceof Seller) {
 
+            //createStoresList()        this method has to be made?
+            //printSellerDashboard() this method has to be made
+
+            String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6"};
+            String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
+
+            switch (userChoiceFromDashboard) {
+                case "1" ->         //Seller selects to manage their store(s)
+                        System.out.println("Placeholder");
+                case "2" ->         //Seller looks at the sales list
+                        System.out.println("Placeholder");
+                case "3" ->         //Seller looks at the statistics dashboard
+                        System.out.println("Placeholder");
+                case "4" ->         //Seller looks at the seller cart view
+                        System.out.println("Placeholder");
+                case "5" ->         //Seller chooses the manage their account
+                        System.out.println("Placeholder");
+                case "6" ->         //Seller chooses to logout
+                        System.out.println("Placeholder");
+            }
         }
     }
 
@@ -235,10 +254,34 @@ public class FurnitureMarketplace {
      *
      * @param itemList The Item list obtained from the createItemList method.
      */
-    public static void printInitialDashboard(Item[] itemList) {
-        System.out.println("(1) Select Product");
-        for (int i = 0; i < itemList.length && i < 10; i++) {
-            itemList[i].printItem();
+    public static void printBuyerDashboard(Item[] itemList) {
+        String[] outputOptions = {"(1) Select Product", "(2) View Cart", "(3) Search", "(4) Sort",
+                "(5) Review Purchase History", "(6) Manage Account", "(7) Sign Out"};
+
+            System.out.printf("\n%-8s Select Option %-12s Furniture Dashboard\n", "", "");
+            int i = 0;
+            while (true) {
+                if (outputOptions.length <= itemList.length) {
+                    if (i < 7) {
+                        System.out.printf("%-30s ||  ", outputOptions[i]);
+                        itemList[i].printItem();
+                    } else if (i < itemList.length) {
+                        System.out.printf("%-31s||  ", "");
+                        itemList[i].printItem();
+                    } else {
+                        break;
+                    }
+                } else if (itemList.length < outputOptions.length) {
+                    if (i < itemList.length) {
+                        System.out.printf("%-30s ||  ", outputOptions[i]);
+                        itemList[i].printItem();
+                    } else if (i < 7) {
+                        System.out.printf("%-30s ||  \n", outputOptions[i]);
+                    } else {
+                        break;
+                    }
+                }
+                i++;
+            }
         }
     }
-}
