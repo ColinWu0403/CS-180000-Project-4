@@ -24,19 +24,32 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 ## Project Members & Roles Contributed
 #### Colin Wu
 - Buyers class
+- Statistics (Buyers)
+- Shopping Cart
 #### Andrei Deaconescu
 - Sellers class
+- Statistics (Sellers)
+- InvalidItem class
 #### Dakota Baldwin
-- Store & Item class
+- Store class
+- Item class
 #### Benjamin Herrington
-- Interface
+- User Class
+- CSV file formatting guide, flowcharts
 #### Nathan Schneider
-- main function
+- FurnitureMarketplace class
+- Main marketplace interface
 
 ## Class Information
 ### FurnitureMarketplace.java (Main marketplace)
-- //Todo
-### Sellers.java
-- //Todo
-### Buyers.java
-- Contains all methods the buyers may use
+- Main marketplace where buyers and sellers can buy items, list items to sell, and access important information for their accounts.
+### Seller.java
+- Contains all methods sellers may use
+### Buyer.java
+- Contains all methods buyers may use
+### User.java
+- User interface with shared methods for Seller.java and Buyer.java
+### Item.java
+- Contains all relevant information for an item and print it when necessary
+### Store.java
+- Contains pertinent information about the store
