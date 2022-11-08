@@ -184,5 +184,7 @@ public class Seller implements User {
             System.out.println("Error deleting user items!");
             e.printStackTrace();
         }
+        
+        System.out.println("Account Deleted!");
     }
 }
