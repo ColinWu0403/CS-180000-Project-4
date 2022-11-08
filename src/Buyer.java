@@ -65,6 +65,16 @@ public class Buyer implements User {
             return null;
         }
     }
+    public void purchaseHistoryToString(ArrayList<String> purchaseHistory) {
+        for (int i = 0; i < purchaseHistory.size(); i++) {
+            String[] splitline = purchaseHistory.get(i).split(",");
+            if (splitline[2].equals("1")) {
+                System.out.printf("Purchased one %s from %s for %s\n", splitline[1], splitline[0], splitline[3]);
+            }
+            System.out.printf("Purchased %s from %s for %s each; Quantity %s",
+                    splitline[1], splitline[0], splitline[3], splitline[2]);
+        }
+    }
 
     // returns a list of stores by the products purchased by that particular customer.
     public ArrayList<String> storesFromPurchasedProducts(String storeName) {
