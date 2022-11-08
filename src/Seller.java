@@ -129,9 +129,16 @@ public class Seller implements User {
             // First remove user from credentials file
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
             line = bfrOne.readLine();
+            int counter = 0;
             while (line != null) {
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
-                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
+                if (!email.equals(line.substring(0, line.indexOf(",")))) {
+                    if (counter >= 1) {
+                        credentialsFile.append("\n");
+                    }
+                    credentialsFile.append(line);
+                    counter++;
+                }
                 line = bfrOne.readLine();
             }
             bfrOne.close();
@@ -146,10 +153,17 @@ public class Seller implements User {
             // Second, remove all stores belonging to this owner from stores file
             BufferedReader bfrTwo = new BufferedReader(new FileReader("FMStores.csv"));
             line = bfrTwo.readLine();
+            int counter = 0;
             while (line != null) {
                 // Only saves stores that don't use this users email
                 String shortLine = line.substring(line.indexOf(","));
-                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) storesFile.append(line).append("\n");
+                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) {
+                    if (counter >= 1) {
+                        storesFile.append("\n");
+                    }
+                    storesFile.append(line);
+                    counter++;
+                }
                 line = bfrTwo.readLine();
             }
             bfrTwo.close();
@@ -164,16 +178,23 @@ public class Seller implements User {
             // Third, remove all items belonging to this owner's stores from items file
             BufferedReader bfrThree = new BufferedReader(new FileReader("FMItems.csv"));
             line = bfrThree.readLine();
+            int counter = 0;
             while (line != null) {
                 boolean keep = true;
                 // Only saves items whose store doesn't match any of this owner's stores
                 for (int i = 0; i < stores.size(); i++) {
-                    if (stores.get(i).getStoreName().equals(line.substring(line.indexOf(",")))) {
+                    if (stores.get(i).getStoreName().equals(line.substring(0, line.indexOf(",")))) {
                         keep = false;
                         break;
                     }
                 }
-                if (keep) itemsFile.append(line).append("\n");
+                if (keep) {
+                    if (counter >= 1) {
+                        itemsFile.append("\n");
+                    }
+                    itemsFile.append(line);
+                }
+                counter++;
                 line = bfrThree.readLine();
             }
             bfrThree.close();
