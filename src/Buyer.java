@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Buyers class - contains all methods the buyers may use
@@ -66,13 +67,21 @@ public class Buyer implements User {
         }
     }
 
+    // returns a list of stores by number of products sold
+    public ArrayList<String> storesFromNumberOfProducts(String store) {
+
+
+        return null;
+    }
+
     // returns a list of stores by the products purchased by that particular customer.
-    public ArrayList<String> storesFromPurchasedProducts(String storeName) {
+    public ArrayList<String> storesFromPurchasedProducts() {
         try {
             // Read through CSV file
             BufferedReader storeReader = new BufferedReader(new FileReader(getPurchaseHistoryName()));
 
             ArrayList<String> selectedStores = new ArrayList<>(); // stores found ArrayList
+            ArrayList<String> storesByProducts = new ArrayList<>(); // stores by products
 
             // Add existing items to ArrayList;
             String line = storeReader.readLine();
@@ -82,20 +91,30 @@ public class Buyer implements User {
             }
 
             for (int i = 0; i < selectedStores.size(); i++) {
-                // If purchased history line does not contain store name, remove from arrayList
                 String[] storeArr = selectedStores.get(i).split(",");
-                String historyStoreName = storeArr[0]; // Gets the store name (first index)
-                if (!historyStoreName.equals(storeName)) {
-                    selectedStores.remove(i);
-                }
+                // Gets the store name (first index) and product name (second index), split by ","
+                String historyStoreName = storeArr[0] + "," + storeArr[1];
+                storesByProducts.add(historyStoreName);
             }
 
-            return selectedStores;
+            /* The formatting for the list of stores by products purchased to be printed:
+            *  StoreName        ProductName
+            *  Jeff's Shelves   Mahogany Shelf*/
+            return storesByProducts;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    // Returns ArrayList of sorted stores from purchased products by store name in alphabetical order
+    public ArrayList<String> sortStoresFromPurchasedProducts() {
+        ArrayList<String> sortedList = storesFromPurchasedProducts();
+
+        Collections.sort(sortedList);
+
+        return sortedList;
     }
 
     public void createShoppingCart() { // create shopping cart
@@ -184,10 +203,6 @@ public class Buyer implements User {
         }
     }
 
-    public ArrayList<String> getPurchaseHistory() {
-        return purchaseHistory;
-    }
-
     public String getShoppingCartName() {
         return shoppingCartName;
     }
@@ -209,10 +224,6 @@ public class Buyer implements User {
     @Override
     public String getPassword() {
         return password;
-    }
-
-    public void setPurchaseHistory(ArrayList<String> purchaseHistory) {
-        this.purchaseHistory = purchaseHistory;
     }
 
     @Override
@@ -237,6 +248,44 @@ public class Buyer implements User {
 
     @Override
     public void deleteAccount() {
-        // Not sure if this is needed
+        String line;
+        StringBuilder credentialsFile = new StringBuilder();
+        try {
+            // First remove user from credentials file
+            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
+            line = bfrOne.readLine();
+            while (line != null) {
+                // Only saves account to reprint to the file if they don't have the email belonging to this account
+                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
+                line = bfrOne.readLine();
+            }
+            bfrOne.close();
+            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
+            pwOne.println(credentialsFile);
+            pwOne.close();
+        } catch (Exception e) {
+            System.out.println("Error deleting user credentials!");
+            e.printStackTrace();
+        }
+        try {
+            // Second, delete PurchaseHistory.csv
+            File purchaseHistoryDelete = new File(getPurchaseHistoryName());
+
+            purchaseHistoryDelete.delete();
+        } catch (Exception e) {
+            System.out.println("Error deleting purchase history!");
+            e.printStackTrace();
+        }
+        try {
+            // Third, delete Cart.csv
+            File cartDelete = new File(getShoppingCartName());
+
+            cartDelete.delete();
+        } catch (Exception e) {
+            System.out.println("Error deleting shopping cart!");
+            e.printStackTrace();
+        }
+
+        System.out.println("Account Deleted!");
     }
 }
