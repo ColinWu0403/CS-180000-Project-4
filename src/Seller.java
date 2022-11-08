@@ -14,21 +14,15 @@ public class Seller implements User {
     private String password; // the user's password
     private ArrayList<Store> stores; // a list of stores the seller owns
 
-    public Seller(String name, String email, String password) throws IOException {
+    public Seller(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
 
-        // write login credentials to FMCredentais.csv
-        BufferedWriter writer = new BufferedWriter(new FileWriter("FMCredentials.csv"));
-        String credentials = email + ";" + password + ";" + "seller" + "\n";
-        writer.write(credentials);
-        writer.close();
-
+        try {
         stores = new ArrayList<>();
         File f = new File("FMStores.csv");
         // Initialize store objects that this seller has created
-        try {
             BufferedReader bfr = new BufferedReader(new FileReader(f));
             String line = bfr.readLine();
             while (line != null) {
@@ -143,7 +137,9 @@ public class Seller implements User {
             }
             bfrOne.close();
             PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
-            pwOne.println(credentialsFile);
+            if (credentialsFile.length() != 0) {
+                pwOne.println(credentialsFile);
+            }
             pwOne.close();
         } catch (Exception e) {
             System.out.println("Error deleting user credentials!");
@@ -168,7 +164,9 @@ public class Seller implements User {
             }
             bfrTwo.close();
             PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStores.csv", false));
-            pwTwo.println(storesFile);
+            if (storesFile.length() != 0) {
+                pwTwo.println(storesFile);
+            }
             pwTwo.close();
         } catch (Exception e) {
             System.out.println("Error deleting user stores!");
@@ -199,7 +197,9 @@ public class Seller implements User {
             }
             bfrThree.close();
             PrintWriter pwThree = new PrintWriter(new FileOutputStream("FMItems.csv", false));
-            pwThree.println(itemsFile);
+            if (itemsFile.length() != 0) {
+                pwThree.println(itemsFile);
+            }
             pwThree.close();
         } catch (Exception e) {
             System.out.println("Error deleting user items!");
