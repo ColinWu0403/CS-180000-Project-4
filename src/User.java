@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 public interface User {
     String getEmail();
@@ -24,4 +25,10 @@ public interface User {
     // associated with that store. Associated "PurchaseListing.csv" files is deleted
     //
     // If Buyer, Associated PurchaseHistory.csv file is deleted
+
+    ArrayList<String> parseItem();
+    // Reads through FMItems.csv and returns a String ArrayList of items
+
+    ArrayList<String> parseStore();
+    // Reads through FMStores.csv and returns a String ArrayList of items
 }
