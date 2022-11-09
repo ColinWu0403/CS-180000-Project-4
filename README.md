@@ -15,8 +15,8 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 - Sellers will be able to import and export .csv files containing their product information.
 - Buyers will be able to export a .csv file containing their purchase history.
 #### Statistics
-- Sellers can view a dashboard that lists statistics for each of their stores. Sellers can choose to sort their dashboard by product name // other sorting options soon
-- Customers can view a dashboard with store and seller information. Customers can choose to sort the dashboard by products sold and store name // other sorting options soon.
+- Sellers can view a dashboard that lists statistics for each of their stores. Sellers can choose to sort their dashboard by a list of customers with the number of items that they have purchased and a list of products with the number of sales. 
+- Customers can view a dashboard with store and seller information. Customers can choose to sort the dashboard by a list of stores by number of products sold and a list of stores by the products purchased by that particular customer.
 #### Shopping Cart
 - Customers can add products from different stores to a shopping cart to purchase all at once, and can remove any product if they choose to do so.
 - Sellers can view the number of products currently in customer shopping carts, along with the store and details associated with the products. 
@@ -35,6 +35,7 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 - Item class
 #### Benjamin Herrington
 - User Class
+- FurnitureMarketplace class
 - CSV file formatting guide, flowcharts
 #### Nathan Schneider
 - FurnitureMarketplace class
