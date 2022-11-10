@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -203,6 +204,21 @@ public class Buyer {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public ArrayList<String> getCart() {
+        return this.cart;
+    }
+    public String printCart() { //@"Bob's Tables"!"solid table"!"1"!"79.99"
+        String cartString = "";
+        for (int i = 0; i < cart.size(); i++) {
+            String[] splitList = cart.get(i).split("!");
+            double totalPrice = Integer.parseInt(splitList[2]) * Double.parseDouble(splitList[3]);
+            cartString = cartString.concat(String.format("%s from %s; Quantity: %s; Total Price: %.2f\n", splitList[1],splitList[0],splitList[2],totalPrice));
+        }
+        return cartString;
+    }
+    public ArrayList<String> getPurchaseHistory() {
+        return this.purchaseHistory;
     }
     public void deleteAccount() {
         String line;
