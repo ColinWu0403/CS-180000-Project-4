@@ -405,19 +405,19 @@ public class FurnitureMarketplace {
                 }
                 break;
             case "3":
-                System.out.println("Oh lord have mercy"); //Search items by name, store, description, sort Quantity/Price
+                System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
 
                 break;
             case "4":
-                System.out.println("AAASAGGHH"); // review Purchase History
+                System.out.println("Placeholder"); // review Purchase History
 
                 break;
             case "5":
-                System.out.println("Dunsmore, please it hurts so much, make it stop"); // Manage Account
+                System.out.println("Placeholder"); // Manage Account
 
                 break;
             case "6":
-                System.out.println("Oh hello Satan");
+                System.out.println("Placeholder");
 
                 break;
         }
