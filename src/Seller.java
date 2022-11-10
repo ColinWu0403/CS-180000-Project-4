@@ -78,7 +78,7 @@ public class Seller implements User {
         stores.add(store);
         try {
             PrintWriter printStore = new PrintWriter(new FileOutputStream("FMStores.csv", true));
-            printStore.println(store.getStoreName() + "," + store.getOwner());
+            printStore.println(store.getStoreName() + "," + store.getOwner() + ",");
             printStore.flush();
             printStore.close();
         } catch (Exception e) { e.printStackTrace(); }
