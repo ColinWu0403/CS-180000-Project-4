@@ -43,27 +43,15 @@ public class FurnitureMarketplace {
             if (currentUser instanceof Buyer userB) {
                 Item[] itemList;
                 itemList = createItemList();
+                while (true) {
+                    printBuyerDashboard(itemList);
 
-                printBuyerDashboard(itemList);
+                    String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
+                    String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
 
-                String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
-                String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
-
-                switch (userChoiceFromDashboard) {
-                    case "1" ->         //Buyer selects Product
-                            System.out.println("Placeholder");  //Product code here
-                    case "2" ->         //Buyer Looks at their cart
-                            System.out.println("Placeholder"); // Cart code here
-                    case "3" ->         //Buyer Narrows their search results
-                            System.out.println("Placeholder"); // Search code here
-                    case "4" ->         //Buyer Sorts by price or quantity
-                            System.out.println("Placeholder"); // Sort code here
-                    case "5" ->         //Buyer Reviews their purchase history
-                            System.out.println("Placeholder"); // Statistics code here
-                    case "6" ->         //Buyer Manages their account
-                            System.out.println("Placeholder"); // Management code here
-                    case "7" ->         //Buyer Logs out
-                            System.out.println("Placeholder"); // Logout Logic here
+                    if (!buyerDashboardNavigation(scanner, userChoiceFromDashboard, userB).equals("repromptDashboard")) {
+                        break;
+                    }
                 }
             } else if (currentUser instanceof Seller userS) {
 
@@ -170,7 +158,7 @@ public class FurnitureMarketplace {
                 accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
                 String[] accountDetails = accountSearch.split(", ");
                 if (accountDetails[3].equals("buyer")) {
-                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[1],"hist"),buyerDataArray(accountDetails[1],"cart"));
+                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[0],"hist"),buyerDataArray(accountDetails[0],"cart"));
                 } else if (accountDetails[3].equals("seller")) {
                     return new Seller(accountDetails[1], accountDetails[0], accountDetails[2]);
                 }
@@ -284,7 +272,7 @@ public class FurnitureMarketplace {
                         } else {
                             String[] initialData = currentLine[4].split("@"); // Split each purchase
                             for (int i = 0; i < initialData.length; i++) {
-                                buyerData.add(currentLine[i]);
+                                buyerData.add(initialData[i]);
                             }
                         }
                     } else { // if cart, get cart
@@ -293,7 +281,7 @@ public class FurnitureMarketplace {
                         } else {
                             String[] initialData = currentLine[5].split("@"); // Split each purchase
                             for (int i = 0; i < initialData.length; i++) {
-                                buyerData.add(currentLine[i]);
+                                buyerData.add(initialData[i]);
                             }
                         }
                     }
@@ -310,14 +298,14 @@ public class FurnitureMarketplace {
      * @param itemList The Item list obtained from the createItemList method.
      */
     public static void printBuyerDashboard(Item[] itemList) {
-        String[] outputOptions = {"(1) Select Product", "(2) View Cart", "(3) Search", "(4) Sort",
-                "(5) Review Purchase History", "(6) Manage Account", "(7) Sign Out"};
+        String[] outputOptions = {"(1) Select Product", "(2) View Cart", "(3) Search",
+                "(4) Review Purchase History", "(5) Manage Account", "(6) Sign Out"};
 
         System.out.printf("\n%-8s Select Option %-12s Furniture Dashboard\n", "", "");
         int i = 0;
         while (true) {
             if (outputOptions.length <= itemList.length) {
-                if (i < 7) {
+                if (i < 6) {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
                     itemList[i].printItem();
                 } else if (i < itemList.length) {
@@ -330,7 +318,7 @@ public class FurnitureMarketplace {
                 if (i < itemList.length) {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
                     itemList[i].printItem();
-                } else if (i < 7) {
+                } else if (i < 6) {
                     System.out.printf("%-30s ||  \n", outputOptions[i]);
                 } else {
                     break;
@@ -366,7 +354,45 @@ public class FurnitureMarketplace {
         }
         return storeName;
     }
+    public static String buyerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Buyer currentUser) {
+        switch (userChoiceFromDashboard) {
+            case "1": // Product Selection
+                System.out.println("Which Item would you like to select");
 
+
+                break;
+            case "2":
+                //view cart options
+                if (currentUser.getCart().isEmpty()) {
+                    System.out.println(currentUser.getCart());
+                    System.out.println("Cart Empty");
+                } else {
+                    System.out.println(currentUser.printCart());
+                    System.out.println("""
+                            \t\tManage Cart
+                            (1) Checkout
+                            """);
+                }
+                break;
+            case "3":
+                System.out.println("Oh lord have mercy"); //Search items by name, store, description, sort Quantity/Price
+
+                break;
+            case "4":
+                System.out.println("AAASAGGHH"); // review Purchase History
+
+                break;
+            case "5":
+                System.out.println("Dunsmore, please it hurts so much, make it stop"); // Manage Account
+
+                break;
+            case "6":
+                System.out.println("Oh hello Satan");
+
+                break;
+        }
+        return "repromptDashboard";
+    }
     public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser) {
         switch (userChoiceFromDashboard) {
             case "1":                                               //Manage stores
