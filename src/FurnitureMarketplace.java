@@ -132,7 +132,7 @@ public class FurnitureMarketplace {
         Seller currentSeller = null;
         if (buyerSellerResponse.equals("1")) {     //new user is created that is a Buyer
             newBuyerOrSeller = "buyer";
-            currentBuyer = new Buyer(newUsername, newEmail, newPassword);
+            currentBuyer = new Buyer(newUsername, newEmail, newPassword,null, null);
         } else {                                //new user is created that is a Seller
             newBuyerOrSeller = "seller";
             currentSeller = new Seller(newUsername, newEmail, newPassword);
@@ -141,7 +141,7 @@ public class FurnitureMarketplace {
         try {                                   //writes the new user's account to the csv file
             PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("FMCredentials.csv"
                     , true)));
-            printWriter.println(newEmail + "," + newUsername + "," + newPassword + "," + newBuyerOrSeller);
+            printWriter.println(newEmail + "," + newUsername + "," + newPassword + "," + newBuyerOrSeller + ",,");
             printWriter.flush();
             printWriter.close();
         } catch (Exception e) {
@@ -170,7 +170,7 @@ public class FurnitureMarketplace {
                 accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
                 String[] accountDetails = accountSearch.split(", ");
                 if (accountDetails[3].equals("buyer")) {
-                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2]);
+                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[1],"hist"),buyerDataArray(accountDetails[1],"cart"));
                 } else if (accountDetails[3].equals("seller")) {
                     return new Seller(accountDetails[1], accountDetails[0], accountDetails[2]);
                 }
@@ -263,6 +263,47 @@ public class FurnitureMarketplace {
         }
     }
 
+    /**
+     * A function used to Get user data from FMCredentials to be used in the Buyer constructor
+     *
+     * @param userEmail User email to make sure you get the right user data
+     * @param cartOrHist If Cart, Cart list is returned. If Hist, Purchase History list is returned
+     * @return
+     */
+    public static ArrayList<String> buyerDataArray(String userEmail, String cartOrHist) {
+        try {
+            ArrayList<String> buyerData = new ArrayList<>();
+            BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
+            String line = "";
+            while ((line = bfr.readLine()) != null) {
+                String[] currentLine = line.split(",");
+                if (currentLine[0].equals(userEmail)) { // first checks for user creds to give correct history
+                    if (cartOrHist.equals("hist")) { // if hist, get Purchase history
+                        if (currentLine[4].equals("")) {
+                            return null;
+                        } else {
+                            String[] initialData = currentLine[4].split("@"); // Split each purchase
+                            for (int i = 0; i < initialData.length; i++) {
+                                buyerData.add(currentLine[i]);
+                            }
+                        }
+                    } else { // if cart, get cart
+                        if (currentLine[5].equals("")) {
+                            return null;
+                        } else {
+                            String[] initialData = currentLine[5].split("@"); // Split each purchase
+                            for (int i = 0; i < initialData.length; i++) {
+                                buyerData.add(currentLine[i]);
+                            }
+                        }
+                    }
+                }
+            }
+            return buyerData;
+        } catch (Exception e) {
+            return null;
+        }
+    }
     /**
      * Prints Dashboard for buyer to view after logging in.
      *
