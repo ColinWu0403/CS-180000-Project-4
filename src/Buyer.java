@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Buyers class - contains all methods the buyers may use
@@ -7,45 +8,35 @@ import java.util.ArrayList;
  * @author Colin Wu
  * @version 2022-3-11
  */
-public class Buyer implements User {
+public class Buyer {
     private String name; // Buyer username
     private final String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password
-    private ArrayList<String> purchaseHistory; // Products bought or purchase history
-    private final String shoppingCartName; // Name of shopping cart CSV file
-    private final String purchaseHistoryName; // Name of shopping cart CSV file
+    private ArrayList<String> purchaseHistory;
+    private ArrayList<String> cart;
 
-    public Buyer(String name, String email, String password) { // Construct Buyers Object
+
+    public Buyer(String name, String email, String password, ArrayList<String> purchaseHistory, ArrayList<String> cart) { // Construct Buyers Object
         this.name = name;
         this.email = email;
         this.password = password;
-        this.shoppingCartName = setCartFileName(email);
-        this.purchaseHistoryName = setPurchaseHistoryFileName(email);
-    }
-    public String setCartFileName(String email) { // Sets shopping cart filename
-        return email + "Cart.csv";
-    }
-    public String setPurchaseHistoryFileName(String email) { // Sets shopping cart filename
-        return email + "PurchaseHistory.csv";
-    }
-
-    public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
-        try {
-            File purchaseHistoryCSV = new File(getPurchaseHistoryName());
-
-            // Append added item to shopping cart
-            FileOutputStream fos = new FileOutputStream(purchaseHistoryCSV, true);
-            PrintWriter purchasesWriter = new PrintWriter(fos);
-
-            purchasesWriter.println(itemToPurchase);
-
-            purchasesWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (purchaseHistory == null) {
+            this.purchaseHistory = new ArrayList<>();
+        } else {
+            this.purchaseHistory = purchaseHistory;
+        }
+        if (cart == null) {
+            this.cart = new ArrayList<>();
+        } else {
+            this.cart = cart;
         }
     }
 
-    public ArrayList<String> showPurchaseHistory() { // returns an ArrayList to be printed as the purchase history
+    public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
+        purchaseHistory.add(itemToPurchase);
+    }
+
+   /* public ArrayList<String> showPurchaseHistory() { // returns an ArrayList to be printed as the purchase history
         try {
             // Read through CSV file
             BufferedReader purchasesReader = new BufferedReader(new FileReader(getPurchaseHistoryName()));
@@ -64,43 +55,34 @@ public class Buyer implements User {
             e.printStackTrace();
             return null;
         }
-    }
-    public void purchaseHistoryToString(ArrayList<String> purchaseHistory) {
-        for (int i = 0; i < purchaseHistory.size(); i++) {
-            String[] splitline = purchaseHistory.get(i).split(",");
-            if (splitline[2].equals("1")) {
-                System.out.printf("Purchased one %s from %s for %s\n", splitline[1], splitline[0], splitline[3]);
-            }
-            System.out.printf("Purchased %s from %s for %s each; Quantity %s",
-                    splitline[1], splitline[0], splitline[3], splitline[2]);
-        }
-    }
+    }*/
 
-    // returns a list of stores by the products purchased by that particular customer.
-    public ArrayList<String> storesFromPurchasedProducts(String storeName) {
+    // Returns ArrayList of sorted purchase history in alphabetical order
+    /*public ArrayList<String> sortPurchaseHistory() {
+        ArrayList<String> sortedHistory = showPurchaseHistory();
+
+        Collections.sort(sortedHistory);
+
+        return sortedHistory;
+    }*/
+
+    // returns ArrayList of stores by number of products sold
+    public ArrayList<String> storesFromProductsSold() {
         try {
-            // Read through CSV file
-            BufferedReader storeReader = new BufferedReader(new FileReader(getPurchaseHistoryName()));
+            ArrayList<String> stores = parseStore(); // parses store and get ArrayList
+            ArrayList<String> storesProductsList = new ArrayList<>();
 
-            ArrayList<String> selectedStores = new ArrayList<>(); // stores found ArrayList
+            for (int i = 0; i < stores.size(); i++) {
+                String[] storeSplit = stores.get(i).split(",");
+                String storeName = storeSplit[0];
+                String productsSold = storeSplit[2];
 
-            // Add existing items to ArrayList;
-            String line = storeReader.readLine();
-            while (line != null) {
-                selectedStores.add(line);
-                line = storeReader.readLine();
+                /* Formatting:
+                /* storeName,productsSold */
+                storesProductsList.add(storeName + "," + productsSold);
             }
 
-            for (int i = 0; i < selectedStores.size(); i++) {
-                // If purchased history line does not contain store name, remove from arrayList
-                String[] storeArr = selectedStores.get(i).split(",");
-                String historyStoreName = storeArr[0]; // Gets the store name (first index)
-                if (!historyStoreName.equals(storeName)) {
-                    selectedStores.remove(i);
-                }
-            }
-
-            return selectedStores;
+            return storesProductsList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,32 +90,36 @@ public class Buyer implements User {
         return null;
     }
 
-    public void createShoppingCart() { // create shopping cart
-        try {
-            File shoppingCartCSV = new File(getShoppingCartName()); // Create new shopping cart file
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Returns sorted ArrayList of stores by number of products sold from most to least
+    public ArrayList<String> sortStoresProductsSold() {
+        ArrayList<String> sortedList = new ArrayList<>();
+        ArrayList<String> accessList = storesFromProductsSold();
+        ArrayList<Integer> productsSoldList = new ArrayList<>();
+
+        for (int i = 0; i < accessList.size(); i++) {
+            String[] listSplit = accessList.get(i).split(",");
+            // add number of products sold to Integer list
+            productsSoldList.add(Integer.parseInt(listSplit[1]));
+
         }
+
+        // Sort from most to least
+        productsSoldList.sort(Collections.reverseOrder());
+
+        for (int i = 0; i < productsSoldList.size(); i++) {
+            for (int j = 0; j < accessList.size(); j++) {
+                // Note: currently this can't have two stores with the same amount of products sold
+                if (accessList.get(j).contains(String.valueOf(productsSoldList.get(i)))) {
+                    sortedList.add(accessList.get(j));
+                }
+            }
+        }
+
+        return sortedList;
     }
 
     public void addItem(String itemToAdd) { // add item to shopping cart
-        /** NOTE: right now String itemToAdd would be the entire line of the shopping cart to add
-         * (Ex: "John's Chairs",awesome chair","3","39.99").
-         * Later in the main interface we'll have to make a parseItem method to first access the specific search Item object
-         * and turn it into a string. Not sure if toString() would work? **/
-        try {
-            File shoppingCartCSV = new File(getShoppingCartName());
-
-            // Append added item to shopping cart
-            FileOutputStream fos = new FileOutputStream(shoppingCartCSV, true);
-            PrintWriter cartWriter = new PrintWriter(fos);
-
-            cartWriter.println(itemToAdd);
-
-            cartWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        cart.add(itemToAdd);
     }
 
     public void removeShoppingCartItem(int itemID) { // remove item from shopping cart
@@ -145,7 +131,7 @@ public class Buyer implements User {
          * with an item ID that allows the user to just input an integer to remove an item from the cart?
          * Otherwise, I'll change the code to remove by item name I guess.
          * **/
-        try {
+        /*try {
             // Read through CSV file
             BufferedReader cartReader = new BufferedReader(new FileReader(getShoppingCartName()));
 
@@ -178,10 +164,10 @@ public class Buyer implements User {
             cartWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
-    public void checkOut() { // Checkout all items from shopping cart / set shopping cart to empty
+    /*public void checkOut() { // Checkout all items from shopping cart / set shopping cart to empty
         try {
             FileOutputStream fos = new FileOutputStream(getShoppingCartName(), false);
             PrintWriter cartWriter = new PrintWriter(fos);
@@ -192,61 +178,95 @@ public class Buyer implements User {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public ArrayList<String> getPurchaseHistory() {
-        return purchaseHistory;
-    }
 
-    public String getShoppingCartName() {
-        return shoppingCartName;
-    }
-
-    public String getPurchaseHistoryName() {
-        return purchaseHistoryName;
-    }
-
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
+
     public String getEmail() {
         return email;
     }
 
-    @Override
+
     public String getPassword() {
         return password;
     }
 
-    public void setPurchaseHistory(ArrayList<String> purchaseHistory) {
-        this.purchaseHistory = purchaseHistory;
-    }
 
-    @Override
     public void setName(String Name) {
         this.name = name;
     }
 
-    @Override
+
     public void setPassword(String password) {
         this.password = password;
     }
-
-    @Override
-    public void sendMessage(String message) {
-        // Not sure if this is needed
-    }
-
-    @Override
-    public String checkMessage() {
-        return null; // Not sure if this is needed
-    }
-
-    @Override
     public void deleteAccount() {
-        // Not sure if this is needed
+        String line;
+        StringBuilder credentialsFile = new StringBuilder();
+        try {
+            // First remove user from credentials file
+            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
+            line = bfrOne.readLine();
+            while (line != null) {
+                // Only saves account to reprint to the file if they don't have the email belonging to this account
+                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
+                line = bfrOne.readLine();
+            }
+            bfrOne.close();
+            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
+            pwOne.println(credentialsFile);
+            pwOne.close();
+        } catch (Exception e) {
+            System.out.println("Error deleting user credentials!");
+            e.printStackTrace();
+        }
+    }
+
+    // Reads through FMItems.csv and returns a String ArrayList of items
+    public ArrayList<String> parseItem() {
+        try {
+            // Read through CSV file
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+
+            ArrayList<String> parsedList = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = itemReader.readLine();
+            while (line != null) {
+                parsedList.add(line);
+                line = itemReader.readLine();
+            }
+
+            return parsedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Reads through FMStores.csv and returns a String ArrayList of items
+    public ArrayList<String> parseStore() {
+        try {
+            // Read through CSV file
+            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
+
+            ArrayList<String> parsedList = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = storeReader.readLine();
+            while (line != null) {
+                parsedList.add(line);
+                line = storeReader.readLine();
+            }
+
+            return parsedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
