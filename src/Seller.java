@@ -84,6 +84,28 @@ public class Seller implements User {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    public void deleteStore(Store store) throws IOException {
+        // remove the store that has the name of the store specified as a parameter
+        BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
+        ArrayList<String> stores = new ArrayList<>();
+
+        String line;
+        while ((line = storeReader.readLine()) != null) {
+            stores.add(line);
+        }
+
+        stores.removeIf(storeLine -> storeLine.split(",")[1].equals(store.getStoreName()));
+
+        // remove any items associated with the store
+        BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+        ArrayList<String> items = new ArrayList<>();
+
+        while ((line = itemReader.readLine()) != null) {
+            items.add(line);
+        }
+        items.removeIf(itemLine -> itemLine.split(",")[0].equals(store.getStoreName()));
+    }
+
     @Override
     public String getEmail() {
         return this.email;

@@ -340,19 +340,33 @@ public class FurnitureMarketplace {
 
                 switch (manageStoreResponse) {
                     case "1":                 //1-1- Manage catalogues
-                        System.out.println("\tStores owned by: " + currentUser.getName());
                         Store[] currentUserStores = currentUser.getStore();
+
+                        // if user owns no stores, re-prompt dashboard
+                        if (currentUserStores.length == 0) {
+                            System.out.println("You don't own any stores yet!");
+                            return "repromptDashboard";
+                        }
+
+                        System.out.println("\tStores owned by: " + currentUser.getName());
+
                         ArrayList<String> numberOptions = new ArrayList<>();
                         for (int i = 0; i < currentUserStores.length; i++) {
                             numberOptions.add(Integer.toString((i + 1)));
                             System.out.println("(" + (i + 1) + ")" + currentUserStores[i].getStoreName());
                         }
+
                         System.out.println("What store would you like to modify: ");
                         String[] manageCatalogueOptions = new String[numberOptions.size()];
                         for (int i = 0; i < numberOptions.size(); i++) {
                             manageCatalogueOptions[i] = numberOptions.get(i);
                         }
+
+                        // option selected needs to be higher than the index by 1
                         String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                        manageCatalogueResponse =
+                                Integer.toString(Integer.parseInt(manageCatalogueResponse) - 1);
+
                         Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse)];
                         System.out.println("Current Store: " + currentStore.getStoreName());
                         System.out.println("""

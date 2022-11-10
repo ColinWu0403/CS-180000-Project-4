@@ -339,7 +339,7 @@ public class Buyer implements User {
     }
 
     // Reads through FMItems.csv and returns a String ArrayList of items
-    @Override
+
     public ArrayList<String> parseItem() {
         try {
             // Read through CSV file
@@ -362,7 +362,7 @@ public class Buyer implements User {
     }
 
     // Reads through FMStores.csv and returns a String ArrayList of items
-    @Override
+
     public ArrayList<String> parseStore() {
         try {
             // Read through CSV file
