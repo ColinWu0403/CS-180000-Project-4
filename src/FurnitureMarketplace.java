@@ -299,6 +299,33 @@ public class FurnitureMarketplace {
         }
     }
 
+    public static String validStoreName (Scanner scanner) {
+        boolean invalidStoreName = true;
+        String storeName = "";
+        while (invalidStoreName) {
+            System.out.print("Enter the name for your store: ");
+            storeName = scanner.nextLine();
+            try {
+                BufferedReader bfr = new BufferedReader(new FileReader("FMStores.csv"));
+                String line = "";
+                int c = 0;
+                while ((line = bfr.readLine())!= null) {
+                    String[] storeInfo = line.split(",");
+                    if (storeName.equals(storeInfo[0])) {
+                        System.out.println("Error: This store name already exists");
+                        c++;
+                        break;
+                    }
+                }
+                if (c == 0) {
+                    invalidStoreName = false;
+                }
+                bfr.close();
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+        return storeName;
+    }
+
     public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser) {
         switch (userChoiceFromDashboard) {
             case "1":                                               //Manage stores
@@ -306,28 +333,65 @@ public class FurnitureMarketplace {
                         \t\tManage Stores
                         (1) Manage Catalogues
                         (2) Create Store
-                        (3) Rename Store
-                        (4) Delete Store
-                        (5) Return to Dashboard""");
-                String[] optionOneChoices = {"1", "2", "3", "4", "5"};
+                        (3) Delete Store
+                        (4) Return to Dashboard""");
+                String[] optionOneChoices = {"1", "2", "3", "4"};
                 String manageStoreResponse = validUserResponse(scanner, optionOneChoices);
 
                 switch (manageStoreResponse) {
                     case "1":                 //1-1- Manage catalogues
+                        System.out.println("\tStores owned by: " + currentUser.getName());
+                        Store[] currentUserStores = currentUser.getStore();
+                        ArrayList<String> numberOptions = new ArrayList<>();
+                        for (int i = 0; i < currentUserStores.length; i++) {
+                            numberOptions.add(Integer.toString((i + 1)));
+                            System.out.println("(" + (i + 1) + ")" + currentUserStores[i].getStoreName());
+                        }
+                        System.out.println("What store would you like to modify: ");
+                        String[] manageCatalogueOptions = new String[numberOptions.size()];
+                        for (int i = 0; i < numberOptions.size(); i++) {
+                            manageCatalogueOptions[i] = numberOptions.get(i);
+                        }
+                        String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                        Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse)];
+                        System.out.println("Current Store: " + currentStore.getStoreName());
+                        System.out.println("""
+                        (1) Add Product
+                        (2) Edit Product
+                        (3) Export Product File
+                        (4) Delete Product
+                        (5) Return to Dash""");
+                        String[] editCatalogueOptions = {"1", "2", "3", "4", "5"};
+                        String editCatalogueResponse = validUserResponse(scanner, editCatalogueOptions);
+                        switch (editCatalogueResponse) {
+                            case "1":
+
+                                break;
+                            case "2":
+
+                                break;
+                            case "3":
+
+                                break;
+                            case "4":
+
+                                break;
+                            case "5":
+
+                                break;
+                        }
+
 
                         break;
-                    case "2":                 //1-2 Create a store
-                        System.out.println("Enter the name for your store");
-                        String storeName = scanner.nextLine();
+                    case "2":                 //1-2 Create a store : DONE
+                        boolean invalidStoreName = true;
+                        String storeName = validStoreName(scanner);
                         currentUser.createStore(new Store(currentUser.getEmail(), storeName));
                         break;
-                    case "3":                 //1-3 Rename a store
+                    case "3":                 //1-3 Delete a store
 
                         break;
-                    case "4":                 //1-4 Delete a store
-
-                        break;
-                    case "5":                 //1-5 Return to the dashboard : DONE
+                    case "4":                 //1-4 Return to the dashboard : DONE
 
                         break;
                 }

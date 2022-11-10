@@ -20,9 +20,9 @@ public class Seller implements User {
         this.password = password;
 
         try {
-        stores = new ArrayList<>();
-        File f = new File("FMStores.csv");
-        // Initialize store objects that this seller has created
+            stores = new ArrayList<>();
+            File f = new File("FMStores.csv");
+            // Initialize store objects that this seller has created
             BufferedReader bfr = new BufferedReader(new FileReader(f));
             String line = bfr.readLine();
             while (line != null) {
@@ -76,6 +76,12 @@ public class Seller implements User {
 
     public void createStore(Store store) {
         stores.add(store);
+        try {
+            PrintWriter printStore = new PrintWriter(new FileOutputStream("FMStores.csv", true));
+            printStore.println(store.getStoreName() + "," + store.getOwner());
+            printStore.flush();
+            printStore.close();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @Override
@@ -96,6 +102,14 @@ public class Seller implements User {
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public Store[] getStore() {
+        Store[] userStores = new Store[this.stores.size()];
+        for (int i = 0; i < this.stores.size(); i++) {
+            userStores[i] = this.stores.get(i);
+        }
+        return userStores;
     }
 
     @Override
