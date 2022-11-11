@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.InputMismatchException;
+import java.util.*;
 
 /**
  * Contains the main method and currently deals with user login
@@ -13,6 +10,19 @@ import java.util.InputMismatchException;
 
 public class FurnitureMarketplace {
 
+    public static Item[] itemList;
+
+    //    public Item[] getItemList() {
+//        return itemList;
+//    }
+//
+//    public void setItemList(Item[] itemList) {
+//        this.itemList = itemList;
+//    }
+//
+//    public FurnitureMarketplace(Item[] itemList) {
+//        this.itemList = itemList;
+//    }
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to Furniture Marketplace");
@@ -29,20 +39,19 @@ public class FurnitureMarketplace {
             Object currentUser = null;                                          //object of Buyer or Seller for current user
 
             switch (loginResponse) {
-                case "1":                 //user chooses to sign in
+                case "1" -> {                //user chooses to sign in
                     currentUser = signInAccount(scanner);
-                    break;
-                case "2":                 //user chooses to create an account
+                }
+                case "2" -> {                //user chooses to create an account
                     currentUser = createAccount(scanner);
-                    break;
-                case "3":                 //user chooses to exit the program
+                }
+                case "3" -> {                 //user chooses to exit the program
                     programIsRunning = false;
-                    System.out.println("Thanks for using furniture marketplace");
-                    break;
+                    System.out.println("Thank you for using Furniture Marketplace!");
+                }
             }
 
             if (currentUser instanceof Buyer userB) {
-                Item[] itemList;
                 itemList = createItemList();
                 while (true) {
                     printBuyerDashboard(itemList);
@@ -121,7 +130,7 @@ public class FurnitureMarketplace {
         Seller currentSeller = null;
         if (buyerSellerResponse.equals("1")) {     //new user is created that is a Buyer
             newBuyerOrSeller = "buyer";
-            currentBuyer = new Buyer(newUsername, newEmail, newPassword,null, null);
+            currentBuyer = new Buyer(newUsername, newEmail, newPassword, null, null);
         } else {                                //new user is created that is a Seller
             newBuyerOrSeller = "seller";
             currentSeller = new Seller(newUsername, newEmail, newPassword);
@@ -159,7 +168,7 @@ public class FurnitureMarketplace {
                 accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
                 String[] accountDetails = accountSearch.split(", ");
                 if (accountDetails[3].equals("buyer")) {
-                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[0],"hist"),buyerDataArray(accountDetails[0],"cart"));
+                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[0], "hist"), buyerDataArray(accountDetails[0], "cart"));
                 } else if (accountDetails[3].equals("seller")) {
                     return new Seller(accountDetails[1], accountDetails[0], accountDetails[2]);
                 }
@@ -198,7 +207,8 @@ public class FurnitureMarketplace {
             return "";
         }
     }
-    public static String validItemName (Scanner scanner) {
+
+    public static String validItemName(Scanner scanner) {
         boolean invalidItemName = true;
         String itemName = "";
         while (invalidItemName) {
@@ -226,6 +236,7 @@ public class FurnitureMarketplace {
         }
         return itemName;
     }
+
     /* Purpose: returns the response from the user if it is a valid response.
     @param String[] inputOptions : possible options that can be accepted the by the user*/
     public static String validUserResponse(Scanner scanner, String[] inputOptions) {
@@ -282,7 +293,7 @@ public class FurnitureMarketplace {
     /**
      * A function used to Get user data from FMCredentials to be used in the Buyer constructor
      *
-     * @param userEmail User email to make sure you get the right user data
+     * @param userEmail  User email to make sure you get the right user data
      * @param cartOrHist If Cart, Cart list is returned. If Hist, Purchase History list is returned
      * @return
      */
@@ -320,6 +331,7 @@ public class FurnitureMarketplace {
             return null;
         }
     }
+
     /**
      * Prints Dashboard for buyer to view after logging in.
      *
@@ -335,9 +347,11 @@ public class FurnitureMarketplace {
             if (outputOptions.length <= itemList.length) {
                 if (i < 6) {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
+                    System.out.printf("(%d) ", i);
                     itemList[i].printItem();
                 } else if (i < itemList.length) {
                     System.out.printf("%-31s||  ", "");
+                    System.out.printf("(%d) ", i);
                     itemList[i].printItem();
                 } else {
                     break;
@@ -345,6 +359,7 @@ public class FurnitureMarketplace {
             } else if (itemList.length < outputOptions.length) {
                 if (i < itemList.length) {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
+                    System.out.printf("(%d) ", i);
                     itemList[i].printItem();
                 } else if (i < 6) {
                     System.out.printf("%-30s ||  \n", outputOptions[i]);
@@ -384,45 +399,80 @@ public class FurnitureMarketplace {
         }
         return storeName;
     }
+
     public static String buyerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Buyer currentUser) {
         switch (userChoiceFromDashboard) {
-            case "1": // Product Selection
+            case "1" -> { // Product Selection - Adds product to cart
                 System.out.println("Which Item would you like to select");
+                int itemNum = Integer.parseInt(scanner.nextLine());
 
-
-                break;
-            case "2":
-                //view cart options
+                String itemListStr = Arrays.toString(new Item[]{itemList[itemNum]});
+                System.out.println(itemListStr);
+                // Work in progress
+            }
+            case "2" -> {
+                // view cart options
                 if (currentUser.getCart().isEmpty()) {
                     System.out.println(currentUser.getCart());
                     System.out.println("Cart Empty");
                 } else {
+                    System.out.println("Cart: ");
                     System.out.println(currentUser.printCart());
-                    System.out.println("""
+                    System.out.printf("""
                             \t\tManage Cart
-                            (1) Checkout
+                            (1) Checkout\n
+                            (2) Remove Item\n
                             """);
                 }
-                break;
-            case "3":
-                System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+            }
+            case "3" -> {
+                //Search items by name, store, description, sort Quantity/Price
+                System.out.printf("(1) Search by product name\n" +
+                        "(2) Search by store\n" +
+                        "(3) Search by price\n");
+                int itemOption = Integer.parseInt(scanner.nextLine());
 
-                break;
-            case "4":
-                System.out.println("Placeholder"); // review Purchase History
+                switch (itemOption) {
+                    case 1 -> {
+                        System.out.println("Enter the item name");
+                        String itemName = scanner.nextLine();
 
-                break;
-            case "5":
+//                        for (int i = 0; i < itemList.length; i++) {
+                            System.out.println(Arrays.toString(itemList));
+//                        }
+                    }
+                    case 2 -> {
+                        System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+                    }
+                }
+            }
+            case "4" -> { // View or Export Purchase History
+                System.out.printf("(1) View Purchase History\n(2) Export Purchase History\n");
+                int purchaseOption = Integer.parseInt(scanner.nextLine());
+
+                if (purchaseOption == 1) {
+                    System.out.println("Purchase History:"); // review Purchase History
+                    ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
+
+                    for (int i = 1; i < purchaseHistory.size(); i++) {
+                        System.out.printf("(%d) %s\n", i, purchaseHistory.get(i));
+                    }
+                } else if (purchaseOption == 2) {
+                    Buyer.exportPurchaseHistory(currentUser.getEmail());
+                }
+            }
+            case "5" -> {
                 System.out.println("Placeholder"); // Manage Account
 
-                break;
-            case "6":
-                System.out.println("Placeholder");
-
-                break;
+            }
+            case "6" -> { // Sign Out
+                System.out.println("Signing Out!");
+                return "Sign out";
+            }
         }
         return "repromptDashboard";
     }
+
     public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser) {
         switch (userChoiceFromDashboard) {
             case "1":                                               //Manage stores
@@ -446,7 +496,7 @@ public class FurnitureMarketplace {
                         }
                         for (int i = 0; i < currentUserStores.length; i++) {
                             numberOptions.add(Integer.toString((i + 1)));
-                            System.out.println("(" + (i + 1) + ")" + currentUserStores[i].getStoreName());
+                            System.out.println("(" + (i + 1) + ") " + currentUserStores[i].getStoreName());
                         }
                         System.out.print("What store would you like to modify: ");
                         String[] manageCatalogueOptions = new String[numberOptions.size()];
@@ -690,7 +740,7 @@ public class FurnitureMarketplace {
                 }
                 break;
             case "6":                                                       //Sign out
-                System.out.println("Thanks for using Furniture Marketplace");
+                System.out.println("Thank you for using Furniture Marketplace!");
                 return "Sign out";
         }
         return "repromptDashboard";
