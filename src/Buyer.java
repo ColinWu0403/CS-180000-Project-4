@@ -37,27 +37,105 @@ public class Buyer {
         purchaseHistory.add(itemToPurchase);
     }
 
-   /* public ArrayList<String> showPurchaseHistory() { // returns an ArrayList to be printed as the purchase history
+//    public static void main(String[] args) { // For Testing
+//        try {
+////            exportPurchaseHistory("pete@gmail.com");
+//
+//            ArrayList<String> purchaseHistory1 = showPurchaseHistory("pete@gmail.com");
+//            for (int i = 0; i < purchaseHistory1.size(); i++) {
+//                System.out.println(purchaseHistory1.get(i));
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    // Creates a new file of purchase history
+    public static void exportPurchaseHistory(String email) {
+        try {
+
+            BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Read through FMCredentials and append to arraylist
+            String line = purchasesReader.readLine();
+            while (line != null) {
+                FMCredentials.add(line);
+                line = purchasesReader.readLine();
+            }
+
+            purchasesReader.close();
+
+            // loop through arraylist and find the correct account
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String purchaseHistoryStr = strSplit[4];
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+
+                    // Create export file
+                    try {
+                        String[] emailSplit = email.split("@");
+                        String fileName = emailSplit[0] + "PurchaseHistory.csv";
+                        File export = new File(fileName);
+
+                        FileOutputStream fos = new FileOutputStream(export, false);
+                        PrintWriter purchaseWriter = new PrintWriter(fos);
+
+                        // Write to file
+                        for (int j = 1; j < purchaseHistoryLine.length; j++) {
+                            purchaseWriter.println(purchaseHistoryLine[j]);
+                        }
+
+                        purchaseWriter.close();
+                        System.out.println("File Exported!");
+                    } catch (Exception e) {
+                        System.out.println("File NOT Exported");
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+   public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
         try {
             // Read through CSV file
-            BufferedReader purchasesReader = new BufferedReader(new FileReader(getPurchaseHistoryName()));
+            BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
 
-            ArrayList<String> purchaseHistory = new ArrayList<>(); // shopping cart ArrayList
+            ArrayList<String> FMCredentials = new ArrayList<>();
 
             // Add existing items to ArrayList;
             String line = purchasesReader.readLine();
             while (line != null) {
-                purchaseHistory.add(line);
+                FMCredentials.add(line);
                 line = purchasesReader.readLine();
             }
 
-            return purchaseHistory;
+            purchasesReader.close();
+
+            // loop through arraylist and find the correct account
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String purchaseHistoryStr = strSplit[4];
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+
+                    // Return new ArrayList
+                    return new ArrayList<>(Arrays.asList(purchaseHistoryLine));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
-    }*/
-    
+        return null;
+    }
+
     // Returns ArrayList of sorted purchase history in alphabetical order
     /*public ArrayList<String> sortPurchaseHistory() {
         ArrayList<String> sortedHistory = showPurchaseHistory();
@@ -212,10 +290,100 @@ public class Buyer {
         String cartString = "";
         for (int i = 0; i < cart.size(); i++) {
             String[] splitList = cart.get(i).split("!");
-            double totalPrice = Integer.parseInt(splitList[2]) * Double.parseDouble(splitList[3]);
-            cartString = cartString.concat(String.format("%s from %s; Quantity: %s; Total Price: %.2f\n", splitList[1],splitList[0],splitList[2],totalPrice));
+            double totalPrice = Double.parseDouble(splitList[2]) * Double.parseDouble(splitList[3]);
+            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: %.2f\n", (i + 1), splitList[1],splitList[0],splitList[2],totalPrice));
         }
         return cartString;
+    }
+
+    /**
+     * User checks out Items.
+     */
+    public void checkout() { //Removes items from cart, puts them in purchase history, adds purchases to respective Store History
+        try {
+            purchaseHistory.addAll(cart);
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
+
+            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
+            for (int i = 0; i < purchaseHistory.size(); i++) {
+                if (i + 1 == purchaseHistory.size()) {
+                    pw.println(purchaseHistory.get(i) + ",");
+                } else {
+                    pw.print(purchaseHistory.get(i) + "@");
+                }
+            }
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
+            }
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Removes an item from a user's cart.
+     *
+     *
+     * @param userChoice Number that the user selects in the main method.
+     */
+    public void removeItemFromCart(int userChoice) {
+        try {
+            cart.remove(userChoice - 1);
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
+
+            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
+            if (purchaseHistory.isEmpty()) {
+                pw.print(",");
+            }
+            for (int i = 0; i < purchaseHistory.size(); i++) {
+                if (i + 1 == purchaseHistory.size()) {
+                    pw.print(purchaseHistory.get(i) + ",");
+                } else {
+                    pw.print(purchaseHistory.get(i) + "@");
+                }
+            }
+            for (int i = 0; i < cart.size(); i++) {
+                if (i + 1 == cart.size()) {
+                    pw.println(cart.get(i));
+                } else {
+                    pw.print(cart.get(i) + "@");
+                }
+            }
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
+            }
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method reads all data that isn't related to the user from the Credentials file and stores it
+     * for easy rewriting
+     *
+     * @return stored csv to be used in other buyer Functions
+     */
+    public ArrayList<String> csvTemporaryStorage() {
+        ArrayList<String> csvStorage = new ArrayList<>();
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            String line = bfr.readLine();
+            while (line != null) {
+                String[] splitLine = line.split(",");
+                if (!splitLine[0].equals(getEmail())) { // saves all data that is not being edited
+                    csvStorage.add(line);
+                }
+                line = bfr.readLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return csvStorage;
     }
     public ArrayList<String> getPurchaseHistory() {
         return this.purchaseHistory;
