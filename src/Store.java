@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.io.*;
+import java.util.Arrays;
 
 /**
  * A store class, contains pertinent information about the store
@@ -135,22 +136,34 @@ public class Store {
     }
 
     // Method to print sale history of a store for seller
-    public void viewSales() {
+    public ArrayList<String> showSales() { // returns an ArrayList to be printed as the stores sale history
         try {
-            BufferedReader bfr = new BufferedReader(new FileReader("Sales.csv"));
-            String line = bfr.readLine();
+            // Read through CSV file
+            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
+            ArrayList<String> FMStores = new ArrayList<>();
+
+            // Add existing stores to ArrayList;
+            String line = storeReader.readLine();
             while (line != null) {
-                String[] splitLine = line.split(",");
-                if (splitLine[0].equals(storeName)) {
-                    System.out.printf("%s bought %d of %s for %f total.\n", splitLine[1], Integer.parseInt(splitLine[3]),
-                            splitLine[2], Double.parseDouble(splitLine[4]));
-                }
-                line = bfr.readLine();
+                FMStores.add(line);
+                line = storeReader.readLine();
             }
-            bfr.close();
+            storeReader.close();
+
+            // loop through arraylist and find the correct store
+            for (int i = 0; i < FMStores.size(); i++) {
+                // If arraylist index has correct store name
+                if (FMStores.get(i).contains(storeName)) {
+                    String[] strSplit = FMStores.get(i).split(",");
+                    String saleHistoryStr = strSplit[2];
+                    String [] saleHistoryLine = saleHistoryStr.split("~");
+                    return new ArrayList<>(Arrays.asList(saleHistoryLine));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void viewStats() {
