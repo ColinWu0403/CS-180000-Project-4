@@ -74,11 +74,11 @@ public class Buyer {
                 if (FMCredentials.get(i).contains(email)) {
                     String[] strSplit = FMCredentials.get(i).split(",");
                     String purchaseHistoryStr = strSplit[4];
-                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
 
                     // Create export file
                     try {
-                        String[] emailSplit = email.split("@");
+                        String[] emailSplit = email.split("~");
                         String fileName = emailSplit[0] + "PurchaseHistory.csv";
                         File export = new File(fileName);
 
@@ -124,7 +124,7 @@ public class Buyer {
                 if (FMCredentials.get(i).contains(email)) {
                     String[] strSplit = FMCredentials.get(i).split(",");
                     String purchaseHistoryStr = strSplit[4];
-                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
 
                     // Return new ArrayList
                     return new ArrayList<>(Arrays.asList(purchaseHistoryLine));
@@ -310,7 +310,7 @@ public class Buyer {
                 if (i + 1 == purchaseHistory.size()) {
                     pw.println(purchaseHistory.get(i) + ",");
                 } else {
-                    pw.print(purchaseHistory.get(i) + "@");
+                    pw.print(purchaseHistory.get(i) + "~");
                 }
             }
             for (int i = 0; i < storedCSVData.size(); i++) {
@@ -342,18 +342,15 @@ public class Buyer {
                 if (i + 1 == purchaseHistory.size()) {
                     pw.print(purchaseHistory.get(i) + ",");
                 } else {
-                    pw.print(purchaseHistory.get(i) + "@");
+                    pw.print(purchaseHistory.get(i) + "~");
                 }
             }
             for (int i = 0; i < cart.size(); i++) {
                 if (i + 1 == cart.size()) {
                     pw.println(cart.get(i));
                 } else {
-                    pw.print(cart.get(i) + "@");
+                    pw.print(cart.get(i) + "~");
                 }
-            }
-            if (cart.size() == 0) {
-                pw.println();
             }
             for (int i = 0; i < storedCSVData.size(); i++) {
                 pw.println(storedCSVData.get(i));

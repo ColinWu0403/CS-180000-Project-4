@@ -309,14 +309,14 @@ public class FurnitureMarketplace {
                         if (currentLine[4].equals("")) {
                             return null;
                         } else {
-                            String[] initialData = currentLine[4].split("@"); // Split each purchase
+                            String[] initialData = currentLine[4].split("~"); // Split each purchase
                             Collections.addAll(buyerData, initialData);
                         }
                     } else { // if cart, get cart
                         if (currentLine[5].equals("")) {
                             return null;
                         } else {
-                            String[] initialData = currentLine[5].split("@"); // Split each purchase
+                            String[] initialData = currentLine[5].split("~"); // Split each purchase
                             Collections.addAll(buyerData, initialData);
                         }
                     }
@@ -412,43 +412,48 @@ public class FurnitureMarketplace {
                     System.out.println("Error item doesn't exist");
                 }
             }
-            case "2" -> {
-                // view cart options
+            case "2" -> { // view cart options
                 if (currentUser.getCart().isEmpty()) {
                     System.out.println("Cart Empty");
                 } else {
+                    boolean checkoutLoop = true;
+                    while (checkoutLoop) {
+                        System.out.println("Cart: ");
+                        System.out.println(currentUser.printCart());
+                        System.out.printf("""
+                                \t\tManage Cart
+                                (1) Checkout
+                                (2) Remove Item
+                                (3) Return
+                                """);
+                        String[] inputOptions = {"1", "2", "3"};
+                        String userResponse = validUserResponse(scanner, inputOptions);
 
-                    System.out.println("Cart: ");
-                    System.out.println(currentUser.printCart());
-                    System.out.printf("""
-                            \t\tManage Cart
-                            (1) Checkout
-                            (2) Remove Item
-                            (3) Return
-                            """);
-                    String[] inputOptions = {"1", "2", "3"};
-                    String userResponse = validUserResponse(scanner, inputOptions);
-
-                    switch (userResponse) {
-                        case "1": // 2-1 DONE
-                            currentUser.checkout();
-                            System.out.println("Checkout Successful!");
-                            break;
-                        case "2":
-                            System.out.println("Input the number of the item you would like to remove");
-                            try {
-                                int userInput = Integer.parseInt(scanner.nextLine());
-                                if (userInput < 1 || userInput > currentUser.getCart().size()) {
-                                    System.out.println("Please input a valid integer");
-                                } else {
-                                    currentUser.removeItemFromCart(userInput);
-                                    System.out.println("Item removed successfully");
+                        switch (userResponse) {
+                            case "1": // 2-1 DONE
+                                currentUser.checkout();
+                                System.out.println("Checkout Successful!");
+                                checkoutLoop = false;
+                                break;
+                            case "2":
+                                System.out.println("Input the number of the item you would like to remove");
+                                while (true) {
+                                    try {
+                                        int userInput = Integer.parseInt(scanner.nextLine());
+                                        if (userInput < 1 || userInput > currentUser.getCart().size()) {
+                                            System.out.println("Please input a valid integer");
+                                        } else {
+                                            currentUser.removeItemFromCart(userInput);
+                                            System.out.println("Item removed successfully");
+                                        }
+                                    } catch (NumberFormatException nfe) {
+                                        System.out.println("Please input an integer");
+                                    }
                                 }
-                            } catch (NumberFormatException nfe) {
-                                System.out.println("Please input an integer");
-                            }
-                        case "3":
-                            break;
+                            case "3":
+                                checkoutLoop = false;
+                                break;
+                        }
                     }
                 }
             }
