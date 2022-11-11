@@ -20,9 +20,9 @@ public class Seller implements User {
         this.password = password;
 
         try {
-            stores = new ArrayList<>();
-            File f = new File("FMStores.csv");
-            // Initialize store objects that this seller has created
+        stores = new ArrayList<>();
+        File f = new File("FMStores.csv");
+        // Initialize store objects that this seller has created
             BufferedReader bfr = new BufferedReader(new FileReader(f));
             String line = bfr.readLine();
             while (line != null) {
@@ -76,54 +76,6 @@ public class Seller implements User {
 
     public void createStore(Store store) {
         stores.add(store);
-        try {
-            PrintWriter printStore = new PrintWriter(new FileOutputStream("FMStores.csv", true));
-            printStore.println(store.getStoreName() + "," + store.getOwner());
-            printStore.flush();
-            printStore.close();
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    public void deleteStore(Store store) {
-        // remove the store that has the name of the store specified as a parameter
-        try {
-            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
-            ArrayList<String> stores = new ArrayList<>();
-
-            String line;
-            while ((line = storeReader.readLine()) != null) {
-                stores.add(line);
-            }
-
-            stores.removeIf(storeLine -> storeLine.split(",")[0].equals(store.getStoreName()));
-
-            // remove any items associated with the store
-            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
-            ArrayList<String> items = new ArrayList<>();
-
-            while ((line = itemReader.readLine()) != null) {
-                items.add(line);
-            }
-            items.removeIf(itemLine -> itemLine.split(",")[0].equals(store.getStoreName()));
-
-            // write all the lines back to the CSV files
-            PrintWriter storeWriter = new PrintWriter(new FileOutputStream("FMStores.csv", false));
-            PrintWriter itemWriter = new PrintWriter(new FileOutputStream("FMItems.csv", false));
-
-            for (String lineToWrite : stores) {
-                storeWriter.println(lineToWrite);
-            }
-            for (String lineToWrite : items) {
-                itemWriter.println(lineToWrite);
-            }
-
-            storeReader.close();
-            itemReader.close();
-            storeWriter.close();
-            itemWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -146,17 +98,27 @@ public class Seller implements User {
         return this.password;
     }
 
-    public Store[] getStore() {
-        Store[] userStores = new Store[this.stores.size()];
-        for (int i = 0; i < this.stores.size(); i++) {
-            userStores[i] = this.stores.get(i);
-        }
-        return userStores;
-    }
-
     @Override
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Store[] getStore() {
+        Store[] store = new Store[this.stores.size()];
+        for (int i = 0; i < store.length; i++) {
+            store[i] = stores.get(i);
+        }
+        return store;
+    }
+
+    @Override
+    public void sendMessage(String message) {
+
+    }
+
+    @Override
+    public String checkMessage() {
+        return null;
     }
 
     @Override
