@@ -95,7 +95,7 @@ public class Seller implements User {
                 stores.add(line);
             }
 
-            stores.removeIf(storeLine -> storeLine.split(",")[1].equals(store.getStoreName()));
+            stores.removeIf(storeLine -> storeLine.split(",")[0].equals(store.getStoreName()));
 
             // remove any items associated with the store
             BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
@@ -107,14 +107,14 @@ public class Seller implements User {
             items.removeIf(itemLine -> itemLine.split(",")[0].equals(store.getStoreName()));
 
             // write all the lines back to the CSV files
-            BufferedWriter storeWriter = new BufferedWriter(new FileWriter("FMStores.csv"));
-            BufferedWriter itemWriter = new BufferedWriter(new FileWriter("FMItems.csv"));
+            PrintWriter storeWriter = new PrintWriter(new FileOutputStream("FMStores.csv", false));
+            PrintWriter itemWriter = new PrintWriter(new FileOutputStream("FMItems.csv", false));
 
             for (String lineToWrite : stores) {
-                storeWriter.write(lineToWrite);
+                storeWriter.println(lineToWrite);
             }
             for (String lineToWrite : items) {
-                itemWriter.write(lineToWrite);
+                itemWriter.println(lineToWrite);
             }
 
             storeReader.close();
