@@ -436,181 +436,58 @@ public class FurnitureMarketplace {
                 String manageStoreResponse = validUserResponse(scanner, optionOneChoices);
 
                 switch (manageStoreResponse) {
-                    case "1":                           //1-1- Manage catalogues
-                        System.out.println("\tStores owned by: " + currentUser.getName());
+                    case "1":                 //1-1- Manage catalogues
                         Store[] currentUserStores = currentUser.getStore();
-                        ArrayList<String> numberOptions = new ArrayList<>();
+
+                        // if user owns no stores, re-prompt dashboard
                         if (currentUserStores.length == 0) {
-                            System.out.println("Error: You have no stores");
-                            break;
+                            System.out.println("You don't own any stores yet!");
+                            return "repromptDashboard";
                         }
+
+                        System.out.println("\tStores owned by: " + currentUser.getName());
+
+                        ArrayList<String> numberOptions = new ArrayList<>();
                         for (int i = 0; i < currentUserStores.length; i++) {
                             numberOptions.add(Integer.toString((i + 1)));
                             System.out.println("(" + (i + 1) + ")" + currentUserStores[i].getStoreName());
                         }
-                        System.out.print("What store would you like to modify: ");
+
+                        System.out.println("What store would you like to modify: ");
                         String[] manageCatalogueOptions = new String[numberOptions.size()];
                         for (int i = 0; i < numberOptions.size(); i++) {
                             manageCatalogueOptions[i] = numberOptions.get(i);
                         }
 
+                        // option selected needs to be higher than the index by 1
                         String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                        manageCatalogueResponse =
+                                Integer.toString(Integer.parseInt(manageCatalogueResponse) - 1);
 
-                        Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse) - 1];
-                        System.out.println("\tCurrent Store: " + currentStore.getStoreName());
+                        Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse)];
+                        System.out.println("Current Store: " + currentStore.getStoreName());
                         System.out.println("""
-                                (1) Add Product
-                                (2) Edit Product
-                                (3) Export Product File
-                                (4) Delete Product
-                                (5) Return to Dash""");
+                        (1) Add Product
+                        (2) Edit Product
+                        (3) Export Product File
+                        (4) Delete Product
+                        (5) Return to Dash""");
                         String[] editCatalogueOptions = {"1", "2", "3", "4", "5"};
                         String editCatalogueResponse = validUserResponse(scanner, editCatalogueOptions);
                         switch (editCatalogueResponse) {
-                            case "1":               //1-1-1 Add product to store : DONE
-
-                                String itemName = validItemName(scanner);
-                                System.out.print("Enter Item Description: ");
-                                String itemDescription = scanner.nextLine();
-                                String itemQuantity = "0";
-                                while (true) {
-                                    System.out.print("Enter item quantity: ");
-                                    try {
-                                        itemQuantity = scanner.nextLine();
-                                        Integer.parseInt(itemQuantity);
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Error: Please enter a number");
-                                        continue;
-                                    }
-                                    break;
-                                }
-                                String itemPrice = "0.00";
-                                while (true) {
-                                    System.out.print("Enter item price (ex. 49.99): ");
-                                    try {
-                                        double doubleItemPrice = scanner.nextDouble();
-                                        itemPrice = Double.toString(doubleItemPrice);
-                                        if ((doubleItemPrice * 100) % 1 != 0) {
-                                            throw new InputMismatchException();
-                                        }
-                                        scanner.nextLine();
-                                    } catch (InputMismatchException e) {
-                                        System.out.println("Error: Please enter a number with two decimals (ex. 49.99)");
-                                        scanner.nextLine();
-                                        continue;
-                                    }
-                                    break;
-                                }
-                                currentStore.addItem(itemName, itemDescription, Integer.parseInt(itemQuantity),
-                                        Double.parseDouble(itemPrice));
+                            case "1":
 
                                 break;
-                            case "2":               //1-1-2 Edit the product information : DONE
-                                ArrayList<String> numberOfProducts = new ArrayList<>();
-                                System.out.println("\tProducts available in " + currentStore.getStoreName());
-                                if (currentStore.getItems().size() == 0) {
-                                    System.out.println("Error: You have no products in this store");
-                                    break;
-                                }
-                                for (int i = 0; i < currentStore.getItems().size(); i++) {
-                                    numberOfProducts.add(Integer.toString((i + 1)));
-                                }
-                                if (!currentStore.printItemNames().equals("Error")) {
-                                    String[] productSelectionOptions = new String[numberOfProducts.size()];
-                                    for (int i = 0; i < currentStore.getItems().size(); i++) {
-                                        productSelectionOptions[i] = numberOfProducts.get(i);
-                                    }
-
-                                    System.out.print("What product would you like to modify: ");
-                                    String productSelectionResponse = validUserResponse(scanner, productSelectionOptions);
-                                    Item currentItem = currentStore.getItems().get(Integer.parseInt(productSelectionResponse) - 1);
-
-
-                                    boolean continueEditItem = true;
-                                    while (continueEditItem) {
-                                        System.out.println("""
-                                                (1) Edit item name
-                                                (2) Edit item description
-                                                (3) Edit item quantity
-                                                (4) Edit item price
-                                                (5) Return to Dash""");
-                                        String[] editProductOptions = {"1", "2", "3", "4", "5"};
-                                        System.out.print("What piece of product information would you like to modify: ");
-                                        String editProductResponse = validUserResponse(scanner, editProductOptions);
-                                        switch (editProductResponse) {
-                                            case "1":       //1-1-2-1 Edit item name : DONE
-                                                String newItemName = validItemName(scanner);
-                                                currentItem.changeField("name", newItemName);
-                                                break;
-                                            case "2":       //1-1-2-2 Edit item description : DONE
-                                                System.out.print("Enter new item description: ");
-                                                String newItemDescription = scanner.nextLine();
-                                                currentItem.changeField("description", newItemDescription);
-                                                break;
-                                            case "3":       //1-1-2-3 Edit item quantity : DONE
-                                                String newItemQuantity = "0";
-                                                while (true) {
-                                                    System.out.print("Enter new item quantity: ");
-                                                    try {
-                                                        newItemQuantity = scanner.nextLine();
-                                                        Integer.parseInt(newItemQuantity);
-                                                    } catch (NumberFormatException e) {
-                                                        System.out.println("Error: Please enter a number");
-                                                        continue;
-                                                    }
-                                                    break;
-                                                }
-                                                currentItem.changeField("quantity", newItemQuantity);
-                                                break;
-                                            case "4":       //1-1-2-4 Edit item price : DONE
-                                                String newItemPrice = "0.00";
-                                                while (true) {
-                                                    System.out.print("Enter new item price (ex. 49.99): ");
-                                                    try {
-                                                        double doubleItemPrice = scanner.nextDouble();
-                                                        newItemPrice = Double.toString(doubleItemPrice);
-                                                        if ((doubleItemPrice * 100) % 1 != 0) {
-                                                            throw new InputMismatchException();
-                                                        }
-                                                        scanner.nextLine();
-                                                    } catch (InputMismatchException e) {
-                                                        System.out.println("Error: Please enter a number with two decimals (ex. 49.99)");
-                                                        scanner.nextLine();
-                                                        continue;
-                                                    }
-                                                    break;
-                                                }
-                                                currentItem.changeField("price", newItemPrice);
-                                                break;
-                                            case "5":       //1-1-2-5 Return to dash with loop: DONE
-                                                continueEditItem = false;
-                                                break;
-                                        }
-                                    }
-                                }
-                                break;
-                            case "3":               //1-1-3 Export Product File
+                            case "2":
 
                                 break;
-                            case "4":               //1-1-4 Delete the product
-                                ArrayList<String> numberOfProductsToDelete = new ArrayList<>();
-                                for (int i = 0; i < currentStore.getItems().size(); i++) {
-                                    numberOfProductsToDelete.add(Integer.toString((i + 1)));
-                                }
-                                if (!currentStore.printItemNames().equals("Error")) {
-                                    String[] productDeleteOptions = new String[numberOfProductsToDelete.size()];
-                                    for (int i = 0; i < currentStore.getItems().size(); i++) {
-                                        productDeleteOptions[i] = numberOfProductsToDelete.get(i);
-                                    }
+                            case "3":
 
-                                    System.out.print("What product would you like to Delete: ");
-                                    String productToDeleteResponse = validUserResponse(scanner, productDeleteOptions);
-                                    Item currentItem = currentStore.getItems().get(Integer.parseInt(productToDeleteResponse) - 1);
-                                    currentItem.deleteItem();
-                                    System.out.println("Deleted Item");
-                                }
                                 break;
-                            case "5":               //1-1-5 Return to dashboard
+                            case "4":
+
+                                break;
+                            case "5":
 
                                 break;
                         }
@@ -618,6 +495,7 @@ public class FurnitureMarketplace {
 
                         break;
                     case "2":                 //1-2 Create a store : DONE
+                        boolean invalidStoreName = true;
                         String storeName = validStoreName(scanner);
                         currentUser.createStore(new Store(currentUser.getEmail(), storeName));
                         break;
@@ -690,8 +568,9 @@ public class FurnitureMarketplace {
                 }
                 break;
             case "6":                                                       //Sign out
-                System.out.println("Thanks for using Furniture Marketplace");
-                return "Sign out";
+
+
+                break;
         }
         return "repromptDashboard";
     }
