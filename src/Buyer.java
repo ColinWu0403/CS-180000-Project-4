@@ -303,7 +303,7 @@ public class Buyer {
         StringBuilder credentialsFile = new StringBuilder();
         try {
             // First remove user from credentials file
-            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.txt"));
+            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
             line = bfrOne.readLine();
             while (line != null) {
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
@@ -311,7 +311,7 @@ public class Buyer {
                 line = bfrOne.readLine();
             }
             bfrOne.close();
-            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.txt", false));
+            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
             pwOne.println(credentialsFile);
             pwOne.close();
         } catch (Exception e) {
