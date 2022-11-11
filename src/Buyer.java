@@ -352,6 +352,9 @@ public class Buyer {
                     pw.print(cart.get(i) + "@");
                 }
             }
+            if (cart.size() == 0) {
+                pw.println();
+            }
             for (int i = 0; i < storedCSVData.size(); i++) {
                 pw.println(storedCSVData.get(i));
             }
