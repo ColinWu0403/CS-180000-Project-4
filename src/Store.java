@@ -12,26 +12,30 @@ public class Store {
     public Store(String owner, String storeName) {
         this.owner = owner;
         this.storeName = storeName;
-        items = new ArrayList<>();
-        File f = new File("FMItems.csv");
+
         try {
+            items = new ArrayList<>();
+            File f = new File("FMItems.csv");
+            // Initialize item objects that this store has created
             BufferedReader bfr = new BufferedReader(new FileReader(f));
-            String line = bfr.readLine();
-            // Reading lines in file while item info is kept
-            // If it belongs to this store, use it information to create an item object
-            while (line != null) {
-                if (line.substring(0, line.indexOf(",")).equals(storeName)) {
-                    String[] splitLine = line.split(",");
-                    items.add(new Item(splitLine[0], splitLine[1], splitLine[2],
-                            Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4])));
+            String line = "";
+            while ((line = bfr.readLine()) != null) {
+                String [] splitLine = line.split(",");
+                if (splitLine[0].equals(storeName)) {
+                    items.add(new Item(splitLine[0],splitLine[1],splitLine[2],Integer.parseInt(splitLine[3]),
+                            Double.parseDouble(splitLine[4])));
                 }
-                line = bfr.readLine();
             }
             bfr.close();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public String getOwner() { return owner; }
     public String getStoreName() { return storeName; }
+    public ArrayList<Item> getItems () {
+        return items;
+    }
     // Method to sellers to create new items in their stores
     public void addItem(String itemName, String description, int quantity, double price) {
         items.add(new Item(storeName, itemName, description, quantity, price));
@@ -39,7 +43,7 @@ public class Store {
         File f = new File("FMItems.csv");
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f, true));
-            pw.printf("%s,%s,%s,%d,%f", storeName, itemName, description, quantity, price);
+            pw.printf("%s,%s,%s,%d,%.2f\n", storeName, itemName, description, quantity, price);
             pw.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,6 +54,19 @@ public class Store {
         for (int i = 0; i < items.size(); i++) {
             System.out.print((i + 1) + ". ");
             items.get(i).printItem();
+        }
+    }
+
+    //
+    public String printItemNames() {
+        if (items.size() == 0) {
+            System.out.println("Error: No products in this store");
+            return "Error";
+        } else {
+            for (int i = 0; i < items.size(); i++) {
+                System.out.println("(" + (i + 1) + ")" + items.get(i).getName());
+            }
+            return "Success";
         }
     }
     // Method to view specifics of a single item within a store
