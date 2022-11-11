@@ -386,15 +386,13 @@ public class FurnitureMarketplace {
     }
     public static String buyerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Buyer currentUser) {
         switch (userChoiceFromDashboard) {
-            case "1": // Product Selection
+            case "1":                               // Product Selection
                 System.out.println("Which item would you like to select?");
 
                 break;
 
-            case "2":
-                //view cart options
+            case "2":                               //view cart options
                 if (currentUser.getCart().isEmpty()) {
-                    System.out.println(currentUser.getCart());
                     System.out.println("Cart Empty");
                 } else {
                     System.out.println(currentUser.printCart());
@@ -405,19 +403,101 @@ public class FurnitureMarketplace {
                 }
                 break;
 
-            case "3":
-                System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+            case "3":                   //Search items by name, store, description, sort Quantity/Price
+                System.out.println("Placeholder");
 
                 break;
 
-            case "4":
-                System.out.println("Placeholder"); // review Purchase History
+            case "4":                                       // review Purchase History
+                System.out.println("Placeholder");
 
                 break;
 
-            case "5":
-                System.out.println("Placeholder"); // Manage Account
+            case "5":                                       // Manage Account
+                System.out.println("""
+                                \t\tManage Account
+                                (1) Change Username
+                                (2) Change Password
+                                (3) Return""");
+                String[] validInputs = {"1", "2", "3"};
+                String response = validUserResponse(scanner, validInputs);
 
+                switch (response) {
+                    case "1" -> {                       // Change Username
+
+                        String username;
+                        while (true) {
+                            System.out.println("Enter username:");
+                            username = scanner.nextLine();
+                            if (checkExistingCredentials(null, username,
+                                    "newAccount").equals("DuplicateUsername")) {
+                                System.out.println("Username already taken. Try again");
+                            } else {
+                                currentUser.setName(username);
+                                break;
+                            }
+                        }
+
+                        try {
+                            BufferedReader reader = new BufferedReader(new FileReader(
+                                    "FMCredentials.csv"));
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(
+                                    "FMCredentials.csv"));
+
+                            ArrayList<String> lines = new ArrayList<>();
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                lines.add(line);
+                            }
+
+                            for (int i = 0; i < lines.size(); i++) {
+                                String userLine = lines.get(i);
+                                String email = userLine.split(",")[0];
+
+                                if (currentUser.getEmail().equals(email)) {
+                                    String oldUsername = userLine.split(",")[1];
+                                    lines.set(i, userLine.replaceAll(oldUsername, username));
+                                }
+                                writer.write(lines.get(i));
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    case "2" -> {
+                        System.out.println("Enter password");
+                        String password = scanner.nextLine();
+                        currentUser.setPassword(password);
+
+                        try {
+                            BufferedReader reader = new BufferedReader(new FileReader(
+                                    "FMCredentials.csv"));
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(
+                                    "FMCredentials.csv"));
+
+                            ArrayList<String> lines = new ArrayList<>();
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                lines.add(line);
+                            }
+
+                            for (int i = 0; i < lines.size(); i++) {
+                                String userLine = lines.get(i);
+                                String email = userLine.split(",")[0];
+
+                                if (currentUser.getEmail().equals(email)) {
+                                    String oldPassword = userLine.split(",")[2];
+                                    lines.set(i, userLine.replaceAll(oldPassword, password));
+                                }
+                                writer.write(lines.get(i));
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 break;
 
             case "6":
@@ -426,7 +506,8 @@ public class FurnitureMarketplace {
         }
         return "repromptDashboard";
     }
-    public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser) throws IOException {
+    public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser)
+            throws IOException {
         switch (userChoiceFromDashboard) {
             case "1":                                               //Manage stores
                 System.out.println("""
@@ -625,7 +706,7 @@ public class FurnitureMarketplace {
                         currentUser.createStore(new Store(currentUser.getEmail(), storeName));
                         break;
 
-                    case "3":                 //1-3 Delete a store
+                    case "3":                 //1-3 Delete a store : DONE
                         storeName = validStoreName(scanner);
                         currentUser.deleteStore(new Store(currentUser.getEmail(), storeName));
                         break;
@@ -662,10 +743,11 @@ public class FurnitureMarketplace {
                         String editAccountResponse = validUserResponse(scanner, new String[]{"1", "2", "3"});
 
                         switch (editAccountResponse) {
-                            case "1":            //5-1-1 Change username
+                            case "1":           //5-1-1 Change username
+                                String newUsername;
                                 while (true) {
                                     System.out.print("New Username: ");
-                                    String newUsername = scanner.nextLine();
+                                    newUsername = scanner.nextLine();
                                     if (checkExistingCredentials(null, newUsername,
                                             "newAccount").equals("DuplicateUsername")) {
                                         System.out.println("Username already taken. Try again");
@@ -674,12 +756,67 @@ public class FurnitureMarketplace {
                                         break;
                                     }
                                 }
-                                //will need to update csv's
+
+                                try {
+                                    BufferedReader reader = new BufferedReader(new FileReader(
+                                            "FMCredentials.csv"));
+                                    BufferedWriter writer = new BufferedWriter(new FileWriter(
+                                            "FMCredentials.csv"));
+
+                                    ArrayList<String> lines = new ArrayList<>();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        lines.add(line);
+                                    }
+
+                                    for (int i = 0; i < lines.size(); i++) {
+                                        String userLine = lines.get(i);
+                                        String email = userLine.split(",")[0];
+
+                                        if (currentUser.getEmail().equals(email)) {
+                                            String oldUsername = userLine.split(",")[1];
+                                            lines.set(i, userLine.replaceAll(oldUsername, newUsername));
+                                        }
+                                        writer.write(lines.get(i));
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 break;
+
                             case "2":           //5-1-2 Change Password
                                 System.out.print("New Password: ");
-                                currentUser.setPassword(scanner.nextLine());
-                                //will need to update csv's
+                                String newPassword = scanner.nextLine();
+                                currentUser.setPassword(newPassword);
+
+                                try {
+                                    BufferedReader reader = new BufferedReader(new FileReader(
+                                            "FMCredentials.csv"));
+                                    BufferedWriter writer = new BufferedWriter(new FileWriter(
+                                            "FMCredentials.csv"));
+
+                                    ArrayList<String> lines = new ArrayList<>();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        lines.add(line);
+                                    }
+
+                                    for (int i = 0; i < lines.size(); i++) {
+                                        String userLine = lines.get(i);
+                                        String email = userLine.split(",")[0];
+
+                                        if (currentUser.getEmail().equals(email)) {
+                                            String oldPassword = userLine.split(",")[2];
+                                            lines.set(i, userLine.replaceAll(oldPassword, newPassword));
+                                        }
+                                        writer.write(lines.get(i));
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
                                 break;
                             case "3":           //5-1-3 Return
 
