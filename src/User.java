@@ -12,11 +12,6 @@ public interface User {
     void setPassword(String password);
     //Users may decide to edit their account password.
 
-    void sendMessage(String message);
-    String checkMessage();
-    //Both sellers and buyers need to be able to message each other. This will be implemented with csv files
-    //See Formatting Documentation for more info
-
     void deleteAccount() throws IOException;
     // Deletes User From Credentials list
     //
