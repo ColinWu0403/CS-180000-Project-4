@@ -39,12 +39,10 @@ public class FurnitureMarketplace {
             Object currentUser = null;                                          //object of Buyer or Seller for current user
 
             switch (loginResponse) {
-                case "1" -> {                //user chooses to sign in
-                    currentUser = signInAccount(scanner);
-                }
-                case "2" -> {                //user chooses to create an account
-                    currentUser = createAccount(scanner);
-                }
+                case "1" ->                //user chooses to sign in
+                        currentUser = signInAccount(scanner);
+                case "2" ->                //user chooses to create an account
+                        currentUser = createAccount(scanner);
                 case "3" -> {                 //user chooses to exit the program
                     programIsRunning = false;
                     System.out.println("Thank you for using Furniture Marketplace!");
@@ -54,7 +52,9 @@ public class FurnitureMarketplace {
             if (currentUser instanceof Buyer userB) {
                 itemList = createItemList();
                 while (true) {
-                    printBuyerDashboard(itemList);
+                    if (itemList != null) {
+                        printBuyerDashboard(itemList);
+                    }
 
                     String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
                     String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
@@ -310,18 +310,14 @@ public class FurnitureMarketplace {
                             return null;
                         } else {
                             String[] initialData = currentLine[4].split("@"); // Split each purchase
-                            for (int i = 0; i < initialData.length; i++) {
-                                buyerData.add(initialData[i]);
-                            }
+                            Collections.addAll(buyerData, initialData);
                         }
                     } else { // if cart, get cart
                         if (currentLine[5].equals("")) {
                             return null;
                         } else {
                             String[] initialData = currentLine[5].split("@"); // Split each purchase
-                            for (int i = 0; i < initialData.length; i++) {
-                                buyerData.add(initialData[i]);
-                            }
+                            Collections.addAll(buyerData, initialData);
                         }
                     }
                 }
@@ -404,11 +400,17 @@ public class FurnitureMarketplace {
         switch (userChoiceFromDashboard) {
             case "1" -> { // Product Selection - Adds product to cart
                 System.out.println("Which Item would you like to select");
-                int itemNum = Integer.parseInt(scanner.nextLine());
+                try {
+                    int itemNum = Integer.parseInt(scanner.nextLine());
 
-                String itemListStr = Arrays.toString(new Item[]{itemList[itemNum]});
-                System.out.println(itemListStr);
-                // Work in progress
+                    if (itemList != null) {
+                        String itemListStr = Arrays.toString(new Item[]{itemList[itemNum]});
+                        System.out.println(itemListStr);
+                    }
+                    // Work in progress
+                } catch (Exception e) {
+                    System.out.println("Error item doesn't exist");
+                }
             }
             case "2" -> {
                 // view cart options
@@ -417,22 +419,25 @@ public class FurnitureMarketplace {
                 } else {
                     System.out.println("Cart: ");
                     System.out.println(currentUser.printCart());
-                    System.out.printf("""
+                    System.out.print("""
                             \t\tManage Cart
-                            (1) Checkout\n
-                            (2) Remove Item\n
+                            (1) Checkout
+                            (2) Remove Item
                             """);
                 }
             }
             case "3" -> {
                 //Search items by name, store, description, sort Quantity/Price
-                System.out.printf("(1) Search by product name\n" +
-                        "(2) Search by store\n" +
-                        "(3) Search by price\n");
-                int itemOption = Integer.parseInt(scanner.nextLine());
+                System.out.print("""
+                        (1) Search by product name
+                        (2) Search by store
+                        (3) Search by price
+                        """);
+                String[] validInputs = {"1", "2", "3"};
+                String itemOption = validUserResponse(scanner, validInputs);
 
                 switch (itemOption) {
-                    case 1 -> {
+                    case "1" -> {
                         System.out.println("Enter the item name");
                         String itemName = scanner.nextLine();
 
@@ -440,62 +445,73 @@ public class FurnitureMarketplace {
                         System.out.println(Arrays.toString(itemList));
 //                        }
                     }
-                    case 2 -> {
+                    case "2" -> {
+                        System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+                    }
+                    case "3" -> {
                         System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
                     }
                 }
             }
             case "4" -> { // View or Export Purchase History
-                System.out.printf("(1) View Purchase History\n(2) Export Purchase History\n");
-                int purchaseOption = Integer.parseInt(scanner.nextLine());
+                System.out.print("(1) View Purchase History\n(2) Export Purchase History\n");
+                String[] validInputs = {"1", "2"};
+                String purchaseOption = validUserResponse(scanner, validInputs);
 
-                if (purchaseOption == 1) {
-                    System.out.println("Purchase History:"); // review Purchase History
-                    ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
+                if (purchaseOption.equals("1")) {
+                    try {
+                        System.out.println("Purchase History:"); // review Purchase History
+                        ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
 
-                    for (int i = 1; i < purchaseHistory.size(); i++) {
-                        System.out.printf("(%d) %s\n", i, purchaseHistory.get(i));
+                        if (purchaseHistory != null) {
+                            for (int i = 1; i < purchaseHistory.size(); i++) {
+                                System.out.printf("(%d) %s\n", i, purchaseHistory.get(i));
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error: Purchase History does not exist");
                     }
-                } else if (purchaseOption == 2) {
+                } else if (purchaseOption.equals("2")) {
                     Buyer.exportPurchaseHistory(currentUser.getEmail());
                 }
             }
             case "5" -> {                                      // Manage Account
                 System.out.println("""
-                                \t\tManage Account
-                                (1) Change Username
-                                (2) Change Password
-                                (3) Return""");
+                        \t\tManage Account
+                        (1) Change Username
+                        (2) Change Password
+                        (3) Return""");
                 String[] validInputs = {"1", "2", "3"};
                 String response = validUserResponse(scanner, validInputs);
 
                 switch (response) {
                     case "1" -> {                       // Change Username
-
-                        String username;
+                        String newUsername;
                         while (true) {
-                            System.out.println("Enter username:");
-                            username = scanner.nextLine();
-                            if (checkExistingCredentials(null, username,
+                            System.out.println("Enter new username: ");
+                            newUsername = scanner.nextLine();
+                            if (checkExistingCredentials(null, newUsername,
                                     "newAccount").equals("DuplicateUsername")) {
                                 System.out.println("Username already taken. Try again");
                             } else {
-                                currentUser.setName(username);
+                                currentUser.setName(newUsername);
                                 break;
                             }
                         }
 
                         try {
-                            BufferedReader reader = new BufferedReader(new FileReader(
-                                    "FMCredentials.csv"));
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(
-                                    "FMCredentials.csv"));
-
+                            File file = new File("FMCredentials.csv");
+                            BufferedReader reader = new BufferedReader(new FileReader(file));
                             ArrayList<String> lines = new ArrayList<>();
                             String line;
                             while ((line = reader.readLine()) != null) {
                                 lines.add(line);
                             }
+
+                            reader.close();
+
+                            FileOutputStream fos = new FileOutputStream(file, false);
+                            PrintWriter writer = new PrintWriter(fos);
 
                             for (int i = 0; i < lines.size(); i++) {
                                 String userLine = lines.get(i);
@@ -503,31 +519,37 @@ public class FurnitureMarketplace {
 
                                 if (currentUser.getEmail().equals(email)) {
                                     String oldUsername = userLine.split(",")[1];
-                                    lines.set(i, userLine.replaceAll(oldUsername, username));
+                                    lines.set(i, userLine.replaceAll(oldUsername, newUsername));
                                 }
-                                writer.write(lines.get(i));
                             }
 
+                            for (String s : lines) {
+                                writer.println(s);
+                            }
+
+                            writer.close();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            System.out.println("Error: Account NOT updated");
                         }
                     }
                     case "2" -> {
-                        System.out.println("Enter password");
-                        String password = scanner.nextLine();
-                        currentUser.setPassword(password);
+                        System.out.println("Enter new password: ");
+                        String newPassword = scanner.nextLine();
+                        currentUser.setPassword(newPassword);
 
                         try {
-                            BufferedReader reader = new BufferedReader(new FileReader(
-                                    "FMCredentials.csv"));
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(
-                                    "FMCredentials.csv"));
-
+                            File file = new File("FMCredentials.csv");
+                            BufferedReader reader = new BufferedReader(new FileReader(file));
                             ArrayList<String> lines = new ArrayList<>();
                             String line;
                             while ((line = reader.readLine()) != null) {
                                 lines.add(line);
                             }
+
+                            reader.close();
+
+                            FileOutputStream fos = new FileOutputStream(file, false);
+                            PrintWriter writer = new PrintWriter(fos);
 
                             for (int i = 0; i < lines.size(); i++) {
                                 String userLine = lines.get(i);
@@ -535,13 +557,17 @@ public class FurnitureMarketplace {
 
                                 if (currentUser.getEmail().equals(email)) {
                                     String oldPassword = userLine.split(",")[2];
-                                    lines.set(i, userLine.replaceAll(oldPassword, password));
+                                    lines.set(i, userLine.replaceAll(oldPassword, newPassword));
                                 }
-                                writer.write(lines.get(i));
                             }
 
+                            for (String s : lines) {
+                                writer.println(s);
+                            }
+
+                            writer.close();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            System.out.println("Error: Account NOT updated");
                         }
                     }
                 }
@@ -553,10 +579,11 @@ public class FurnitureMarketplace {
         }
         return "repromptDashboard";
     }
+
     public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser)
             throws IOException {
         switch (userChoiceFromDashboard) {
-            case "1":                                               //Manage stores
+            case "1" -> {                                              //Manage stores
                 System.out.println("""
                         \t\tManage Stores
                         (1) Manage Catalogues
@@ -669,16 +696,16 @@ public class FurnitureMarketplace {
                                         System.out.print("What piece of product information would you like to modify: ");
                                         String editProductResponse = validUserResponse(scanner, editProductOptions);
                                         switch (editProductResponse) {
-                                            case "1":       //1-1-2-1 Edit item name : DONE
+                                            case "1" -> {       //1-1-2-1 Edit item name : DONE
                                                 String newItemName = validItemName(scanner);
                                                 currentItem.changeField("name", newItemName);
-                                                break;
-                                            case "2":       //1-1-2-2 Edit item description : DONE
+                                            }
+                                            case "2" -> {       //1-1-2-2 Edit item description : DONE
                                                 System.out.print("Enter new item description: ");
                                                 String newItemDescription = scanner.nextLine();
                                                 currentItem.changeField("description", newItemDescription);
-                                                break;
-                                            case "3":       //1-1-2-3 Edit item quantity : DONE
+                                            }
+                                            case "3" -> {       //1-1-2-3 Edit item quantity : DONE
                                                 String newItemQuantity = "0";
                                                 while (true) {
                                                     System.out.print("Enter new item quantity: ");
@@ -692,8 +719,8 @@ public class FurnitureMarketplace {
                                                     break;
                                                 }
                                                 currentItem.changeField("quantity", newItemQuantity);
-                                                break;
-                                            case "4":       //1-1-2-4 Edit item price : DONE
+                                            }
+                                            case "4" -> {       //1-1-2-4 Edit item price : DONE
                                                 String newItemPrice = "0.00";
                                                 while (true) {
                                                     System.out.print("Enter new item price (ex. 49.99): ");
@@ -712,10 +739,9 @@ public class FurnitureMarketplace {
                                                     break;
                                                 }
                                                 currentItem.changeField("price", newItemPrice);
-                                                break;
-                                            case "5":       //1-1-2-5 Return to dash with loop: DONE
-                                                continueEditItem = false;
-                                                break;
+                                            }
+                                            case "5" ->       //1-1-2-5 Return to dash with loop: DONE
+                                                    continueEditItem = false;
                                         }
                                     }
                                 }
@@ -762,17 +788,17 @@ public class FurnitureMarketplace {
 
                         break;
                 }
-                break;
-            case "2":                                                //View Sales List
+            }
+            case "2" -> {                                               //View Sales List
 
-                break;
-            case "3":                                                //View Statistics Dashboard
+            }
+            case "3" -> {                                                //View Statistics Dashboard
 
-                break;
-            case "4":                                                //View Current Carts
+            }
+            case "4" -> {                                                //View Current Carts
 
-                break;
-            case "5":                                                //Manage Account
+            }
+            case "5" -> {                                                //Manage Account
                 System.out.println("""
                         \t\tManage Account
                         (1) Edit Account
@@ -781,7 +807,7 @@ public class FurnitureMarketplace {
                 String manageAccountResponse = validUserResponse(scanner, new String[]{"1", "2", "3"});
 
                 switch (manageAccountResponse) {
-                    case "1":                           //5-1 Edit Account
+                    case "1" -> {                           //5-1 Edit Account
                         System.out.println("""
                                 \t\tManage Account
                                 (1) Change Username
@@ -790,10 +816,10 @@ public class FurnitureMarketplace {
                         String editAccountResponse = validUserResponse(scanner, new String[]{"1", "2", "3"});
 
                         switch (editAccountResponse) {
-                            case "1":           //5-1-1 Change username
+                            case "1" -> {           //5-1-1 Change username
                                 String newUsername;
                                 while (true) {
-                                    System.out.print("New Username: ");
+                                    System.out.print("Enter new username: ");
                                     newUsername = scanner.nextLine();
                                     if (checkExistingCredentials(null, newUsername,
                                             "newAccount").equals("DuplicateUsername")) {
@@ -805,16 +831,18 @@ public class FurnitureMarketplace {
                                 }
 
                                 try {
-                                    BufferedReader reader = new BufferedReader(new FileReader(
-                                            "FMCredentials.csv"));
-                                    BufferedWriter writer = new BufferedWriter(new FileWriter(
-                                            "FMCredentials.csv"));
-
+                                    File file = new File("FMCredentials.csv");
+                                    BufferedReader reader = new BufferedReader(new FileReader(file));
                                     ArrayList<String> lines = new ArrayList<>();
                                     String line;
                                     while ((line = reader.readLine()) != null) {
                                         lines.add(line);
                                     }
+
+                                    reader.close();
+
+                                    FileOutputStream fos = new FileOutputStream(file, false);
+                                    PrintWriter writer = new PrintWriter(fos);
 
                                     for (int i = 0; i < lines.size(); i++) {
                                         String userLine = lines.get(i);
@@ -824,30 +852,36 @@ public class FurnitureMarketplace {
                                             String oldUsername = userLine.split(",")[1];
                                             lines.set(i, userLine.replaceAll(oldUsername, newUsername));
                                         }
-                                        writer.write(lines.get(i));
                                     }
 
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                break;
+                                    for (String s : lines) {
+                                        writer.println(s);
+                                    }
 
-                            case "2":           //5-1-2 Change Password
-                                System.out.print("New Password: ");
+                                    writer.close();
+                                } catch (Exception e) {
+                                    System.out.println("Error: Account NOT updated");
+                                }
+                            }
+
+                            case "2" -> {           //5-1-2 Change Password
+                                System.out.print("Enter new password: ");
                                 String newPassword = scanner.nextLine();
                                 currentUser.setPassword(newPassword);
 
                                 try {
-                                    BufferedReader reader = new BufferedReader(new FileReader(
-                                            "FMCredentials.csv"));
-                                    BufferedWriter writer = new BufferedWriter(new FileWriter(
-                                            "FMCredentials.csv"));
-
+                                    File file = new File("FMCredentials.csv");
+                                    BufferedReader reader = new BufferedReader(new FileReader(file));
                                     ArrayList<String> lines = new ArrayList<>();
                                     String line;
                                     while ((line = reader.readLine()) != null) {
                                         lines.add(line);
                                     }
+
+                                    reader.close();
+
+                                    FileOutputStream fos = new FileOutputStream(file, false);
+                                    PrintWriter writer = new PrintWriter(fos);
 
                                     for (int i = 0; i < lines.size(); i++) {
                                         String userLine = lines.get(i);
@@ -857,31 +891,37 @@ public class FurnitureMarketplace {
                                             String oldPassword = userLine.split(",")[2];
                                             lines.set(i, userLine.replaceAll(oldPassword, newPassword));
                                         }
-                                        writer.write(lines.get(i));
                                     }
 
+                                    for (String s : lines) {
+                                        writer.println(s);
+                                    }
+
+                                    writer.close();
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    System.out.println("Error: Account NOT updated");
                                 }
 
-                                break;
-                            case "3":           //5-1-3 Return
+                            }
+                            case "3" -> {           //5-1-3 Return
 
-                                break;
+                            }
                         }
-                        break;
-                    case "2":                           //5-2 Delete Account
+                    }
+                    case "2" -> {                           //5-2 Delete Account
                         currentUser.deleteAccount();
                         System.out.println("Deleted Account");
                         return "AccountDeleted";
-                    case "3":                           //5-3 Return to Dashboard Account : DONE
+                    }
+                    case "3" -> {                           //5-3 Return to Dashboard Account : DONE
 
-                        break;
+                    }
                 }
-                break;
-            case "6":                                                       //Sign out
-                System.out.println("Thank you for using Furniture Marketplace!");
+            }
+            case "6" -> {                                                       //Sign out
+                System.out.println("Signing Out!");
                 return "Sign out";
+            }
         }
         return "repromptDashboard";
     }
