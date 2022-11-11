@@ -54,7 +54,6 @@ public class Buyer {
     // Creates a new file of purchase history
     public static void exportPurchaseHistory(String email) {
         try {
-
             BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
 
             ArrayList<String> FMCredentials = new ArrayList<>();
@@ -93,16 +92,16 @@ public class Buyer {
                         purchaseWriter.close();
                         System.out.println("File Exported!");
                     } catch (Exception e) {
-                        System.out.println("File NOT Exported");
+                        System.out.println("Error: File NOT Exported");
                     }
                 }
             }
         } catch (Exception e) {
-
+            System.out.println("Error: File NOT Exported");
         }
     }
 
-   public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
+    public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
         try {
             // Read through CSV file
             BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -131,7 +130,7 @@ public class Buyer {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -303,7 +302,7 @@ public class Buyer {
         StringBuilder credentialsFile = new StringBuilder();
         try {
             // First remove user from credentials file
-            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
+            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.txt"));
             line = bfrOne.readLine();
             while (line != null) {
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
@@ -311,7 +310,7 @@ public class Buyer {
                 line = bfrOne.readLine();
             }
             bfrOne.close();
-            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
+            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.txt", false));
             pwOne.println(credentialsFile);
             pwOne.close();
         } catch (Exception e) {
