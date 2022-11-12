@@ -110,7 +110,7 @@ public class Item {
 
     // Method to print product name and price of an item
     public void printItem() {
-        System.out.printf("%s selling at %.2f\n", name, price);
+        System.out.printf("Store: %s :Product: %s :Price: $%.2f :Quantity: %d :Description: %s\n", store, name, price, quantity, description);
     }
     // Method to print more detailed information about an item
     public void printItemInfo() {
