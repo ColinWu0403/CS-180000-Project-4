@@ -10,10 +10,6 @@ public class Store {
     private String owner;
     private String storeName;
     private ArrayList<Item> items;
-    public static void main(String[] args) {
-        Store store = new Store("someDude", "someStore");
-        store.saveSale("someBuyer", store.items.get(0), 5);
-    }
     public Store(String owner, String storeName) {
         this.owner = owner;
         this.storeName = storeName;
