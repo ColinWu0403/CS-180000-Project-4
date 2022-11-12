@@ -39,10 +39,9 @@ public class FurnitureMarketplace {
             }
 
             if (currentUser instanceof Buyer userB) {
-                itemList = createItemList();
-                itemListStr = createItemListString();
-
                 while (true) {
+                    itemList = createItemList();
+                    itemListStr = createItemListString();
                     if (itemList != null) {
                         printBuyerDashboard(itemList);
                     }
@@ -454,13 +453,25 @@ public class FurnitureMarketplace {
 
                             System.out.print("(1) Add item to shopping cart\n(2) Cancel\n");
                             String[] validCartResponse = {"1", "2"};
+                            System.out.print("Input: ");
                             String shoppingCartOption = validUserResponse(scanner, validCartResponse);
 
                             if (shoppingCartOption.equals("1")) { // Add to cart
-                                String itemToAdd = "~" + storeName + "!" + itemName + "!" + description + "!"
-                                        + quantityAvailable + "!" + price;
-                                currentUser.addItem(itemToAdd);
-                                System.out.println("Item added to cart!");
+                                while (true) {
+                                    int quantityToPurchase = 0;
+                                    System.out.print("How many would you like to add to cart: ");
+                                    quantityToPurchase = scanner.nextInt();
+                                    scanner.nextLine();
+                                    if ((quantityToPurchase > Integer.parseInt(quantityAvailable)) || (quantityToPurchase <= 0)) {
+                                        System.out.println("Error: Invalid quantity input");
+                                        continue;
+                                    }
+                                    String itemToAdd = storeName + "!" + itemName + "!" + description + "!"
+                                            + quantityToPurchase + "!" + price;
+                                    currentUser.addItem(itemToAdd, itemName, quantityToPurchase);
+                                    System.out.println("Item added to cart!");
+                                    break;
+                                }
                             }
                             itemSelectLoop = false;
                         }
@@ -471,7 +482,7 @@ public class FurnitureMarketplace {
                 }
             }
             case "2" -> { // view cart options
-                if (currentUser.getCart().isEmpty()) {
+                if (currentUser.getCart().get(0).equals("x")) {
                     System.out.println("Cart Empty");
                 } else {
                     boolean checkoutLoop = true;
@@ -490,6 +501,8 @@ public class FurnitureMarketplace {
                         switch (userResponse) {
                             case "1": // 2-1 DONE
                                 currentUser.checkout();
+                                currentUser.setCart(new ArrayList<>());
+
                                 System.out.println("Checkout Successful!");
                                 checkoutLoop = false;
                                 break;
@@ -518,89 +531,124 @@ public class FurnitureMarketplace {
             case "3" -> {
                 //Search items by name, store, description, sort Quantity/Price
                 System.out.print("""
-                        (1) Search by product name
-                        (2) Search by store
-                        (3) Search by price
+                        \tSearch By:
+                        (1) Product name
+                        (2) Store
+                        (3) Description
+                        \tSort By:
+                        (4) Price
+                        (5) Quantity
                         """);
-                String[] validInputs = {"1", "2", "3"};
+                String[] validInputs = {"1", "2", "3", "4", "5"};
                 String itemOption = validUserResponse(scanner, validInputs);
 
                 switch (itemOption) {                        // search by product name
                     case "1" -> {
+                        ArrayList<Item> output = new ArrayList<>();
                         System.out.println("Enter the item name");
                         String itemName = scanner.nextLine();
-
-//                        for (int i = 0; i < itemList.length; i++) {
-                        System.out.println(Arrays.toString(itemList));
-//                        }
+                        itemList = createItemList();
+                        for (int i = 0; i < itemList.length; i++) {
+                            if (itemList[i].getName().contains(itemName)) {
+                                output.add(itemList[i]);
+                            }
+                        }
+                        if (output.size() == 0) {
+                            System.out.println("Error: No items match that name");
+                        } else {
+                            for (int i = 0; i < output.size(); i++) {
+                                output.get(i).printItem();
+                            }
+                            System.out.println("Type (exit) to exit");
+                            String filler = scanner.nextLine();
+                        }
                     }
-                    case "2" -> {
+                    case "2" -> {       // search by store
                         System.out.println("Enter the store name");
                         String storeName = scanner.nextLine();
-                        ArrayList<Item> itemsFromStore = new ArrayList<>();
-
-                        try { // checks whether store name exists
-                            BufferedReader reader = new BufferedReader(new FileReader("FMStores.csv"));
-                            String line;
-                            boolean storeOk = false;
-                            while ((line = reader.readLine()) != null) {
-                                String storeNameToCheck = line.split(",")[0];
-                                if (storeName.equals(storeNameToCheck)) {
-                                    storeOk = true;
-                                    reader.close();
-                                    break;
-                                }
-                            }
-                            reader.close();
-                            if (!storeOk) {
-                                System.out.println("Error: store does not exist");
-                                break;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
+                        ArrayList<Item> output = new ArrayList<>();
+                        itemList = createItemList();
                         for (int i = 0; i < itemList.length; i++) {
-                            if (itemList[i].getStore().equals(storeName)) {
-                                itemsFromStore.add(itemList[i]);
-                                itemList[i].printItemInfo();
+                            if (itemList[i].getStore().contains(storeName)) {
+                                output.add(itemList[i]);
                             }
                         }
-                        if (itemsFromStore.size() == 0) {
-                            System.out.println("Error: There are no items available in this store");
+
+                        if (output.size() == 0) {
+                            System.out.println("Error: No stores match that name");
+                        } else {
+                            for (int i = 0; i < output.size(); i++) {
+                                output.get(i).printItem();
+                            }
+                            System.out.println("Type (exit) to exit");
+                            String filler = scanner.nextLine();
                         }
                     }
-                    case "3" -> {
-                        System.out.println("Enter maximum price");
-                        String maxPriceStr = scanner.nextLine();
-                        int maxPrice = 0;
-                        try {
-                            maxPrice = Integer.parseInt(maxPriceStr);
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error: invalid price");
-                            break;
-                        }
-
-                        System.out.println("Enter minimum price");
-                        String minPriceStr = scanner.nextLine();
-                        int minPrice = 0;
-                        try {
-                            minPrice = Integer.parseInt(minPriceStr);
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error: invalid price");
-                            break;
-                        }
-
-                        ArrayList<Item> itemsFittingPrice = new ArrayList<>();
+                    case "3" -> {           //search by description
+                        System.out.println("Enter text to search for in description");
+                        String searchDescription = scanner.nextLine();
+                        ArrayList<Item> output = new ArrayList<>();
+                        itemList = createItemList();
                         for (int i = 0; i < itemList.length; i++) {
-                            if (minPrice < itemList[i].getPrice() && maxPrice > itemList[i].getPrice()) {
-                                itemsFittingPrice.add(itemList[i]);
-                                System.out.println(itemList[i]);
+                            if (itemList[i].getDescription().contains(searchDescription)) {
+                                output.add(itemList[i]);
                             }
                         }
-                        if (itemsFittingPrice.size() == 0) {
-                            System.out.println("Error: no items within price range");
+
+                        if (output.size() == 0) {
+                            System.out.println("Error: No descriptions match that search");
+                        } else {
+                            for (int i = 0; i < output.size(); i++) {
+                                output.get(i).printItem();
+                            }
+                            System.out.println("Type (exit) to exit");
+                            String filler = scanner.nextLine();
                         }
+                    }
+                    case "4" -> {               //sort by price
+                        itemList = createItemList();
+                        ArrayList<Double> prices = new ArrayList<>();
+                        ArrayList<Item> output = new ArrayList<>();
+                        for (int i = 0; i < itemList.length; i++) {
+                            prices.add(itemList[i].getPrice());
+                        }
+                        Collections.sort(prices);
+                        prices.sort(Collections.reverseOrder());
+                        for (int i = 0; i < prices.size(); i++) {
+                            for (int j = 0; j < itemList.length; j++) {
+                                if (prices.get(i) == itemList[j].getPrice()) {
+                                    output.add(itemList[j]);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < output.size(); i++) {
+                            output.get(i).printItem();
+                        }
+                        System.out.println("Type (exit) to exit");
+                        String filler = scanner.nextLine();
+                        break;
+                    }
+                    case "5" -> {               //sory by quantity
+                        itemList = createItemList();
+                        ArrayList<Integer> quantity = new ArrayList<>();
+                        ArrayList<Item> output = new ArrayList<>();
+                        for (int i = 0; i < itemList.length; i++) {
+                            quantity.add(itemList[i].getQuantity());
+                        }
+                        Collections.sort(quantity);
+                        for (int i = 0; i < quantity.size(); i++) {
+                            for (int j = 0; j < itemList.length; j++) {
+                                if (quantity.get(i) == itemList[j].getQuantity()) {
+                                    output.add(itemList[j]);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < output.size(); i++) {
+                            output.get(i).printItem();
+                        }
+                        System.out.println("Type (exit) to exit");
+                        String filler = scanner.nextLine();
+                        break;
                     }
                 }
             }
@@ -612,10 +660,11 @@ public class FurnitureMarketplace {
                 if (purchaseOption.equals("1")) {
                     try {
                         System.out.println("Purchase History:"); // review Purchase History
+                        ArrayList<String> purchaseHistoryOutput = new ArrayList<>();
                         ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
 
                         if (purchaseHistory != null) {
-                            for (int i = 1; i < purchaseHistory.size(); i++) {
+                            for (int i = 0; i < purchaseHistory.size(); i++) {
                                 System.out.printf("(%d) %s\n", i, purchaseHistory.get(i));
                             }
                         }
@@ -776,7 +825,7 @@ public class FurnitureMarketplace {
                                     (4) Delete Product
                                     (5) Import Product File
                                     (6) Return to Dash""");
-                            String[] editCatalogueOptions = {"1", "2", "3", "4", "5","6"};
+                            String[] editCatalogueOptions = {"1", "2", "3", "4", "5", "6"};
                             String editCatalogueResponse = validUserResponse(scanner, editCatalogueOptions);
                             switch (editCatalogueResponse) {
                                 case "1":               //1-1-1 Add product to store : DONE
@@ -932,7 +981,6 @@ public class FurnitureMarketplace {
                                     }
 
 
-
                                     break;
                                 case "6":               //1-1-6 Return to dashboard
 
@@ -983,7 +1031,7 @@ public class FurnitureMarketplace {
 
             }
             case "4" -> {                                                //View Current Carts
-                    Seller.viewCustomerShoppingCart();
+                Seller.viewCustomerShoppingCart();
             }
             case "5" -> {                                                //Manage Account
                 boolean continueManageAccount = true;
