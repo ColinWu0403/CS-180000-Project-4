@@ -72,12 +72,11 @@ public class Seller implements User {
 
         return new Item(store, name, description, quantity, price);
     }
-
     public void createStore(Store store) {
         stores.add(store);
         try {
             PrintWriter printStore = new PrintWriter(new FileOutputStream("FMStores.csv", true));
-            printStore.println(store.getStoreName() + "," + store.getOwner());
+            printStore.println(store.getStoreName() + "," + email);
             printStore.flush();
             printStore.close();
         } catch (Exception e) {
