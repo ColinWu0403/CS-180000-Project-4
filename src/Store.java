@@ -141,7 +141,7 @@ public class Store {
             if (!itemFound) { statsFile.add(String.format("%s,%s,%s,item", storeName, item.getName(), amountSold)); }
             bfrTwo.close();
             // Print updated statistics back to the file
-            PrintWriter pwTwo = new PrintWriter(new FileOutputStream(".idea/FMStats.csv", false));
+            PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStats.csv", false));
             for (int i = 0; i < statsFile.size(); i++) {
                 pwTwo.println(statsFile.get(i));
             }
@@ -186,7 +186,7 @@ public class Store {
         ArrayList<String> stats = new ArrayList<>();
         try {
             // Read csv file, if line has correct store name, add to array list
-            BufferedReader statsReader = new BufferedReader(new FileReader(".idea/FMStats.csv"));
+            BufferedReader statsReader = new BufferedReader(new FileReader("FMStats.csv"));
             String line = statsReader.readLine();
             while (line != null) {
                 if (line.substring(0, line.indexOf(",")).equals(storeName)) {
