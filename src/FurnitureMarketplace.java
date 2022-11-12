@@ -463,7 +463,7 @@ public class FurnitureMarketplace {
                 String itemOption = validUserResponse(scanner, validInputs);
 
                 switch (itemOption) {
-                    case "1" -> {
+                    case "1" -> {                        // search by product name
                         System.out.println("Enter the item name");
                         String itemName = scanner.nextLine();
 
@@ -471,11 +471,74 @@ public class FurnitureMarketplace {
                         System.out.println(Arrays.toString(itemList));
 //                        }
                     }
-                    case "2" -> {
-                        System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+                    case "2" -> {                       // search by store
+                        System.out.println("Enter the store name");
+                        String storeName = scanner.nextLine();
+                        ArrayList<Item> itemsFromStore = new ArrayList<>();
+
+                        try { // checks whether store name exists
+                            BufferedReader reader = new BufferedReader(new FileReader("FMStores.csv"));
+                            String line;
+                            boolean storeOk = false;
+                            while ((line = reader.readLine()) != null) {
+                                String storeNameToCheck = line.split(",")[0];
+                                if (storeName.equals(storeNameToCheck)) {
+                                    storeOk = true;
+                                    reader.close();
+                                    break;
+                                }
+                            }
+                            reader.close();
+                            if (!storeOk) {
+                                System.out.println("Error: store does not exist");
+                                break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        for (int i = 0; i < itemList.length; i++) {
+                            if (itemList[i].getStore().equals(storeName)) {
+                                itemsFromStore.add(itemList[i]);
+                                itemList[i].printItemInfo();
+                            }
+                        }
+                        if (itemsFromStore.size() == 0) {
+                            System.out.println("Error: There are no items available in this store");
+                        }
+
                     }
-                    case "3" -> {
-                        System.out.println("Placeholder"); //Search items by name, store, description, sort Quantity/Price
+                    case "3" -> {               // search by price
+                        System.out.println("Enter maximum price");
+                        String maxPriceStr = scanner.nextLine();
+                        int maxPrice = 0;
+                        try {
+                            maxPrice = Integer.parseInt(maxPriceStr);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error: invalid price");
+                            break;
+                        }
+
+                        System.out.println("Enter minimum price");
+                        String minPriceStr = scanner.nextLine();
+                        int minPrice = 0;
+                        try {
+                            minPrice = Integer.parseInt(minPriceStr);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error: invalid price");
+                            break;
+                        }
+
+                        ArrayList<Item> itemsFittingPrice = new ArrayList<>();
+                        for (int i = 0; i < itemList.length; i++) {
+                            if (minPrice < itemList[i].getPrice() && maxPrice > itemList[i].getPrice()) {
+                                itemsFittingPrice.add(itemList[i]);
+                                System.out.println(itemList[i]);
+                            }
+                        }
+                        if (itemsFittingPrice.size() == 0) {
+                            System.out.println("Error: no items within price range");
+                        }
                     }
                 }
             }
@@ -691,6 +754,7 @@ public class FurnitureMarketplace {
                                             Double.parseDouble(itemPrice));
 
                                     break;
+
                                 case "2":               //1-1-2 Edit the product information : DONE
                                     ArrayList<String> numberOfProducts = new ArrayList<>();
                                     System.out.println("\tProducts available in " + currentStore.getStoreName());
@@ -774,8 +838,9 @@ public class FurnitureMarketplace {
                                         }
                                     }
                                     break;
-                                case "3":               //1-1-3 Export Product File
+                                case "3"://1-1-3 Export Product File
 
+                                    currentUser.exportPublishedItems(currentStore.getStoreName());
                                     break;
                                 case "4":               //1-1-4 Delete the product
                                     ArrayList<String> numberOfProductsToDelete = new ArrayList<>();
