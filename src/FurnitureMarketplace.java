@@ -10,18 +10,7 @@ import java.util.*;
 
 public class FurnitureMarketplace {
     public static Item[] itemList;
-
-    //    public Item[] getItemList() {
-//        return itemList;
-//    }
-//
-//    public void setItemList(Item[] itemList) {
-//        this.itemList = itemList;
-//    }
-//
-//    public FurnitureMarketplace(Item[] itemList) {
-//        this.itemList = itemList;
-//    }
+    public static ArrayList<String> itemListStr;
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
@@ -51,6 +40,8 @@ public class FurnitureMarketplace {
 
             if (currentUser instanceof Buyer userB) {
                 itemList = createItemList();
+                itemListStr = createItemListString();
+
                 while (true) {
                     if (itemList != null) {
                         printBuyerDashboard(itemList);
@@ -85,6 +76,22 @@ public class FurnitureMarketplace {
                 }
             }
         }
+    }
+
+    public Item[] getItemList() {
+        return itemList;
+    }
+
+    public static ArrayList<String> getItemListStr() {
+        return itemListStr;
+    }
+
+    public static void setItemListStr(ArrayList<String> itemListStr) {
+        FurnitureMarketplace.itemListStr = itemListStr;
+    }
+
+    public void setItemList(Item[] itemList) {
+        this.itemList = itemList;
     }
 
     //creates an account that is appended to FMCredentials.csv and returns either a Buyer or Seller object
@@ -291,6 +298,27 @@ public class FurnitureMarketplace {
     }
 
     /**
+     * Returns string representation of Item to be accessed throughout the program.
+     */
+    public static ArrayList<String> createItemListString() {
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));
+
+            ArrayList<String> itemListStr = new ArrayList<>();
+
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                itemListStr.add(line);
+            }
+
+            bfr.close();
+            return itemListStr;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * A function used to Get user data from FMCredentials to be used in the Buyer constructor
      *
      * @param userEmail  User email to make sure you get the right user data
@@ -399,17 +427,45 @@ public class FurnitureMarketplace {
     public static String buyerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Buyer currentUser) {
         switch (userChoiceFromDashboard) {
             case "1" -> { // Product Selection - Adds product to cart
-                System.out.println("Which Item would you like to select");
-                try {
-                    int itemNum = Integer.parseInt(scanner.nextLine());
+                boolean itemSelectLoop = true;
+                while (itemSelectLoop) {
+                    System.out.println("Which Item would you like to select: ");
+                    String[] validResponse = new String[itemList.length];
+                    try {
+                        // Create valid responses based on length of itemList
+                        for (int i = 0; i < validResponse.length; i++) {
+                            validResponse[i] = String.valueOf(i);
+                        }
+                        String itemNumStr = validUserResponse(scanner, validResponse); // require valid response
+                        int itemNum = Integer.parseInt(itemNumStr);
 
-                    if (itemList != null) {
-                        String itemListStr = Arrays.toString(new Item[]{itemList[itemNum]});
-                        System.out.println(itemListStr);
+                        if (itemList != null) {
+                            String[] itemStrSplit = itemListStr.get(itemNum).split(","); // get itemList fields
+                            String storeName = itemStrSplit[0];
+                            String itemName = itemStrSplit[1];
+                            String description = itemStrSplit[2];
+                            String quantityAvailable = itemStrSplit[3];
+                            String price = itemStrSplit[4];
+                            System.out.println("Item information:");
+                            System.out.printf("Store Name: %s\nItem Name: %s\nDescription: %s\nQuantity Available: %s\nPrice: $%s\n",
+                                    storeName, itemName, description, quantityAvailable, price);
+
+                            System.out.print("(1) Add item to shopping cart\n(2) Cancel\n");
+                            String[] validCartResponse = {"1", "2"};
+                            String shoppingCartOption = validUserResponse(scanner, validCartResponse);
+
+                            if (shoppingCartOption.equals("1")) { // Add to cart
+                                String itemToAdd = "~" + storeName + "!" + itemName + "!" + description + "!"
+                                        + quantityAvailable + "!" + price;
+                                currentUser.addItem(itemToAdd);
+                                System.out.println("Item added to cart!");
+                            }
+                            itemSelectLoop = false;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("Error item doesn't exist");
                     }
-                    // Work in progress
-                } catch (Exception e) {
-                    System.out.println("Error item doesn't exist");
                 }
             }
             case "2" -> { // view cart options
@@ -467,8 +523,8 @@ public class FurnitureMarketplace {
                 String[] validInputs = {"1", "2", "3"};
                 String itemOption = validUserResponse(scanner, validInputs);
 
-                switch (itemOption) {
-                    case "1" -> {                        // search by product name
+                switch (itemOption) {                        // search by product name
+                    case "1" -> {
                         System.out.println("Enter the item name");
                         String itemName = scanner.nextLine();
 
@@ -476,7 +532,7 @@ public class FurnitureMarketplace {
                         System.out.println(Arrays.toString(itemList));
 //                        }
                     }
-                    case "2" -> {                       // search by store
+                    case "2" -> {
                         System.out.println("Enter the store name");
                         String storeName = scanner.nextLine();
                         ArrayList<Item> itemsFromStore = new ArrayList<>();
@@ -511,9 +567,8 @@ public class FurnitureMarketplace {
                         if (itemsFromStore.size() == 0) {
                             System.out.println("Error: There are no items available in this store");
                         }
-
                     }
-                    case "3" -> {               // search by price
+                    case "3" -> {
                         System.out.println("Enter maximum price");
                         String maxPriceStr = scanner.nextLine();
                         int maxPrice = 0;
@@ -759,7 +814,6 @@ public class FurnitureMarketplace {
                                             Double.parseDouble(itemPrice));
 
                                     break;
-
                                 case "2":               //1-1-2 Edit the product information : DONE
                                     ArrayList<String> numberOfProducts = new ArrayList<>();
                                     System.out.println("\tProducts available in " + currentStore.getStoreName());
@@ -843,8 +897,7 @@ public class FurnitureMarketplace {
                                         }
                                     }
                                     break;
-                                case "3"://1-1-3 Export Product File
-
+                                case "3":               //1-1-3 Export Product File
                                     currentUser.exportPublishedItems(currentStore.getStoreName());
                                     break;
                                 case "4":               //1-1-4 Delete the product
