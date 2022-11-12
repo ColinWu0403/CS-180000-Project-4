@@ -114,6 +114,6 @@ public class Item {
     }
     // Method to print more detailed information about an item
     public void printItemInfo() {
-        System.out.printf("%s selling at %2.f. %d in stock.\n%s\n", name, price, quantity, description);
+        System.out.printf("%s selling at %.2f. %d in stock.\n%s\n", name, price, quantity, description);
     }
 }
