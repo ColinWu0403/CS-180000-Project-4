@@ -162,7 +162,7 @@ public class Store {
                 pwTwo.println(statsFile.get(i));
             }
             pwTwo.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
