@@ -53,33 +53,45 @@ public class Item {
     public String getDescription() { return description; }
     public int getQuantity() { return quantity; }
     public double getPrice() { return price; }
-    public boolean changeField(String field, String newValue) { // Changes value of field, returns true if successful
+    public void changeField(String field, String newValue) {
         // Write quantity change to csv file
         File f = new File("FMItems.csv");
         ArrayList<String> lines = new ArrayList<>();
-        // Returns false if the quantity or price would go too low
-        if (field.equals("quantity") && Integer.parseInt(newValue) > quantity) { return false; }
-        if (field.equals("price") && Double.parseDouble(newValue) >= price) { return false; }
         try {
-            BufferedReader bfr = new BufferedReader(new FileReader(f));
+            FileReader fr = new FileReader(f);
+            BufferedReader bfr = new BufferedReader(fr);
             String line = bfr.readLine();
             while (line != null) {
-                if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, this.name, description, quantity, price))) {
-                    if (field.equals("name")) {
+                if (field.equals("name")) {
+                    if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, this.name, description, quantity, price))) {
                         line = String.format("%s,%s,%s,%d,%.2f", store, newValue, description, quantity, price);
-                    } else if (field.equals("description")) {
+                    }
+                    lines.add(line);
+                    line = bfr.readLine();
+                } else if (field.equals("description")) {
+                    if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, name, this.description, quantity, price))) {
                         line = String.format("%s,%s,%s,%d,%.2f", store, name, newValue, quantity, price);
-                    } else if (field.equals("quantity")) {
+                    }
+                    lines.add(line);
+                    line = bfr.readLine();
+                } else if (field.equals("quantity")) {
+                    if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, name, description, this.quantity, price))) {
                         line = String.format("%s,%s,%s,%d,%.2f", store, name, description, Integer.parseInt(newValue), price);
-                    } else if (field.equals("price")) {
+                    }
+                    lines.add(line);
+                    line = bfr.readLine();
+                } else if (field.equals("price")) {
+                    if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, name, description, quantity, this.price))) {
                         line = String.format("%s,%s,%s,%d,%.2f", store, name, description, quantity, Double.parseDouble(newValue));
                     }
+                    lines.add(line);
+                    line = bfr.readLine();
                 }
-                lines.add(line);
-                line = bfr.readLine();
+
             }
             bfr.close();
-            PrintWriter pw = new PrintWriter(new FileOutputStream(f, false));
+            FileOutputStream fos = new FileOutputStream(f, false);
+            PrintWriter pw = new PrintWriter(fos);
             for (String s : lines) {
                 pw.println(s);
             }
@@ -94,7 +106,6 @@ public class Item {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     // Method to print product name and price of an item
