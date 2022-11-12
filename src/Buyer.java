@@ -98,7 +98,7 @@ public class Buyer {
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
