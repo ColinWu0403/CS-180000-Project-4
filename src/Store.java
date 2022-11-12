@@ -114,7 +114,7 @@ public class Store {
             }
             pwOne.close();
             // Read file holding statistics and update buyer and item numbers if already present
-            BufferedReader bfrTwo = new BufferedReader(new FileReader(".idea/FMStats.csv"));
+            BufferedReader bfrTwo = new BufferedReader(new FileReader("FMStats.csv"));
             ArrayList<String> statsFile = new ArrayList<>();
             boolean buyerFound = false;
             boolean itemFound = false;
