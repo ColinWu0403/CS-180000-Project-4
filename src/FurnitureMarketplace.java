@@ -146,7 +146,9 @@ public class FurnitureMarketplace {
         try {                                   //writes the new user's account to the csv file
             PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("FMCredentials.csv"
                     , true)));
-            printWriter.println(newEmail + "," + newUsername + "," + newPassword + "," + newBuyerOrSeller + ",,");
+
+
+            printWriter.println(newEmail + "," + newUsername + "," + newPassword + "," + newBuyerOrSeller + ",x,x");
             printWriter.flush();
             printWriter.close();
         } catch (Exception e) {
@@ -931,8 +933,27 @@ public class FurnitureMarketplace {
                             break;
 
                         case "3":                 //1-3 Delete a store : DONE
-                            storeName = validStoreName(scanner);
-                            currentUser.deleteStore(new Store(currentUser.getEmail(), storeName));
+                            Store[] currentUserStoresToDelete = currentUser.getStore();
+                            ArrayList<String> numberOptionsForStores = new ArrayList<>();
+                            if (currentUserStoresToDelete.length == 0) {
+                                System.out.println("Error: You have no stores");
+                                break;
+                            }
+                            System.out.println("\tStores owned by: " + currentUser.getName());
+                            for (int i = 0; i < currentUserStoresToDelete.length; i++) {
+                                numberOptionsForStores.add(Integer.toString((i + 1)));
+                                System.out.println("(" + (i + 1) + ")" + currentUserStoresToDelete[i].getStoreName());
+                            }
+                            System.out.print("What store would you like to delete: ");
+                            String[] deleteStoreOptions = new String[numberOptionsForStores.size()];
+                            for (int i = 0; i < numberOptionsForStores.size(); i++) {
+                                deleteStoreOptions[i] = numberOptionsForStores.get(i);
+                            }
+
+                            String deleteStoreResponse = validUserResponse(scanner, deleteStoreOptions);
+                            currentStore = currentUserStoresToDelete[Integer.parseInt(deleteStoreResponse) - 1];
+                            System.out.println(currentStore.getStoreName() + " has been deleted");
+                            currentUser.deleteStore(currentStore);
                             break;
 
                         case "4":                 //1-4 Return to the dashboard : DONE
@@ -948,6 +969,11 @@ public class FurnitureMarketplace {
 
             }
             case "4" -> {                                                //View Current Carts
+                if (currentUser.getStore().length == 0) {
+                    System.out.println("You have no stores");
+                } else {
+                    Seller.viewCustomerShoppingCart();
+                }
 
             }
             case "5" -> {                                                //Manage Account
