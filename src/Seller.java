@@ -43,8 +43,8 @@ public class Seller implements User {
     }
 
     public Item publishItem(String item, String store) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("marketplace.txt"));
-        BufferedWriter writer = new BufferedWriter(new FileWriter("marketplace.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("FMItems.csv"));
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("FMItems.csv")));
 
         StringBuilder fileContents = new StringBuilder();
 
@@ -63,7 +63,7 @@ public class Seller implements User {
         fileContents.append(toAppend);
 
         // write the new file back to the main marketplace text file
-        writer.write(fileContents.toString());
+        writer.println(fileContents);
 
         // create a new Item object and return it
         String name = item.split(",")[0];
@@ -78,10 +78,88 @@ public class Seller implements User {
         stores.add(store);
         try {
             PrintWriter printStore = new PrintWriter(new FileOutputStream("FMStores.csv", true));
-            printStore.println(store.getStoreName() + "," + store.getOwner() + ",");
+            printStore.println(store.getStoreName() + "," + store.getOwner());
             printStore.flush();
             printStore.close();
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public void deleteStore(Store store) {
+        // remove the store that has the name of the store specified as a parameter
+        try {
+            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
+            ArrayList<String> stores = new ArrayList<>();
+
+            String line;
+            while ((line = storeReader.readLine()) != null) {
+                stores.add(line);
+            }
+
+            stores.removeIf(storeLine -> storeLine.split(",")[0].equals(store.getStoreName()));
+
+            // remove any items associated with the store
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+            ArrayList<String> items = new ArrayList<>();
+
+            while ((line = itemReader.readLine()) != null) {
+                items.add(line);
+            }
+            items.removeIf(itemLine -> itemLine.split(",")[0].equals(store.getStoreName()));
+
+            // write all the lines back to the CSV files
+            PrintWriter storeWriter = new PrintWriter(new FileOutputStream("FMStores.csv", false));
+            PrintWriter itemWriter = new PrintWriter(new FileOutputStream("FMItems.csv", false));
+
+            for (String lineToWrite : stores) {
+                storeWriter.println(lineToWrite);
+            }
+            for (String lineToWrite : items) {
+                itemWriter.println(lineToWrite);
+            }
+
+            storeReader.close();
+            itemReader.close();
+            storeWriter.close();
+            itemWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exportPublishedItems(String storeName) {
+        try {
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+            ArrayList<String> itemsInStore = new ArrayList<>();
+
+            // creates array of all items
+            ArrayList<String> itemStrings = new ArrayList<>();
+            String line;
+            while ((line = itemReader.readLine()) != null) {
+                itemStrings.add(line);
+            }
+
+            for (String item : itemStrings) {
+                String storeToCheck = item.split(",")[0];
+                if (storeToCheck.equals(storeName)) {
+                    itemsInStore.add(item);
+                }
+            }
+
+            String filename = storeName + "—Items.csv";
+
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+            for (String lineToWrite : itemsInStore) {
+                writer.println(lineToWrite);
+            }
+            System.out.println("Exported item file successfully");
+
+            writer.close();
+            itemReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error exporting file");
+        }
+
     }
 
     @Override
@@ -115,16 +193,6 @@ public class Seller implements User {
     @Override
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    @Override
-    public void sendMessage(String message) {
-
-    }
-
-    @Override
-    public String checkMessage() {
-        return null;
     }
 
     @Override
