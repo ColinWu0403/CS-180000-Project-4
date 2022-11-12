@@ -21,10 +21,10 @@ public class Buyer {
         this.name = name;
         this.email = email;
         this.password = password;
-        if (purchaseHistory == null) {
+        if (purchaseHistory == null) { //creating account
             this.purchaseHistory = new ArrayList<>();
-        } else {
-            this.purchaseHistory = purchaseHistory;
+        } else {                        //signing in
+            this.purchaseHistory = showPurchaseHistory(email);
         }
         if (cart == null) {
             this.cart = new ArrayList<>();

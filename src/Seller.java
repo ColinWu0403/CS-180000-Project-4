@@ -84,44 +84,61 @@ public class Seller implements User {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    public void deleteStore(Store store) {
-        // remove the store that has the name of the store specified as a parameter
+    public void deleteStore(Store currentStore) {
+        String line;
+        StringBuilder storesFile = new StringBuilder();
+        StringBuilder itemsFile = new StringBuilder();
         try {
-            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
-            ArrayList<String> stores = new ArrayList<>();
-
-            String line;
-            while ((line = storeReader.readLine()) != null) {
-                stores.add(line);
+            // First, remove store belonging to this owner from stores file
+            BufferedReader bfrTwo = new BufferedReader(new FileReader("FMStores.csv"));
+            line = bfrTwo.readLine();
+            int counter = 0;
+            while (line != null) {
+                String[] splitLine = line.split(",");
+                if (!currentStore.getStoreName().equals(splitLine[0])) {
+                    if (counter >= 1) {
+                        storesFile.append("\n");
+                    }
+                    storesFile.append(line);
+                    counter++;
+                }
+                line = bfrTwo.readLine();
             }
-
-            stores.removeIf(storeLine -> storeLine.split(",")[0].equals(store.getStoreName()));
-
-            // remove any items associated with the store
-            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
-            ArrayList<String> items = new ArrayList<>();
-
-            while ((line = itemReader.readLine()) != null) {
-                items.add(line);
+            bfrTwo.close();
+            PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStores.csv", false));
+            if (storesFile.length() != 0) {
+                pwTwo.println(storesFile);
             }
-            items.removeIf(itemLine -> itemLine.split(",")[0].equals(store.getStoreName()));
-
-            // write all the lines back to the CSV files
-            PrintWriter storeWriter = new PrintWriter(new FileOutputStream("FMStores.csv", false));
-            PrintWriter itemWriter = new PrintWriter(new FileOutputStream("FMItems.csv", false));
-
-            for (String lineToWrite : stores) {
-                storeWriter.println(lineToWrite);
-            }
-            for (String lineToWrite : items) {
-                itemWriter.println(lineToWrite);
-            }
-
-            storeReader.close();
-            itemReader.close();
-            storeWriter.close();
-            itemWriter.close();
+            pwTwo.close();
         } catch (Exception e) {
+            System.out.println("Error deleting current store!");
+            e.printStackTrace();
+        }
+        try {
+            // Second, remove all items belonging to this store from items file
+            BufferedReader bfrThree = new BufferedReader(new FileReader("FMItems.csv"));
+            line = bfrThree.readLine();
+            int counter = 0;
+            while (line != null) {
+                // Only saves items whose store doesn't match any of this owner's stores
+                String[] splitLine = line.split(",");
+                if (!currentStore.getStoreName().equals(splitLine[0])) {
+                    if (counter >= 1) {
+                        itemsFile.append("\n");
+                    }
+                    itemsFile.append(line);
+                    counter++;
+                }
+                line = bfrThree.readLine();
+            }
+            bfrThree.close();
+            PrintWriter pwThree = new PrintWriter(new FileOutputStream("FMItems.csv", false));
+            if (itemsFile.length() != 0) {
+                pwThree.println(itemsFile);
+            }
+            pwThree.close();
+        } catch (Exception e) {
+            System.out.println("Error deleting store items!");
             e.printStackTrace();
         }
     }
@@ -180,7 +197,6 @@ public class Seller implements User {
             ArrayList<String> customerNames = new ArrayList<>();
 
             // loop through arraylist and find the correct account
-            System.out.println(credentials.size());
             int credSize = credentials.size();
             for (int i = 0; i < credSize; i++) {
                 String[] credentialsSplit = credentials.get(i).split(",");
