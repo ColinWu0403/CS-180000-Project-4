@@ -12,6 +12,7 @@ Shopping cart Follows similar convention. Different items separated by "~", deta
 LOGIN CREDENTIALS: Email,Username,password,buyer/seller,PurchaseHistory if Buyer, shopping cart if user is a Buyer
 NOTE: Placeholder for purchase history and shopping cart before the user purchases anything is x; 
 > Ex: JohnSmith@gmail.com,SmithChairs17,123456,buyer,x,x
+
 After they add items to shopping cart and purchase item is seen below
 NOTE: Also the first index in either the purchase history or shopping cart CAN NOT have ~ before the first value.
 For example the example below only has one item in the shopping cart and therefore a ~ is not seen after the , that indicates the shopping cart data has begun
