@@ -26,7 +26,9 @@ public class Buyer {
             this.purchaseHistory = showPurchaseHistory(email);
         }
         if (cart == null) {
-            this.cart = new ArrayList<>();
+            ArrayList<String> temp = new ArrayList<>();
+            temp.add("x");
+            this.cart = temp;
         } else {
             this.cart = showItemsInCart(email);
         }
@@ -134,6 +136,9 @@ public class Buyer {
                 if (FMCredentials.get(i).contains(email)) {
                     String[] strSplit = FMCredentials.get(i).split(",");
                     String purchaseHistoryStr = strSplit[4];
+                    if (purchaseHistoryStr.equals("x")) {
+                        return new ArrayList<>();
+                    }
                     String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
 
                     // Return new ArrayList
@@ -314,8 +319,74 @@ public class Buyer {
         return sortedList;
     }
 
-    public void addItem(String itemToAdd) { // add item to shopping cart
-        cart.add(itemToAdd);
+    public void addItem(String itemToAdd, String itemName, int quantityToPurchase) { // add item to shopping cart
+        try {
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = "";
+            while ((line = cartReader.readLine()) != null) {
+                FMCredentials.add(line);
+            }
+            cartReader.close();
+
+            PrintWriter pwOne = new PrintWriter(new FileWriter("FMCredentials.csv"));
+
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                if (FMCredentials.get(i).contains(email)) {
+                    String changeLine = FMCredentials.get(i);
+                    String[] splitLine = changeLine.split(",");
+                    String shoppingCart = changeLine.split(",")[5];
+                    if (shoppingCart.equals("x")) {
+                        shoppingCart = itemToAdd;
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.add(itemToAdd);
+                        setCart(temp);
+                    } else {
+                        shoppingCart = shoppingCart + "~" + itemToAdd;
+                        cart.add(itemToAdd);
+                    }
+                    pwOne.printf("%s,%s,%s,%s,%s,%s\n", splitLine[0], splitLine[1], splitLine[2], splitLine[3], splitLine[4], shoppingCart);
+                } else {
+                    pwOne.println(FMCredentials.get(i));
+                }
+            }
+            pwOne.close();
+
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+            ArrayList<String> FMItems = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String itemLine = "";
+            while ((itemLine = itemReader.readLine()) != null) {
+                FMItems.add(itemLine);
+            }
+            itemReader.close();
+
+            PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+            for (int i = 0; i < FMItems.size(); i++) {
+                if (FMItems.get(i).contains(itemName)) {
+                    String changeLine = FMItems.get(i);
+                    String[] splitLine = changeLine.split(",");
+                    int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                    quantity = quantity - quantityToPurchase;
+                    pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine[0], splitLine[1], splitLine[2], quantity, splitLine[4]);
+                } else {
+                    pwTwo.println(FMItems.get(i));
+                }
+            }
+            pwTwo.close();
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
     }
 
     public String getName() {
@@ -335,6 +406,10 @@ public class Buyer {
 
     public void setName(String Name) {
         this.name = name;
+    }
+
+    public void setCart(ArrayList<String> input) {
+        this.cart = input;
     }
 
 

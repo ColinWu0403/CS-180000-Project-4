@@ -93,7 +93,7 @@ public class Store {
 //        }
 //    }
     // Method to save sale information for seller
-    public static void saveSale(String buyer, Item item, int amountSold) {
+    public static boolean saveSale(String buyer, Item item, int amountSold) {
         try {
             // Read FMStores to find the correct store to add sale information to
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMStores.csv"));
@@ -158,6 +158,7 @@ public class Store {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     // Method to print sale history of a store for seller
