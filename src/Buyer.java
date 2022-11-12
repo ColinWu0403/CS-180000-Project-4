@@ -29,8 +29,10 @@ public class Buyer {
         if (cart == null) {
             this.cart = new ArrayList<>();
         } else {
-            this.cart = cart;
+            this.cart = showItemsInCart(email);
         }
+        System.out.println(cart);
+        System.out.println(purchaseHistory);
     }
 
     public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
@@ -131,6 +133,35 @@ public class Buyer {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ArrayList<String> showItemsInCart(String email) {
+        try {
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = "";
+            while ((line = cartReader.readLine()) != null) {
+                FMCredentials.add(line);
+            }
+            cartReader.close();
+
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String shoppingCartInfo = strSplit[5];
+                    String[] shoppingCartLine = shoppingCartInfo.split("~");
+
+                    return new ArrayList<>(Arrays.asList(shoppingCartLine));
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

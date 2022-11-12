@@ -1,9 +1,8 @@
 import java.io.*;
-import java.nio.Buffer;
 import java.util.ArrayList;
 
 /**
- *  The Seller class and all the variables and methods they may use.
+ * The Seller class and all the variables and methods they may use.
  *
  * @author Colin Wu
  * @version 2022-3-11
@@ -26,7 +25,7 @@ public class Seller implements User {
             BufferedReader bfr = new BufferedReader(new FileReader(f));
             String line = bfr.readLine();
             while (line != null) {
-                String [] splitLine = line.split(",");
+                String[] splitLine = line.split(",");
                 if (splitLine[1].equals(email)) {
                     stores.add(new Store(splitLine[1], splitLine[0]));
                 }
@@ -81,7 +80,9 @@ public class Seller implements User {
             printStore.println(store.getStoreName() + "," + store.getOwner());
             printStore.flush();
             printStore.close();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteStore(Store currentStore) {
@@ -177,7 +178,7 @@ public class Seller implements User {
             System.out.println("Error exporting file");
         }
     }
-    
+
     public static void viewCustomerShoppingCart() { // Prints customer shopping cart info for Sellers
         try {
             // Read through CSV file
@@ -209,9 +210,9 @@ public class Seller implements User {
 
             // Get amount of items in cart for each customer
             for (int i = 0; i < shoppingCart.size(); i++) {
-                String[] cartItems = shoppingCart.get(i).split("~");
-                for (int j = 0; j < cartItems.length; j++) {
-                    if (!cartItems[j].equals("x")) {
+                if (!shoppingCart.get(i).equals("x")) {
+                    String[] cartItems = shoppingCart.get(i).split("~");
+                    for (int j = 0; j < cartItems.length; j++) {
                         try {
                             String[] itemFields = cartItems[j].split("!");
                             String storeName = itemFields[0];
@@ -234,7 +235,7 @@ public class Seller implements User {
                 String[] credentialsSplit = credentials.get(i).split(",");
                 String[] cartLine = credentialsSplit[5].split("~");
                 for (int j = 0; j < cartLine.length; j++) {
-                    if (cartLine[j].length() > 1) {
+                    if (!cartLine[j].equals("x")) {
                         System.out.printf("\t%s\n", cartInfoLine.get(y));
                         y++;
                     } else {
@@ -247,7 +248,7 @@ public class Seller implements User {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public String getEmail() {
         return this.email;
@@ -373,5 +374,40 @@ public class Seller implements User {
             System.out.println("Error deleting user items!");
             e.printStackTrace();
         }
+    }
+
+    public int importItems(String fileName, Store[] stores) { // Adds imported items to stores and returns number of incorrectly formatted items
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(fileName));
+            String line = "";
+            int numberSuccess = 0;
+            int numberIncorrectFormat = 0;
+            while ((line = bfr.readLine()) != null) {
+                int counter = 0;
+                String[] splitLine = line.split(",");
+                for (int i = 0; i < stores.length; i++) {
+                    // Tests against all store names until one works
+                    if (splitLine[0].equals(stores[i].getStoreName())) {
+                        counter ++;
+                        try {
+                            stores[i].addItem(splitLine[1], splitLine[2],
+                                    Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
+                            numberSuccess ++;
+                            break;
+                        } catch (Exception e) {
+                            // If item is formatted incorrectly, adds to counter
+                            numberIncorrectFormat ++;
+                        }
+                    }
+                }
+                if (counter == 0) {
+                    numberIncorrectFormat ++;
+                }
+            }
+            return numberSuccess;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

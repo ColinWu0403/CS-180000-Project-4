@@ -774,8 +774,9 @@ public class FurnitureMarketplace {
                                     (2) Edit Product
                                     (3) Export Product File
                                     (4) Delete Product
-                                    (5) Return to Dash""");
-                            String[] editCatalogueOptions = {"1", "2", "3", "4", "5"};
+                                    (5) Import Product File
+                                    (6) Return to Dash""");
+                            String[] editCatalogueOptions = {"1", "2", "3", "4", "5","6"};
                             String editCatalogueResponse = validUserResponse(scanner, editCatalogueOptions);
                             switch (editCatalogueResponse) {
                                 case "1":               //1-1-1 Add product to store : DONE
@@ -920,7 +921,20 @@ public class FurnitureMarketplace {
                                         System.out.println("Deleted Item");
                                     }
                                     break;
-                                case "5":               //1-1-5 Return to dashboard
+                                case "5":               //1-1-5 Import product file
+                                    System.out.print("Enter name of file: ");
+                                    String filename = scanner.nextLine();
+                                    int numberOfFiles = currentUser.importItems(filename, currentUserStores);
+                                    if (numberOfFiles == -1) {
+                                        System.out.println("Error: Incorrect format, no items added");
+                                    } else {
+                                        System.out.println("Imported " + numberOfFiles + " files successfuly");
+                                    }
+
+
+
+                                    break;
+                                case "6":               //1-1-6 Return to dashboard
 
                                     break;
                             }
@@ -969,12 +983,7 @@ public class FurnitureMarketplace {
 
             }
             case "4" -> {                                                //View Current Carts
-                if (currentUser.getStore().length == 0) {
-                    System.out.println("You have no stores");
-                } else {
                     Seller.viewCustomerShoppingCart();
-                }
-
             }
             case "5" -> {                                                //Manage Account
                 boolean continueManageAccount = true;
