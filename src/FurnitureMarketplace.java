@@ -501,7 +501,9 @@ public class FurnitureMarketplace {
                         switch (userResponse) {
                             case "1": // 2-1 DONE
                                 currentUser.checkout();
-                                currentUser.setCart(new ArrayList<>());
+                                ArrayList<String> temp = new ArrayList<>();
+                                temp.add("x");
+                                currentUser.setCart(temp);
 
                                 System.out.println("Checkout Successful!");
                                 checkoutLoop = false;
