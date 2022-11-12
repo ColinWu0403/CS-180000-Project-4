@@ -72,40 +72,6 @@ public class Seller implements User {
 
         return new Item(store, name, description, quantity, price);
     }
-
-    public int importItems(String fileName) { // Adds imported items to stores and returns number of incorrectly formatted items
-        try {
-            BufferedReader bfr = new BufferedReader(new FileReader(fileName));
-            String line = bfr.readLine();
-            int counter = 0;
-            while(line != null) {
-                boolean added = false;
-                String[] splitLine = line.split(",");
-                for (int i = 0; i < stores.size(); i++) {
-                    // Tests against all store names until one works
-                    if (splitLine[0].equals(stores.get(i).getStoreName())) {
-                        try {
-                            stores.get(i).addItem(splitLine[1], splitLine[2],
-                                    Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
-                            added = true;
-                            break;
-                        } catch (Exception e) {
-                            // If item is formatted incorrectly, adds to counter
-                            counter = counter + 1;
-                        }
-                    }
-                }
-                if (!added) counter = counter + 1;
-                line = bfr.readLine();
-            }
-            return counter;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // Returns negative 1 if an error occurred
-        return -1;
-    }
-
     public void createStore(Store store) {
         stores.add(store);
         try {
