@@ -425,8 +425,8 @@ public class Buyer {
         String cartString = "";
         for (int i = 0; i < cart.size(); i++) {
             String[] splitList = cart.get(i).split("!");
-            double totalPrice = Double.parseDouble(splitList[2]) * Double.parseDouble(splitList[3]);
-            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: %.2f\n", (i + 1), splitList[1], splitList[0], splitList[2], totalPrice));
+            double totalPrice = Double.parseDouble(splitList[3]) * Double.parseDouble(splitList[4]);
+            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: %.2f\n", (i + 1), splitList[1], splitList[0], splitList[3], totalPrice));
         }
         return cartString;
     }
@@ -436,18 +436,33 @@ public class Buyer {
      */
     public void checkout() { //Removes items from cart, puts them in purchase history, adds purchases to respective Store History
         try {
+            String currentCartCSVInfo = "";
+            String currentHistoryCSVInfo = "";
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+
+            // Add existing items to ArrayList;
+            String line = "";
+            while ((line = cartReader.readLine()) != null) {
+                if (line.split(",")[0].equals(email)) {
+                    currentCartCSVInfo = line.split(",")[5];
+                    currentHistoryCSVInfo = line.split(",")[4];
+                }
+            }
+            cartReader.close();
+
+            int cartSize = cart.size();
             purchaseHistory.addAll(cart);
+            System.out.println(purchaseHistory);
             ArrayList<String> storedCSVData = csvTemporaryStorage();
             PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
 
-            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
-            for (int i = 0; i < purchaseHistory.size(); i++) {
-                if (i + 1 == purchaseHistory.size()) {
-                    pw.println(purchaseHistory.get(i) + ",");
-                } else {
-                    pw.print(purchaseHistory.get(i) + "~");
-                }
+            if (purchaseHistory.size() == cartSize) {
+                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," + currentCartCSVInfo + ",x");
+            } else {
+                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," + currentHistoryCSVInfo + "~" + currentCartCSVInfo + ",x");
             }
+
             for (int i = 0; i < storedCSVData.size(); i++) {
                 pw.println(storedCSVData.get(i));
             }
