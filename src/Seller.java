@@ -159,9 +159,79 @@ public class Seller implements User {
             e.printStackTrace();
             System.out.println("Error exporting file");
         }
-
     }
+    
+    public static void viewCustomerShoppingCart() { // Prints customer shopping cart info for Sellers
+        try {
+            // Read through CSV file
+            BufferedReader fmReader = new BufferedReader(new FileReader("FMCredentials.csv"));
 
+            ArrayList<String> credentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line;
+            while ((line = fmReader.readLine()) != null) {
+                credentials.add(line);
+            }
+
+            fmReader.close();
+
+            ArrayList<String> shoppingCart = new ArrayList<>();
+            ArrayList<String> customerNames = new ArrayList<>();
+
+            // loop through arraylist and find the correct account
+            System.out.println(credentials.size());
+            int credSize = credentials.size();
+            for (int i = 0; i < credSize; i++) {
+                String[] credentialsSplit = credentials.get(i).split(",");
+                String shoppingCartLine = credentialsSplit[5];
+                shoppingCart.add(shoppingCartLine);
+                customerNames.add(credentialsSplit[1]);
+            }
+
+            ArrayList<String> cartInfoLine = new ArrayList<>();
+
+            // Get amount of items in cart for each customer
+            for (int i = 0; i < shoppingCart.size(); i++) {
+                String[] cartItems = shoppingCart.get(i).split("~");
+                for (int j = 0; j < cartItems.length; j++) {
+                    if (!cartItems[j].equals("x")) {
+                        try {
+                            String[] itemFields = cartItems[j].split("!");
+                            String storeName = itemFields[0];
+                            String itemName = itemFields[1];
+                            String quantity = itemFields[2];
+                            String price = itemFields[3];
+                            String itemInfoLine = "Store Name: " + storeName + ", Item Name: " + itemName + ", Quantity: "
+                                    + quantity + ", Price: $" + price;
+                            cartInfoLine.add(itemInfoLine);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            int y = 0;
+            for (int i = 0; i < shoppingCart.size(); i++) {
+                System.out.printf("Customer Name: %s\n", customerNames.get(i));
+                String[] credentialsSplit = credentials.get(i).split(",");
+                String[] cartLine = credentialsSplit[5].split("~");
+                for (int j = 0; j < cartLine.length; j++) {
+                    if (cartLine[j].length() > 1) {
+                        System.out.printf("\t%s\n", cartInfoLine.get(y));
+                        y++;
+                    } else {
+                        System.out.println("\tCustomer cart empty!");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     public String getEmail() {
         return this.email;
