@@ -74,11 +74,11 @@ public class Buyer {
                 if (FMCredentials.get(i).contains(email)) {
                     String[] strSplit = FMCredentials.get(i).split(",");
                     String purchaseHistoryStr = strSplit[4];
-                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
 
                     // Create export file
                     try {
-                        String[] emailSplit = email.split("@");
+                        String[] emailSplit = email.split("~");
                         String fileName = emailSplit[0] + "PurchaseHistory.csv";
                         File export = new File(fileName);
 
@@ -98,11 +98,11 @@ public class Buyer {
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
-   public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
+    public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
         try {
             // Read through CSV file
             BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -124,7 +124,7 @@ public class Buyer {
                 if (FMCredentials.get(i).contains(email)) {
                     String[] strSplit = FMCredentials.get(i).split(",");
                     String purchaseHistoryStr = strSplit[4];
-                    String[] purchaseHistoryLine = purchaseHistoryStr.split("@");
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
 
                     // Return new ArrayList
                     return new ArrayList<>(Arrays.asList(purchaseHistoryLine));
@@ -291,9 +291,99 @@ public class Buyer {
         for (int i = 0; i < cart.size(); i++) {
             String[] splitList = cart.get(i).split("!");
             double totalPrice = Double.parseDouble(splitList[2]) * Double.parseDouble(splitList[3]);
-            cartString = cartString.concat(String.format("%s from %s; Quantity: %s; Total Price: %.2f\n", splitList[1],splitList[0],splitList[2],totalPrice));
+            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: %.2f\n", (i + 1), splitList[1],splitList[0],splitList[2],totalPrice));
         }
         return cartString;
+    }
+
+    /**
+     * User checks out Items.
+     */
+    public void checkout() { //Removes items from cart, puts them in purchase history, adds purchases to respective Store History
+        try {
+            purchaseHistory.addAll(cart);
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
+
+            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
+            for (int i = 0; i < purchaseHistory.size(); i++) {
+                if (i + 1 == purchaseHistory.size()) {
+                    pw.println(purchaseHistory.get(i) + ",");
+                } else {
+                    pw.print(purchaseHistory.get(i) + "~");
+                }
+            }
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
+            }
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Removes an item from a user's cart.
+     *
+     *
+     * @param userChoice Number that the user selects in the main method.
+     */
+    public void removeItemFromCart(int userChoice) {
+        try {
+            cart.remove(userChoice - 1);
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
+
+            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
+            if (purchaseHistory.isEmpty()) {
+                pw.print(",");
+            }
+            for (int i = 0; i < purchaseHistory.size(); i++) {
+                if (i + 1 == purchaseHistory.size()) {
+                    pw.print(purchaseHistory.get(i) + ",");
+                } else {
+                    pw.print(purchaseHistory.get(i) + "~");
+                }
+            }
+            for (int i = 0; i < cart.size(); i++) {
+                if (i + 1 == cart.size()) {
+                    pw.println(cart.get(i));
+                } else {
+                    pw.print(cart.get(i) + "~");
+                }
+            }
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
+            }
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method reads all data that isn't related to the user from the Credentials file and stores it
+     * for easy rewriting
+     *
+     * @return stored csv to be used in other buyer Functions
+     */
+    public ArrayList<String> csvTemporaryStorage() {
+        ArrayList<String> csvStorage = new ArrayList<>();
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            String line = bfr.readLine();
+            while (line != null) {
+                String[] splitLine = line.split(",");
+                if (!splitLine[0].equals(getEmail())) { // saves all data that is not being edited
+                    csvStorage.add(line);
+                }
+                line = bfr.readLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return csvStorage;
     }
     public ArrayList<String> getPurchaseHistory() {
         return this.purchaseHistory;
