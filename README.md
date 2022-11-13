@@ -138,7 +138,7 @@ public static ArrayList<String> buyerDataArray(String userEmail, String cartOrHi
 
 public static void printBuyerDashboard(Item[] itemList)
 - Prints Dashboard for buyer to view after logging in
-> @param itemList : The Item list obtained from the createItemList method.
+- @param itemList : The Item list obtained from the createItemList method.
 
 public static String validStoreName(Scanner scanner)
 - Returns the store name from the user if it is a valid store name.
