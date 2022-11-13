@@ -157,11 +157,23 @@ public class Buyer {
     }
 
     // returns Arraylist of stores by the products purchased by that particular customer.
-    public ArrayList<String> storesFromBuyerProducts(String buyerEmail) {
+    public ArrayList<String> storesFromBuyerProducts(String email) {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
 
             ArrayList<String> storesProductsList = new ArrayList<>();
+
+            boolean containsUser = false;
+            for (int i = 0; i < stores.size(); i++) { // check if stores has buyer email
+                if (stores.get(i).contains(email)) {
+                    containsUser = true;
+                    break;
+                }
+            }
+
+            if (!containsUser) {
+                return null;
+            }
 
             for (int i = 0; i < stores.size(); i++) {
                 String[] storeSplit = stores.get(i).split(",");
@@ -180,12 +192,14 @@ public class Buyer {
 
                 int quantity = 0;
                 for (int j = 0; j < productsSplit.length; j++) {
-                    if (productsSplit[j].contains(buyerEmail)) {
+                    if (productsSplit[j].contains(email)) {
                         String[] formatProductSplit = productsSplit[j].split("!");
                         quantity += Integer.parseInt(formatProductSplit[2]);
                     }
                 }
-                productsPurchased.add(storeName + "," + quantity);
+                if (quantity != 0) {
+                    productsPurchased.add(storeName + "," + quantity);
+                }
             }
 
             for (int i = 0; i < productsPurchased.size(); i++) {
