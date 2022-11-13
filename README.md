@@ -26,6 +26,7 @@ Sample Dashboard
 - If the account type is a Seller, the Seller dasboard is shown will all available items 
 
 Sample Dashboard
+
 ![Seller Dashboard](https://github.com/ColinWu0403/CS-180000-Project-4/blob/main/images/Seller%20Dashboard.png "Seller Dashboard")
 
 ## Buyer features
