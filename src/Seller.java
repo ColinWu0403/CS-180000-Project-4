@@ -203,8 +203,10 @@ public class Seller implements User {
             for (int i = 0; i < credSize; i++) {
                 String[] credentialsSplit = credentials.get(i).split(",");
                 String shoppingCartLine = credentialsSplit[5];
-                shoppingCart.add(shoppingCartLine);
-                customerNames.add(credentialsSplit[1]);
+                if (credentialsSplit[3].equals("buyer")) {
+                    shoppingCart.add(shoppingCartLine);
+                    customerNames.add(credentialsSplit[1]);
+                }
             }
 
             ArrayList<String> cartInfoLine = new ArrayList<>();
@@ -237,10 +239,10 @@ public class Seller implements User {
                 String[] cartLine = credentialsSplit[5].split("~");
                 for (int j = 0; j < cartLine.length; j++) {
                     if (!cartLine[j].equals("x")) {
-                        System.out.printf("\t%s\n", cartInfoLine.get(y));
+                        System.out.printf("  %s\n", cartInfoLine.get(y));
                         y++;
                     } else {
-                        System.out.println("\tCustomer cart empty!");
+                        System.out.println("  Customer cart empty!");
                     }
                 }
             }
