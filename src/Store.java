@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.io.*;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * A store class, contains pertinent information about the store
@@ -10,6 +11,7 @@ public class Store {
     private String owner;
     private String storeName;
     private ArrayList<Item> items;
+
     public Store(String owner, String storeName) {
         this.owner = owner;
         this.storeName = storeName;
@@ -32,6 +34,7 @@ public class Store {
             e.printStackTrace();
         }
     }
+
 
     public String getOwner() {
         return owner;
@@ -85,7 +88,7 @@ public class Store {
         items.get(itemNumber - 1).printItemInfo();
     }
 
-//    public static void main(String[] args) { // testing
+    //    public static void main(String[] args) { // testing
 ////        saveSale("JOhn DOe", new Item("John's Desks", "Cedar desk", "desk", 10, 299.99), 2);
 //        ArrayList<String> showStats = showStats();
 //        for (int i = 0; i < showStats.size(); i++) {
@@ -186,7 +189,7 @@ public class Store {
                 if (FMStores.get(i).contains(storeName)) {
                     String[] strSplit = FMStores.get(i).split(",");
                     String saleHistoryStr = strSplit[2];
-                    String [] saleHistoryLine = saleHistoryStr.split("~");
+                    String[] saleHistoryLine = saleHistoryStr.split("~");
                     return new ArrayList<>(Arrays.asList(saleHistoryLine));
                 }
             }
@@ -205,9 +208,9 @@ public class Store {
             String line = statsReader.readLine();
             while (line != null) {
                 String[] splitLine = line.split(",");
-                 if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
+                if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
                     stats.add(splitLine[1] + "," + splitLine[2]);
-                 }
+                }
                 line = statsReader.readLine();
             }
             return stats;
@@ -215,5 +218,25 @@ public class Store {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static ArrayList<String> showSortedStats(String storeName, String type) {
+        ArrayList<String> unsorted = showStats(storeName, type);
+        ArrayList<Integer> amounts = new ArrayList<>();
+        ArrayList<String> sorted = new ArrayList<>();
+        for (int i = 0; i < unsorted.size(); i++) {
+            amounts.add(Integer.parseInt(unsorted.get(i).substring(unsorted.get(i).indexOf(",") + 1)));
+        }
+        amounts.sort(Collections.reverseOrder());
+        for (int i = 0; i < amounts.size(); i++) {
+            for (int j = 0; j < unsorted.size(); j++) {
+                if (amounts.get(i) == Integer.parseInt(unsorted.get(j).split(",")[1])) {
+                    sorted.add(unsorted.get(j));
+                    unsorted.remove(j);
+                    break;
+                }
+            }
+        }
+        return sorted;
     }
 }
