@@ -39,31 +39,6 @@ public class Buyer {
         purchaseHistory.add(itemToPurchase);
     }
 
-//    public static void main(String[] args) { // For Testing
-////        Buyer buyer = new Buyer("Brad", "brad@gmail.com", "123",
-////                showPurchaseHistory("brad@gmail.com"), showItemsInCart("brad@gmail.com"));
-////        ArrayList<String> storesFromProductsSold = buyer.storesFromProductsSold();
-//
-////        for (int i = 0; i < storesFromProductsSold.size(); i++) {
-////            System.out.println(storesFromProductsSold.get(i));
-////        }
-//
-////        storesFromProductsSold = buyer.sortStoresProductsSold();
-////        for (int i = 0; i < storesFromProductsSold.size(); i++) {
-////            System.out.println(storesFromProductsSold.get(i));
-////        }
-//
-////        ArrayList<String> storesFromBuyerProducts = buyer.storesFromBuyerProducts("jamesz@outlook.com");
-////        for (int i = 0; i < storesFromBuyerProducts.size(); i++) {
-////            System.out.println(storesFromBuyerProducts.get(i));
-////        }
-//
-////        ArrayList<String> sortedStoresFromBuyerProducts = buyer.sortStoresFromBuyerProducts("jamesz@outlook.com");
-////        for (int i = 0; i < sortedStoresFromBuyerProducts.size(); i++) {
-////            System.out.println(sortedStoresFromBuyerProducts.get(i));
-////        }
-//    }
-
     // Creates a new file of purchase history
     public static void exportPurchaseHistory(String email) {
         try {
@@ -181,17 +156,7 @@ public class Buyer {
         return null;
     }
 
-    // Returns ArrayList of sorted purchase history in alphabetical order
-//    public ArrayList<String> sortPurchaseHistory() {
-//        ArrayList<String> sortedHistory = showPurchaseHistory();
-//
-//        Collections.sort(sortedHistory);
-//
-//        return sortedHistory;
-//    }
-
-
-    // returns Arraylist of stores by the products purchased by that particular customer.
+        // returns Arraylist of stores by the products purchased by that particular customer.
     public ArrayList<String> storesFromBuyerProducts(String buyerEmail) {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
@@ -213,16 +178,22 @@ public class Buyer {
                 String[] productsSplit = listSplit[1].split("~");
                 String storeName = listSplit[0];
 
+                int quantity = 0;
                 for (int j = 0; j < productsSplit.length; j++) {
                     if (productsSplit[j].contains(buyerEmail)) {
                         String[] formatProductSplit = productsSplit[j].split("!");
-                        String formatProduct = formatProductSplit[2] + ": Quantity-> " +
-                                formatProductSplit[3] + " Price-> $" + formatProductSplit[4];
-                        productsPurchased.add(storeName + "," + formatProduct);
+                        quantity += Integer.parseInt(formatProductSplit[2]);
                     }
                 }
+                productsPurchased.add(storeName + "," + quantity);
             }
 
+            for (int i = 0; i < productsPurchased.size(); i++) {
+                String[] productsPurchasedSplit = productsPurchased.get(i).split(",");
+                if (productsPurchasedSplit[1].equals("0")) {
+                    productsPurchased.remove(i);
+                }
+            }
             return productsPurchased;
         } catch (Exception e) {
             e.printStackTrace();
@@ -238,7 +209,7 @@ public class Buyer {
             ArrayList<String> sortedList = new ArrayList<>();
 
             for (int i = 0; i < unsortedList.size(); i++) {
-                String[] listSplit = unsortedList.get(i).split("\\$");
+                String[] listSplit = unsortedList.get(i).split(",");
                 prices.add(Double.parseDouble(listSplit[1]));
             }
 
@@ -246,7 +217,7 @@ public class Buyer {
 
             for (int i = 0; i < prices.size(); i++) {
                 for (int j = 0; j < unsortedList.size(); j++) {
-                    if (prices.get(i) == Double.parseDouble(unsortedList.get(j).split("\\$")[1])) {
+                    if (prices.get(i) == Double.parseDouble(unsortedList.get(j).split(",")[1])) {
                         sortedList.add(unsortedList.get(j));
                         unsortedList.remove(j);
                         break;
@@ -266,13 +237,14 @@ public class Buyer {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
 
             ArrayList<String> storesProductsList = new ArrayList<>();
+            ArrayList<String> storesProductsSold = new ArrayList<>();
 
             for (int i = 0; i < stores.size(); i++) {
                 String[] storeSplit = stores.get(i).split(",");
                 String storeName = storeSplit[0];
                 String productsSold = storeSplit[2];
-
                 storesProductsList.add(storeName + "," + productsSold);
+
             }
 
             for (int i = 0; i < storesProductsList.size(); i++) {
@@ -280,15 +252,20 @@ public class Buyer {
                 // add number of products sold to Integer list
                 String[] productsSplit = listSplit[1].split("~");
                 String storeName = listSplit[0];
-                if (!productsSplit[0].equals("x")) {
-                    int productSize = productsSplit.length;
-                    storesProductsList.set(i, storeName + "," + productSize);
-                } else {
-                    storesProductsList.set(i, storeName + ",0");
+
+                int quantity = 0;
+                for (int j = 0; j < productsSplit.length; j++) {
+                    if (productsSplit[j].length() > 1) {
+                        String[] formatProductSplit = productsSplit[j].split("!");
+                        if (formatProductSplit.length > 1) {
+                            quantity += Integer.parseInt(formatProductSplit[2]);
+                        }
+                    }
                 }
+                storesProductsSold.add(storeName + "," + quantity);
             }
 
-            return storesProductsList;
+            return storesProductsSold;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -320,7 +297,7 @@ public class Buyer {
         }
         return sortedList;
     }
-
+    
     public void addItem(String itemToAdd, String itemName, int quantityToPurchase) { // add item to shopping cart
         try {
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
