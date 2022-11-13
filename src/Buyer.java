@@ -229,6 +229,7 @@ public class Buyer {
 
         return null;
     }
+
     public ArrayList<String> sortStoresFromBuyerProducts(String email) {
         try {
             ArrayList<String> unsortedList = storesFromBuyerProducts(email);
@@ -477,6 +478,8 @@ public class Buyer {
      *
      * @param userChoice Number that the user selects in the main method.
      */
+
+    //TODONATHAN
     public void removeItemFromCart(int userChoice) {
         try {
             cart.remove(userChoice - 1);
@@ -546,9 +549,55 @@ public class Buyer {
             // First remove user from credentials file
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
             line = bfrOne.readLine();
+            int counter = -1;
             while (line != null) {
+                counter ++;
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
-                if (!email.equals(line.substring(0, line.indexOf(",")))) credentialsFile.append(line).append("\n");
+                if (!email.equals(line.substring(0, line.indexOf(",")))) {
+                    if (counter == 0) {
+                        credentialsFile.append(line);
+                    } else {
+                        credentialsFile.append("\n").append(line);
+                    }
+                } else {
+                    counter --;
+                    if (!getCart().get(0).equals("x")) {
+                        for (int i = 0; i < getCart().size(); i++) {
+                            String currentCartItem = getCart().get(i);
+                            String[] splitLine = currentCartItem.split("!");
+                            String itemName = splitLine[1];
+                            int quantityToAdd = Integer.parseInt(splitLine[3]);
+                            try {
+                                BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+                                ArrayList<String> FMItems = new ArrayList<>();
+
+                                // Add existing items to ArrayList;
+                                String itemLine = "";
+                                while ((itemLine = itemReader.readLine()) != null) {
+                                    FMItems.add(itemLine);
+                                }
+                                itemReader.close();
+
+                                PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+                                for (int j = 0; j < FMItems.size(); j++) {
+                                    if (FMItems.get(j).contains(itemName)) {
+                                        String changeLine = FMItems.get(j);
+                                        String[] splitLine2 = changeLine.split(",");
+                                        int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                                        quantity = quantity + quantityToAdd;
+                                        pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2], quantity, splitLine2[4]);
+                                    } else {
+                                        pwTwo.println(FMItems.get(j));
+                                    }
+                                }
+                                pwTwo.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
                 line = bfrOne.readLine();
             }
             bfrOne.close();

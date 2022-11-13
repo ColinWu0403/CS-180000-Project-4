@@ -221,7 +221,7 @@ public class Store {
         }
         return null;
     }
-
+    
     public static ArrayList<String> showSortedStats(String storeName, String type) {
         ArrayList<String> unsorted = showStats(storeName, type);
         ArrayList<Integer> amounts = new ArrayList<>();
