@@ -300,6 +300,30 @@ public class Seller implements User {
                     if (counter >= 1) {
                         credentialsFile.append("\n");
                     }
+                    // Also deletes items from seller's stores from shopping carts
+                    String[] splitLine = line.split(",");
+                    String cart = splitLine[5];
+                    if (cart.contains("~")) {
+                        String[] cartItems = cart.split("~");
+                        for (int i = 0; i < cartItems.length; i++) {
+                            for (int j = 0; j < stores.size(); j++) {
+                                if (cartItems[i].substring(0, cartItems[i].indexOf("!")).equals(stores.get(j).getStoreName())) {
+                                    if (!cart.contains("~")) {
+                                        cart = "x";
+                                    }else if (cart.contains("~" + cartItems[i])) {
+                                        cart = cart.replaceFirst("~" + cartItems[i], "");
+                                    } else cart = cart.replaceFirst(cartItems[i] + "~", "");
+                                }
+                            }
+                        }
+                    } else if (cart.contains("!")) {
+                        for (int i = 0; i < stores.size(); i++) {
+                            if (cart.substring(0, cart.indexOf("!")).equals(stores.get(i).getStoreName())) {
+                                cart = "x";
+                            }
+                        }
+                    }
+                    line = line.replaceAll(splitLine[5], cart);
                     credentialsFile.append(line);
                     counter++;
                 }
@@ -323,7 +347,8 @@ public class Seller implements User {
             while (line != null) {
                 // Only saves stores that don't use this users email
                 String shortLine = line.substring(line.indexOf(","));
-                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) {
+                String[] splitLine = line.split(",");
+                if (!splitLine[1].equals(email)) {
                     if (counter >= 1) {
                         storesFile.append("\n");
                     }

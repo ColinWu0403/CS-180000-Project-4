@@ -1085,8 +1085,8 @@ public class FurnitureMarketplace {
                     for (int i = 0; i < sales.size(); i++) {
                         String[] saleInfo = sales.get(i).split("!");
                         System.out.printf("%-25s  %-25s  %-25s  %-25s\n",
-                                "Customer:" + saleInfo[0], "Product:" + saleInfo[1], "Quantity bought:" + saleInfo[2],
-                                "Price bought at:" + saleInfo[3]);
+                                "Customer: " + saleInfo[0], "Product: " + saleInfo[1], "Quantity bought: " + saleInfo[2],
+                                "Price bought at: " + saleInfo[3]);
                     }
                 }
                 System.out.println();
