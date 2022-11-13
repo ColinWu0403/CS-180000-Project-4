@@ -1,5 +1,4 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,31 +37,6 @@ public class Buyer {
     public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
         purchaseHistory.add(itemToPurchase);
     }
-
-//    public static void main(String[] args) { // For Testing
-////        Buyer buyer = new Buyer("Brad", "brad@gmail.com", "123",
-////                showPurchaseHistory("brad@gmail.com"), showItemsInCart("brad@gmail.com"));
-////        ArrayList<String> storesFromProductsSold = buyer.storesFromProductsSold();
-//
-////        for (int i = 0; i < storesFromProductsSold.size(); i++) {
-////            System.out.println(storesFromProductsSold.get(i));
-////        }
-//
-////        storesFromProductsSold = buyer.sortStoresProductsSold();
-////        for (int i = 0; i < storesFromProductsSold.size(); i++) {
-////            System.out.println(storesFromProductsSold.get(i));
-////        }
-//
-////        ArrayList<String> storesFromBuyerProducts = buyer.storesFromBuyerProducts("jamesz@outlook.com");
-////        for (int i = 0; i < storesFromBuyerProducts.size(); i++) {
-////            System.out.println(storesFromBuyerProducts.get(i));
-////        }
-//
-////        ArrayList<String> sortedStoresFromBuyerProducts = buyer.sortStoresFromBuyerProducts("jamesz@outlook.com");
-////        for (int i = 0; i < sortedStoresFromBuyerProducts.size(); i++) {
-////            System.out.println(sortedStoresFromBuyerProducts.get(i));
-////        }
-//    }
 
     // Creates a new file of purchase history
     public static void exportPurchaseHistory(String email) {
@@ -213,16 +187,22 @@ public class Buyer {
                 String[] productsSplit = listSplit[1].split("~");
                 String storeName = listSplit[0];
 
+                int quantity = 0;
                 for (int j = 0; j < productsSplit.length; j++) {
                     if (productsSplit[j].contains(buyerEmail)) {
                         String[] formatProductSplit = productsSplit[j].split("!");
-                        String formatProduct = formatProductSplit[2] + ": Quantity-> " +
-                                formatProductSplit[3] + " Price-> $" + formatProductSplit[4];
-                        productsPurchased.add(storeName + "," + formatProduct);
+                        quantity += Integer.parseInt(formatProductSplit[2]);
                     }
                 }
+                productsPurchased.add(storeName + "," + quantity);
             }
 
+            for (int i = 0; i < productsPurchased.size(); i++) {
+                String[] productsPurchasedSplit = productsPurchased.get(i).split(",");
+                if (productsPurchasedSplit[1].equals("0")) {
+                    productsPurchased.remove(i);
+                }
+            }
             return productsPurchased;
         } catch (Exception e) {
             e.printStackTrace();
@@ -238,7 +218,7 @@ public class Buyer {
             ArrayList<String> sortedList = new ArrayList<>();
 
             for (int i = 0; i < unsortedList.size(); i++) {
-                String[] listSplit = unsortedList.get(i).split("\\$");
+                String[] listSplit = unsortedList.get(i).split(",");
                 prices.add(Double.parseDouble(listSplit[1]));
             }
 
@@ -246,7 +226,7 @@ public class Buyer {
 
             for (int i = 0; i < prices.size(); i++) {
                 for (int j = 0; j < unsortedList.size(); j++) {
-                    if (prices.get(i) == Double.parseDouble(unsortedList.get(j).split("\\$")[1])) {
+                    if (prices.get(i) == Double.parseDouble(unsortedList.get(j).split(",")[1])) {
                         sortedList.add(unsortedList.get(j));
                         unsortedList.remove(j);
                         break;
@@ -266,13 +246,14 @@ public class Buyer {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
 
             ArrayList<String> storesProductsList = new ArrayList<>();
+            ArrayList<String> storesProductsSold = new ArrayList<>();
 
             for (int i = 0; i < stores.size(); i++) {
                 String[] storeSplit = stores.get(i).split(",");
                 String storeName = storeSplit[0];
                 String productsSold = storeSplit[2];
-
                 storesProductsList.add(storeName + "," + productsSold);
+
             }
 
             for (int i = 0; i < storesProductsList.size(); i++) {
@@ -280,15 +261,20 @@ public class Buyer {
                 // add number of products sold to Integer list
                 String[] productsSplit = listSplit[1].split("~");
                 String storeName = listSplit[0];
-                if (!productsSplit[0].equals("x")) {
-                    int productSize = productsSplit.length;
-                    storesProductsList.set(i, storeName + "," + productSize);
-                } else {
-                    storesProductsList.set(i, storeName + ",0");
+
+                int quantity = 0;
+                for (int j = 0; j < productsSplit.length; j++) {
+                    if (productsSplit[j].length() > 1) {
+                        String[] formatProductSplit = productsSplit[j].split("!");
+                        if (formatProductSplit.length > 1) {
+                            quantity += Integer.parseInt(formatProductSplit[2]);
+                        }
+                    }
                 }
+                storesProductsSold.add(storeName + "," + quantity);
             }
 
-            return storesProductsList;
+            return storesProductsSold;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -328,7 +314,7 @@ public class Buyer {
             ArrayList<String> FMCredentials = new ArrayList<>();
 
             // Add existing items to ArrayList;
-            String line = "";
+            String line;
             while ((line = cartReader.readLine()) != null) {
                 FMCredentials.add(line);
             }
@@ -361,7 +347,7 @@ public class Buyer {
             ArrayList<String> FMItems = new ArrayList<>();
 
             // Add existing items to ArrayList;
-            String itemLine = "";
+            String itemLine;
             while ((itemLine = itemReader.readLine()) != null) {
                 FMItems.add(itemLine);
             }
@@ -444,7 +430,7 @@ public class Buyer {
 
 
             // Add existing items to ArrayList;
-            String line = "";
+            String line;
             while ((line = cartReader.readLine()) != null) {
                 if (line.split(",")[0].equals(email)) {
                     currentCartCSVInfo = line.split(",")[5];
@@ -483,85 +469,30 @@ public class Buyer {
     //TODONATHAN
     public void removeItemFromCart(int userChoice) {
         try {
-            String cartRemove = cart.get(userChoice - 1);
             cart.remove(userChoice - 1);
-            if (cart.size() == 0) {
-                cart.add("x");
-            }
-
-            File file = new File("FMCredentials.csv");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            ArrayList<String> storedCSVData = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                storedCSVData.add(line);
-            }
-            reader.close();
-
-            ArrayList<String> output = new ArrayList<>();
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
             PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
 
-            int counter = -1;
-            for (int i = 0; i < storedCSVData.size(); i++) {
-                String[] splitLine = storedCSVData.get(i).split(",");
-                if (!email.equals(splitLine[0])) {
-                        output.add(storedCSVData.get(i));
+            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
+            if (purchaseHistory.isEmpty()) {
+                pw.print(",");
+            }
+            for (int i = 0; i < purchaseHistory.size(); i++) {
+                if (i + 1 == purchaseHistory.size()) {
+                    pw.print(purchaseHistory.get(i) + ",");
                 } else {
-                    String[] cart = splitLine[5].split("~");
-                    String currentCart = "";
-                    for (int j = 0; j < cart.length; j++) {
-                        if (!cart[j].equals(cartRemove)) {
-                            counter++;
-                            if (counter == 0) {
-                                currentCart = currentCart + cart[j];
-                            } else {
-                                currentCart = currentCart + "~" + cart[j];
-                            }
-                        }
-                    }
-                    if (currentCart.equals("")) {
-                        currentCart = "x";
-                    }
-                    String addLine = splitLine[0] + "," + splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4] + "," + currentCart;
-
-                    output.add(addLine);
-                    int quantityToAdd = Integer.parseInt(cartRemove.split("!")[3]);
-                    String itemName = cartRemove.split("!")[1];
-
-
-                    try {
-                        BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
-                        ArrayList<String> FMItems = new ArrayList<>();
-
-                        // Add existing items to ArrayList;
-                        String itemLine = "";
-                        while ((itemLine = itemReader.readLine()) != null) {
-                            FMItems.add(itemLine);
-                        }
-                        itemReader.close();
-
-                        PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
-
-                        for (int j = 0; j < FMItems.size(); j++) {
-                            if (FMItems.get(j).contains(itemName)) {
-                                String changeLine = FMItems.get(j);
-                                String[] splitLine2 = changeLine.split(",");
-                                int quantity = Integer.parseInt(changeLine.split(",")[3]);
-                                quantity = quantity + quantityToAdd;
-                                pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2], quantity, splitLine2[4]);
-                            } else {
-                                pwTwo.println(FMItems.get(j));
-                            }
-                        }
-                        pwTwo.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    pw.print(purchaseHistory.get(i) + "~");
                 }
             }
-
-            for (int i = 0; i < output.size(); i++) {
-                pw.println(output.get(i));
+            for (int i = 0; i < cart.size(); i++) {
+                if (i + 1 == cart.size()) {
+                    pw.println(cart.get(i));
+                } else {
+                    pw.print(cart.get(i) + "~");
+                }
+            }
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
             }
             pw.close();
         } catch (Exception e) {
@@ -628,7 +559,7 @@ public class Buyer {
                                 ArrayList<String> FMItems = new ArrayList<>();
 
                                 // Add existing items to ArrayList;
-                                String itemLine = "";
+                                String itemLine;
                                 while ((itemLine = itemReader.readLine()) != null) {
                                     FMItems.add(itemLine);
                                 }
