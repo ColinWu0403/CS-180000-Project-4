@@ -1053,7 +1053,27 @@ public class FurnitureMarketplace {
                 }
             }
             case "2" -> {                                               //View Sales List
-
+                Store[] currentUserStores = currentUser.getStore();
+                ArrayList<String> numberOptions = new ArrayList<>();
+                if (currentUserStores.length == 0) {
+                    System.out.println("Error: You have no stores");
+                    break;
+                }
+                for (int i = 0; i < currentUserStores.length; i++) {
+                    numberOptions.add(Integer.toString((i + 1)));
+                    System.out.println("(" + (i + 1) + ") " + currentUserStores[i].getStoreName());
+                }
+                System.out.println("Which store's sale history would you like to view?");
+                String[] manageCatalogueOptions = new String[numberOptions.size()];
+                for (int i = 0; i < numberOptions.size(); i++) {
+                    manageCatalogueOptions[i] = numberOptions.get(i);
+                }
+                String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                ArrayList<String> sales = currentUserStores[Integer.parseInt(manageCatalogueResponse) - 1].showSales();
+                for (int i = 0; i < sales.size(); i++) {
+                    String[] saleInfo = sales.get(i).split("!");
+                    System.out.printf("%s bought %s of %s for %s each\n", saleInfo[0], saleInfo[2], saleInfo[1], saleInfo[3]);
+                }
             }
             case "3" -> {                                                //View Statistics Dashboard
 

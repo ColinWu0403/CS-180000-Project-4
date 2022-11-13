@@ -37,7 +37,10 @@ public class Store {
 
     public static void main(String[] args) {
         Store store = new Store("seller", "store");
-        saveSale("buyer", store.items.get(0), 5);
+        ArrayList<String> sales = store.showSales();
+        for (int i = 0; i < sales.size(); i++) {
+            System.out.println(sales.get(i));
+        }
     }
     public String getOwner() {
         return owner;
@@ -108,12 +111,12 @@ public class Store {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 // Detects if this is the store we need
-                if (splitLine[1].equals(item.getStore())) {
+                if (splitLine[0].equals(item.getStore())) {
                     // Creates sale section if it doesn't already exist, else adds new sale to end of sale section
                     if (splitLine.length == 2) {
-                        line += String.format(",%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
+                        line += String.format(",%s!%s!%d!%.2f", buyer, item.getName(), amountSold, item.getPrice());
                     } else {
-                        line += String.format("~%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
+                        line += String.format("~%s!%s!%d!%.2f", buyer, item.getName(), amountSold, item.getPrice());
                     }
                 }
                 storeFile.add(line);
