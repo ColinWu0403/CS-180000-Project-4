@@ -146,8 +146,12 @@ public class Store {
              File will have buyer statistics above item statistics, and this will make sure
              new buyers are printed at top of file
             */
-            if (!buyerFound) { statsFile.add(0, String.format("%s,%s,%s,buyer", item.getStore(), buyer, amountSold)); }
-            if (!itemFound) { statsFile.add(String.format("%s,%s,%s,item", item.getStore(), item.getName(), amountSold)); }
+            if (!buyerFound) {
+                statsFile.add(0, String.format("%s,%s,%s,buyer", item.getStore(), buyer, amountSold));
+            }
+            if (!itemFound) {
+                statsFile.add(String.format("%s,%s,%s,item", item.getStore(), item.getName(), amountSold));
+            }
             bfrTwo.close();
             // Print updated statistics back to the file
             PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStats.csv", false));
@@ -192,16 +196,18 @@ public class Store {
         return null;
     }
 
-    public static ArrayList<String> showStats() { // returns arraylist to be printed as stores statistics
+    public static ArrayList<String> showStats(String storeName, String type) { // returns arraylist to be printed as stores statistics
+        // type should be either buyer or item
         ArrayList<String> stats = new ArrayList<>();
         try {
             // Read csv file, if line has correct store name, add to array list
             BufferedReader statsReader = new BufferedReader(new FileReader("FMStats.csv"));
             String line = statsReader.readLine();
             while (line != null) {
-//                if (line.substring(0, line.indexOf(",")).equals(storeName)) {
-                    stats.add(line);
-//                }
+                String[] splitLine = line.split(",");
+                 if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
+                    stats.add(splitLine[1] + "," + splitLine[2]);
+                 }
                 line = statsReader.readLine();
             }
             return stats;
