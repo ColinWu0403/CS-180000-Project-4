@@ -35,10 +35,10 @@ public class Store {
         }
     }
 
-    public static void main(String[] args) {
-        Store store = new Store("seller", "store");
-        saveSale("buyer", store.items.get(0), 5);
-    }
+//    public static void main(String[] args) {
+//        Store store = new Store("seller", "store");
+//        saveSale("buyer", store.items.get(0), 5);
+//    }
     public String getOwner() {
         return owner;
     }
@@ -91,13 +91,6 @@ public class Store {
         items.get(itemNumber - 1).printItemInfo();
     }
 
-    //    public static void main(String[] args) { // testing
-////        saveSale("JOhn DOe", new Item("John's Desks", "Cedar desk", "desk", 10, 299.99), 2);
-//        ArrayList<String> showStats = showStats();
-//        for (int i = 0; i < showStats.size(); i++) {
-//            System.out.println(showStats.get(i));
-//        }
-//    }
     // Method to save sale information for seller
     public static void saveSale(String buyer, Item item, int amountSold) {
         try {
