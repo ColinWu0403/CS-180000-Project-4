@@ -2,7 +2,9 @@
 
 ### Description
 This is a furniture reselling marketplace where users can buy and sell items. Users can create an account that is either a Buyer or Seller with their information saved between sessions. To access their account after creation, users just have to log into their account by inputting the correct credentials. 
+
 For buyers, the Buyer Dashboard shows a marketplace listing page shows the store, product name, and price of the available goods. Buyers also have many options like adding items to shopping cart, purchasing items, and editing account information. More information is below.
+
 For sellers, the Seller Dashboard show different options including creating and managing stores, viewing customer and sale information, and other functions. More information is below.
 
 # How to run project
@@ -296,3 +298,15 @@ public static void saveSale(String buyer, Item item, int amountSold)
 - @param item : Item object to be accessed
 - @param amountSold : Amount sold to be written
 
+public ArrayList<String> showSales()
+- Returns an ArrayList to be printed as the store's sale history
+
+public static ArrayList<String> showStats(String storeName, String type)
+- Returns arraylist to be printed as store's statistics
+- @param storeName : Name of store to search for
+- @param type : Type of statistic to show 
+  
+public static ArrayList<String> sortShowedStats(String storeName, String type)
+- Returns arraylist to be printed as store's statistics sorted by amount from most to least
+- @param storeName : Name of store to search for
+- @param type : Type of statistic to show 
