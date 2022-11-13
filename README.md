@@ -13,22 +13,13 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 > (3) Exit
 ### Step 3 - Main Dashboard
 - If the account type is a Buyer, the Buyer Dashboard is shown with available options and all available items displayed to purchase.
-> Sample Dashboard
+Sample Dashboard
 
 ![Buyer Dashboard](https://github.com/ColinWu0403/CS-180000-Project-4/blob/main/images/Buyer%20Dashboard.png "Buyer Dashboard")
 
 - If the account type is a Seller, the Seller dasboard is shown will all available items 
-> (1) Manage Stores
-
-> (2) Sales List
-
-> (3) Statistics Dashboard
-
-> (4) View Current Carts
-
-> (5) Manage Account
-
-> (6) Sign out
+Sample Dashboard
+![Seller Dashboard](https://github.com/ColinWu0403/CS-180000-Project-4/blob/main/images/Seller%20Dashboard.png "Seller Dashboard")
 
 ### Additional features
 #### Files
@@ -64,6 +55,10 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 ## Class Information
 ### FurnitureMarketplace.java (Main marketplace)
 - Main marketplace where buyers and sellers can buy items, list items to sell, and access important information for their accounts.
+- Contains dashboards for Buyer and Seller account types
+#### Methods
+> public static Object createAccount(Scanner scanner)
+> - Creates an account that is appended to FMCredentials.csv and returns either a Buyer or Seller object
 ### Seller.java
 - Contains all methods sellers may use
 ### Buyer.java
