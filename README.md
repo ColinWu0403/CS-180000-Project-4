@@ -70,7 +70,8 @@ Sample Dashboard
 # Project Members & Roles Contributed
 ### Colin Wu
 - Buyers class
-- FurnitureMarketplace class : (1) Select Product, (2) View Cart (Only printing), (4) Review Purchase History, and (6) View Statistics
+- FurnitureMarketplace class : Buyers options -> (1) Select Product, (2) View Cart (Only printing), (4) Review Purchase History, and (6) View Statistics
+- FurnitureMarketplace class : Seller options -> (4) View Current Carts
 - Statistics methods in Buyers
 - Showing purchase history in Buyers
 ### Andrei Deaconescu
@@ -81,15 +82,19 @@ Sample Dashboard
 ### Dakota Baldwin
 - Store class
 - Item class
+- FurnitureMarketplace class : Seller options -> (3) Statistics Dashboard, (5) Manage Account
 - Statistics methods in Sellers
 ### Benjamin Herrington
 - User Class
-- FurnitureMarketplace class : (2) View Cart
+- FurnitureMarketplace class : Buyer options -> (2) View Cart
 - CSV file formatting guide
 - Buyer and Seller flowcharts
 ### Nathan Schneider
-- FurnitureMarketplace class : Most of the Buyer and Seller dashboard formatting, 
-- Main marketplace interface
+- FurnitureMarketplace class : Main Buyer dashboard and Seller dashboard, Seller options -> (1) Manage Stores, (2) Sales List, (5) Manage Account
+- Adding products in Buyers
+- Purchasing products in Buyers
+- Main method for the marketplace interface in FurnitureMarketplace
+- Oversaw most pull requests to GitHub
 
 # Class Information
 ## FurnitureMarketplace.java (Main marketplace)
