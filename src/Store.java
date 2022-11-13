@@ -93,8 +93,12 @@ public class Store {
 //        }
 //    }
     // Method to save sale information for seller
-    public static boolean saveSale(String buyer, Item item, int amountSold) {
+    public boolean saveSale(String buyer, Item item, int amountSold) { // Executes sale for store, returns true if successful
         try {
+            // Reduce quantity of item by amount bought
+            boolean successful = item.changeField("quantity", Integer.toString(item.getQuantity() - amountSold));
+            // Only go on if enough items were available to be purchased
+            if (!successful) { return false; }
             // Read FMStores to find the correct store to add sale information to
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMStores.csv"));
             String line = bfrOne.readLine();
@@ -114,7 +118,6 @@ public class Store {
                 line = bfrOne.readLine();
             }
             bfrOne.close();
-
             // Prints FMStores file with added sale
             PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMStores.csv", false));
             for (int i = 0; i < storeFile.size(); i++) {
@@ -146,8 +149,12 @@ public class Store {
              File will have buyer statistics above item statistics, and this will make sure
              new buyers are printed at top of file
             */
-            if (!buyerFound) { statsFile.add(0, String.format("%s,%s,%s,buyer", item.getStore(), buyer, amountSold)); }
-            if (!itemFound) { statsFile.add(String.format("%s,%s,%s,item", item.getStore(), item.getName(), amountSold)); }
+            if (!buyerFound) {
+                statsFile.add(0, String.format("%s,%s,%s,buyer", item.getStore(), buyer, amountSold));
+            }
+            if (!itemFound) {
+                statsFile.add(String.format("%s,%s,%s,item", item.getStore(), item.getName(), amountSold));
+            }
             bfrTwo.close();
             // Print updated statistics back to the file
             PrintWriter pwTwo = new PrintWriter(new FileOutputStream("FMStats.csv", false));
@@ -158,7 +165,7 @@ public class Store {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 
     // Method to print sale history of a store for seller
@@ -192,16 +199,18 @@ public class Store {
         return null;
     }
 
-    public static ArrayList<String> showStats() { // returns arraylist to be printed as stores statistics
+    public static ArrayList<String> showStats(String storeName, String type) { // returns arraylist to be printed as stores statistics
+        // type should be either buyer or item
         ArrayList<String> stats = new ArrayList<>();
         try {
             // Read csv file, if line has correct store name, add to array list
             BufferedReader statsReader = new BufferedReader(new FileReader("FMStats.csv"));
             String line = statsReader.readLine();
             while (line != null) {
-//                if (line.substring(0, line.indexOf(",")).equals(storeName)) {
-                    stats.add(line);
-//                }
+                String[] splitLine = line.split(",");
+                 if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
+                    stats.add(splitLine[1] + "," + splitLine[2]);
+                 }
                 line = statsReader.readLine();
             }
             return stats;
