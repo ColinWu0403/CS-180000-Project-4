@@ -72,23 +72,23 @@ Sample Dashboard
 
 # Project Members & Roles Contributed
 ### Colin Wu
-- Buyers class
+- Buyer class : Created class & many of the early structure
 - FurnitureMarketplace class : Buyers options -> (1) Select Product, (2) View Cart (Only printing), (4) Review Purchase History, and (6) View Statistics
 - FurnitureMarketplace class : Seller options -> (4) View Current Carts
 - Statistics methods in Buyers
 - Showing purchase history in Buyers
 ### Andrei Deaconescu
-- Sellers class
+- Seller class : Created class & many of the early structure
 - ItemTest class
 - StoreTest class
 - SellerTest class 
 ### Dakota Baldwin
-- Store class
-- Item class
+- Store class : Created class & many of the early structure
+- Item class : Created class & many of the early structure
 - FurnitureMarketplace class : Seller options -> (3) Statistics Dashboard, (5) Manage Account
 - Statistics methods in Sellers
 ### Benjamin Herrington
-- User Class
+- User Class : Created user interface
 - FurnitureMarketplace class : Buyer options -> (2) View Cart
 - CSV file formatting guide
 - Buyer and Seller flowcharts
