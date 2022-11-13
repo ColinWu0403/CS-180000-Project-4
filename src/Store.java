@@ -35,7 +35,10 @@ public class Store {
         }
     }
 
-
+    public static void main(String[] args) {
+        Store store = new Store("seller", "store");
+        saveSale("buyer", store.items.get(0), 5);
+    }
     public String getOwner() {
         return owner;
     }
@@ -96,7 +99,7 @@ public class Store {
 //        }
 //    }
     // Method to save sale information for seller
-    public static boolean saveSale(String buyer, Item item, int amountSold) {
+    public static void saveSale(String buyer, Item item, int amountSold) {
         try {
             // Read FMStores to find the correct store to add sale information to
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMStores.csv"));
@@ -108,7 +111,7 @@ public class Store {
                 if (splitLine[1].equals(item.getStore())) {
                     // Creates sale section if it doesn't already exist, else adds new sale to end of sale section
                     if (splitLine.length == 2) {
-                        line = String.format(",%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
+                        line += String.format(",%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
                     } else {
                         line += String.format("~%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
                     }
@@ -165,7 +168,6 @@ public class Store {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     // Method to print sale history of a store for seller
