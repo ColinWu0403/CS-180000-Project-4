@@ -216,4 +216,24 @@ public class Store {
         }
         return null;
     }
+    
+    public static ArrayList<String> showSortedStats(String storeName, String type) {
+        ArrayList<String> unsorted = showStats(storeName, type);
+        ArrayList<Integer> amounts = new ArrayList<>();
+        ArrayList<String> sorted = new ArrayList<>();
+        for (int i = 0; i < unsorted.size(); i++) {
+            amounts.add(Integer.parseInt(unsorted.get(i).substring(unsorted.get(i).indexOf(",") + 1)));
+        }
+        amounts.sort(Collections.reverseOrder());
+        for (int i = 0; i < amounts.size(); i++) {
+            for (int j = 0; j < unsorted.size(); j++) {
+                if (amounts.get(i) == Integer.parseInt(unsorted.get(j).split(",")[1])) {
+                    sorted.add(unsorted.get(j));
+                    unsorted.remove(j);
+                    break;
+                }
+            }
+        }
+        return sorted;
+    }
 }
