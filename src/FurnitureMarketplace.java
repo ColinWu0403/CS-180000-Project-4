@@ -1185,6 +1185,7 @@ public class FurnitureMarketplace {
             }
             case "4" -> {                                                //View Current Carts
                 Seller.viewCustomerShoppingCart();
+                System.out.println();
             }
             case "5" -> {                                                //Manage Account
                 boolean continueManageAccount = true;
