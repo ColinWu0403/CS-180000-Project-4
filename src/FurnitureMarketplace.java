@@ -422,6 +422,7 @@ public class FurnitureMarketplace {
                 e.printStackTrace();
             }
         }
+        System.out.println("Store created!");
         return storeName;
     }
 
@@ -447,7 +448,7 @@ public class FurnitureMarketplace {
                             String description = itemStrSplit[2];
                             String quantityAvailable = itemStrSplit[3];
                             String price = itemStrSplit[4];
-                            System.out.println("Item information:");
+                            System.out.println("\tItem information:");
                             System.out.printf("Store Name: %s\nItem Name: %s\nDescription: %s\nQuantity Available: %s\nPrice: $%s\n",
                                     storeName, itemName, description, quantityAvailable, price);
 
@@ -485,48 +486,54 @@ public class FurnitureMarketplace {
                 if (currentUser.getCart().get(0).equals("x")) {
                     System.out.println("Cart Empty");
                 } else {
-                        System.out.println("Cart: ");
-                        System.out.println(currentUser.printCart());
-                        System.out.printf("""
-                                \t\tManage Cart
-                                (1) Checkout
-                                (2) Remove Item
-                                (3) Return
-                                """);
-                        String[] inputOptions = {"1", "2", "3"};
-                        String userResponse = validUserResponse(scanner, inputOptions);
+                    System.out.println("Cart: ");
+                    System.out.println(currentUser.printCart());
+                    System.out.printf("""
+                            \t\tManage Cart
+                            (1) Checkout
+                            (2) Remove Item
+                            (3) Return
+                            """);
+                    String[] inputOptions = {"1", "2", "3"};
+                    String userResponse = validUserResponse(scanner, inputOptions);
 
-                        switch (userResponse) {
-                            case "1": // 2-1 DONE
-                                currentUser.checkout();
-                                ArrayList<String> temp = new ArrayList<>();
-                                temp.add("x");
-                                currentUser.setCart(temp);
+                    switch (userResponse) {
+                        case "1": // 2-1 DONE
+                            currentUser.checkout();
+                            //save sales
+                            for (int i = 0; i < currentUser.getCart().size(); i++) {
+                                String[] splitLine = currentUser.getCart().get(i).split("!");
+                                Item saleItem = new Item(splitLine[0], splitLine[1], splitLine[2], Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
+                                Store.saveSale(currentUser.getEmail(), saleItem, Integer.parseInt(splitLine[3]));
+                            }
+                            ArrayList<String> temp = new ArrayList<>();
+                            temp.add("x");
+                            currentUser.setCart(temp);
 
-                                System.out.println("Checkout Successful!");
+                            System.out.println("Checkout Successful!");
 
-                                break;
-                            case "2":
-                                System.out.println("Input the number of the item you would like to remove: ");
-                                ArrayList<String> removeCartInputOptions = new ArrayList<>();
+                            break;
+                        case "2":
+                            System.out.println("Input the number of the item you would like to remove: ");
+                            ArrayList<String> removeCartInputOptions = new ArrayList<>();
 
-                                for (int i = 0; i < currentUser.getCart().size(); i++) {
-                                    removeCartInputOptions.add(Integer.toString(i + 1));
-                                }
-                                String[] cartInputOptions = new String[removeCartInputOptions.size()];
-                                for (int i = 0; i < removeCartInputOptions.size(); i++) {
-                                    cartInputOptions[i] = removeCartInputOptions.get(i);
-                                }
-                                String deleteCartResponse = validUserResponse(scanner, cartInputOptions);
-                                currentUser.removeItemFromCart(Integer.parseInt(deleteCartResponse));
-                                System.out.println("Item removed successfully");
-                                break;
-                            case "3":
+                            for (int i = 0; i < currentUser.getCart().size(); i++) {
+                                removeCartInputOptions.add(Integer.toString(i + 1));
+                            }
+                            String[] cartInputOptions = new String[removeCartInputOptions.size()];
+                            for (int i = 0; i < removeCartInputOptions.size(); i++) {
+                                cartInputOptions[i] = removeCartInputOptions.get(i);
+                            }
+                            String deleteCartResponse = validUserResponse(scanner, cartInputOptions);
+                            currentUser.removeItemFromCart(Integer.parseInt(deleteCartResponse));
+                            System.out.println("Item removed successfully");
+                            break;
+                        case "3":
 
-                                break;
-                        }
+                            break;
                     }
                 }
+            }
             case "3" -> {
                 //Search items by name, store, description, sort Quantity/Price
                 System.out.print("""
@@ -659,7 +666,7 @@ public class FurnitureMarketplace {
 
                 if (purchaseOption.equals("1")) {
                     try {
-                        System.out.println("Purchase History:"); // review Purchase History
+                        System.out.println("\t\tPurchase History:"); // review Purchase History
                         ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
                         ArrayList<String> purchaseHistoryOutput = new ArrayList<>();
 
@@ -668,9 +675,12 @@ public class FurnitureMarketplace {
                                 String[] splitLine = purchaseHistory.get(i).split("!");
                                 double totalCost = Double.parseDouble(splitLine[3]) * Double.parseDouble(splitLine[4]);
 
-                                System.out.printf("(%d) Store bought from:%s Item bought:%s Description:%s " +
-                                        "Quantity bought=%s Total Cost=$%.2f\n", i + 1, splitLine[0],splitLine[1],
-                                        splitLine[2], splitLine[3], totalCost);
+                                System.out.printf("(%d)%-2sStore: %s\n" +
+                                                "%-5sItem bought: %s\n" +
+                                                "%-5sDescription: %s\n" +
+                                                "%-5sQuantity bought = %s\n" +
+                                                "%-5sTotal Cost = $%.2f\n", i + 1, "", splitLine[0], "", splitLine[1], "",
+                                        splitLine[2], "", splitLine[3], "", totalCost);
                             }
                         } else {
                             System.out.println("Error: This account has no purchases");
@@ -689,7 +699,7 @@ public class FurnitureMarketplace {
                         (2) Change Password
                         (3) Delete Account
                         (4) Return""");
-                String[] validInputs = {"1", "2", "3","4"};
+                String[] validInputs = {"1", "2", "3", "4"};
                 String response = validUserResponse(scanner, validInputs);
 
                 switch (response) {
@@ -1066,10 +1076,18 @@ public class FurnitureMarketplace {
                     manageCatalogueOptions[i] = numberOptions.get(i);
                 }
                 String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse) - 1];
                 ArrayList<String> sales = currentUserStores[Integer.parseInt(manageCatalogueResponse) - 1].showSales();
-                for (int i = 0; i < sales.size(); i++) {
-                    String[] saleInfo = sales.get(i).split("!");
-                    System.out.printf("%s bought %s of %s for %s each\n", saleInfo[0], saleInfo[2], saleInfo[1], saleInfo[3]);
+                if (sales == null) {
+                    System.out.println("Error: This store has no sale history");
+                } else {
+                    System.out.println("\tSale History for " + currentStore.getStoreName());
+                    for (int i = 0; i < sales.size(); i++) {
+                        String[] saleInfo = sales.get(i).split("!");
+                        System.out.printf("%-25s  %-25s  %-25s  %-25s\n",
+                                "Customer:" + saleInfo[0], "Product:" + saleInfo[1], "Quantity bought:" + saleInfo[2],
+                                "Price bought at:" + saleInfo[3]);
+                    }
                 }
                 System.out.println();
             }
@@ -1103,7 +1121,11 @@ public class FurnitureMarketplace {
                 } else stats = Store.showStats(currentStore.getStoreName(), buyerOrItem);
                 for (int i = 0; i < stats.size(); i++) {
                     String[] splitLine = stats.get(i).split(",");
-                    System.out.println(splitLine[0] + ": " + splitLine[1]);
+                    if (buyerOrItem.equals("buyer")) {
+                        System.out.printf("%-20s %-20s\n", "Customer: " + splitLine[0], "Items Purchased = " + splitLine[1]);
+                    } else {
+                        System.out.printf("%-25s %-25s\n", "Itemname: " + splitLine[0], "Number of Sales = " + splitLine[1]);
+                    }
                 }
             }
             case "4" -> {                                                //View Current Carts

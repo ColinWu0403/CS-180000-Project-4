@@ -86,6 +86,7 @@ public class Seller implements User {
     }
 
     public void deleteStore(Store currentStore) {
+        stores.remove(currentStore);
         String line;
         StringBuilder storesFile = new StringBuilder();
         StringBuilder itemsFile = new StringBuilder();
@@ -388,20 +389,20 @@ public class Seller implements User {
                 for (int i = 0; i < stores.length; i++) {
                     // Tests against all store names until one works
                     if (splitLine[0].equals(stores[i].getStoreName())) {
-                        counter ++;
+                        counter++;
                         try {
                             stores[i].addItem(splitLine[1], splitLine[2],
                                     Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
-                            numberSuccess ++;
+                            numberSuccess++;
                             break;
                         } catch (Exception e) {
                             // If item is formatted incorrectly, adds to counter
-                            numberIncorrectFormat ++;
+                            numberIncorrectFormat++;
                         }
                     }
                 }
                 if (counter == 0) {
-                    numberIncorrectFormat ++;
+                    numberIncorrectFormat++;
                 }
             }
             return numberSuccess;
