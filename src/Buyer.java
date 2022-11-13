@@ -156,7 +156,7 @@ public class Buyer {
         return null;
     }
 
-        // returns Arraylist of stores by the products purchased by that particular customer.
+    // returns Arraylist of stores by the products purchased by that particular customer.
     public ArrayList<String> storesFromBuyerProducts(String buyerEmail) {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
