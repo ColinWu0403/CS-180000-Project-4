@@ -1,7 +1,9 @@
 # CS 18000 GLD Project 4 - Furniture Marketplace
 
 ### Description
-This is a furniture reselling marketplace where users can buy and sell items. The marketplace listing page shows the store, product name, and price of the available goods. Customers can select a specific product to be taken to that product's page, which will include a description and the quantity available. 
+This is a furniture reselling marketplace where users can buy and sell items. Users can create an account that is either a Buyer or Seller with their information saved between sessions. To access their account after creation, users just have to log into their account by inputting the correct credentials. 
+For buyers, the Buyer Dashboard shows a marketplace listing page shows the store, product name, and price of the available goods. Buyers also have many options like adding items to shopping cart, purchasing items, and editing account information. More information is below.
+For sellers, the Seller Dashboard show different options including creating and managing stores, viewing customer and sale information, and other functions. More information is below.
 
 # How to run project
 ## Step 1 - Run FurnitureMarketplace.java
