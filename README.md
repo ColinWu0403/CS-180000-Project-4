@@ -13,14 +13,15 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 > (3) Exit
 ### Step 3 - Main Dashboard
 - If the account type is a Buyer, the Buyer Dashboard is shown with available options and all available items displayed to purchase.
->         Select Option              Furniture Dashboard
-> (1) Select Product             ||  (0) Store: Ikea :Product: awesome chair :Price: $39.99 :Quantity: 5 :Description: the best chair your rear has ever neared!
-> (2) View Cart                  ||  (1) Store: Jack's Whiskey Shelves :Product: Whiskey Shelf :Price: $159.99 :Quantity: 40 :Description: Shelf to store whiskey
-> (3) Search                     ||  (2) Store: Cool Tables :Product: Ufo-table :Price: $499.99 :Quantity: 2 :Description: ufo shaped table
-> (4) Review Purchase History    ||
-> (5) Manage Account             ||  
-> (6) View Statistics            ||  
-> (7) Sign Out                   ||  
+|         Select Option           |   Furniture Dashboard|
+| ------------- |:-------------:| -----:|
+| (1) Select Product             ||  (0) Store: Ikea :Product: awesome chair :Price: $39.99 :Quantity: 5 :Description: the best chair your rear has ever neared!|
+| (2) View Cart                  ||  (1) Store: Jack's Whiskey Shelves :Product: Whiskey Shelf :Price: $159.99 :Quantity: 40 :Description: Shelf to store whiskey|
+| (3) Search                     ||  (2) Store: Cool Tables :Product: Ufo-table :Price: $499.99 :Quantity: 2 :Description: ufo shaped table|
+| (4) Review Purchase History    ||  |
+| (5) Manage Account             ||  |
+| (6) View Statistics            ||  |
+| (7) Sign Out                   ||  |
 - If the account type is a Seller, the Seller dasboard is shown will all available items 
 > (1) Manage Stores
 > (2) Sales List
