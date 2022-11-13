@@ -59,36 +59,36 @@ Sample Dashboard
 - Main marketplace where buyers and sellers can buy items, list items to sell, and access important information for their accounts.
 - Contains dashboards for Buyer and Seller account types
 #### Important methods
-> public static Object createAccount(Scanner scanner)
+public static Object createAccount(Scanner scanner)
 > - Creates an account that is appended to FMCredentials.csv and returns either a Buyer or Seller object
 > - @param scanner : takes scanner input
 
-> public static Object signInAccount(Scanner scanner)
+public static Object signInAccount(Scanner scanner)
 > - Checks if the user has an account with the email and password and returns that Buyer or Seller object
 > - @param scanner : takes scanner input
 
-> public static String checkExistingCredentials(String email, String usernameOrPassword, String purpose)
+public static String checkExistingCredentials(String email, String usernameOrPassword, String purpose)
 > - Returns a string to tell whether the user's inputted username or email already exists
 > - @param String email : string with the user inputted email
 > - @param String username : string with the user inputted username
 > - @param String purpose : contains a string with "newAccount" or "signIn"
 
-> public static String validItemName(Scanner scanner)
+public static String validItemName(Scanner scanner)
 > - Check if item already exists in FMItems.csv; returns the inputted string name
 > - @param scanner : takes scanner input
 
-> public static String validUserResponse(Scanner scanner, String[] inputOptions)
+public static String validUserResponse(Scanner scanner, String[] inputOptions)
 > - Returns the response from the user if it is a valid response.
 > - @param String[] inputOptions : possible options that can be accepted the by the user
 > - @param scanner : takes scanner input
 
-> public static Item[] createItemList()
+public static Item[] createItemList()
 > - Returns a list of Item objects to be accessed throughout the program.
 
-> public static ArrayList<String> createItemListString()
+public static ArrayList<String> createItemListString()
 > - Returns string ArrayList of Item to be accessed throughout the program.
 
-> public static ArrayList<String> buyerDataArray(String userEmail, String cartOrHist)
+public static ArrayList<String> buyerDataArray(String userEmail, String cartOrHist)
 > - Returns user data from FMCredentials to be used in the Buyer constructor
 > - @param userEmail  User email to make sure you get the right user data
 > - @param cartOrHist If Cart, Cart list is returned. If Hist, Purchase History list is returned
