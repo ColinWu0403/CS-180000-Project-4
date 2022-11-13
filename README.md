@@ -18,11 +18,13 @@ For sellers, the Seller Dashboard show different options including creating and 
 
 ## Step 3 - Main Dashboard
 - If the account type is a Buyer, the Buyer Dashboard is shown with available options and all available items displayed to purchase.
+
 Sample Dashboard
 
 ![Buyer Dashboard](https://github.com/ColinWu0403/CS-180000-Project-4/blob/main/images/Buyer%20Dashboard.png "Buyer Dashboard")
 
 - If the account type is a Seller, the Seller dasboard is shown will all available items 
+
 Sample Dashboard
 ![Seller Dashboard](https://github.com/ColinWu0403/CS-180000-Project-4/blob/main/images/Seller%20Dashboard.png "Seller Dashboard")
 
