@@ -485,8 +485,6 @@ public class FurnitureMarketplace {
                 if (currentUser.getCart().get(0).equals("x")) {
                     System.out.println("Cart Empty");
                 } else {
-                    boolean checkoutLoop = true;
-                    while (checkoutLoop) {
                         System.out.println("Cart: ");
                         System.out.println(currentUser.printCart());
                         System.out.printf("""
@@ -506,7 +504,7 @@ public class FurnitureMarketplace {
                                 currentUser.setCart(temp);
 
                                 System.out.println("Checkout Successful!");
-                                checkoutLoop = false;
+
                                 break;
                             case "2":
                                 System.out.println("Input the number of the item you would like to remove: ");
@@ -524,12 +522,11 @@ public class FurnitureMarketplace {
                                 System.out.println("Item removed successfully");
                                 break;
                             case "3":
-                                checkoutLoop = false;
+
                                 break;
                         }
                     }
                 }
-            }
             case "3" -> {
                 //Search items by name, store, description, sort Quantity/Price
                 System.out.print("""

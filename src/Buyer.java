@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -482,30 +483,85 @@ public class Buyer {
     //TODONATHAN
     public void removeItemFromCart(int userChoice) {
         try {
+            String cartRemove = cart.get(userChoice - 1);
             cart.remove(userChoice - 1);
-            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            if (cart.size() == 0) {
+                cart.add("x");
+            }
+
+            File file = new File("FMCredentials.csv");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            ArrayList<String> storedCSVData = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                storedCSVData.add(line);
+            }
+            reader.close();
+
+            ArrayList<String> output = new ArrayList<>();
             PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
 
-            pw.print(getEmail() + "," + getName() + "," + getPassword() + ",buyer,");
-            if (purchaseHistory.isEmpty()) {
-                pw.print(",");
-            }
-            for (int i = 0; i < purchaseHistory.size(); i++) {
-                if (i + 1 == purchaseHistory.size()) {
-                    pw.print(purchaseHistory.get(i) + ",");
-                } else {
-                    pw.print(purchaseHistory.get(i) + "~");
-                }
-            }
-            for (int i = 0; i < cart.size(); i++) {
-                if (i + 1 == cart.size()) {
-                    pw.println(cart.get(i));
-                } else {
-                    pw.print(cart.get(i) + "~");
-                }
-            }
+            int counter = -1;
             for (int i = 0; i < storedCSVData.size(); i++) {
-                pw.println(storedCSVData.get(i));
+                String[] splitLine = storedCSVData.get(i).split(",");
+                if (!email.equals(splitLine[0])) {
+                        output.add(storedCSVData.get(i));
+                } else {
+                    String[] cart = splitLine[5].split("~");
+                    String currentCart = "";
+                    for (int j = 0; j < cart.length; j++) {
+                        if (!cart[j].equals(cartRemove)) {
+                            counter++;
+                            if (counter == 0) {
+                                currentCart = currentCart + cart[j];
+                            } else {
+                                currentCart = currentCart + "~" + cart[j];
+                            }
+                        }
+                    }
+                    if (currentCart.equals("")) {
+                        currentCart = "x";
+                    }
+                    String addLine = splitLine[0] + "," + splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4] + "," + currentCart;
+
+                    output.add(addLine);
+                    int quantityToAdd = Integer.parseInt(cartRemove.split("!")[3]);
+                    String itemName = cartRemove.split("!")[1];
+
+
+                    try {
+                        BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+                        ArrayList<String> FMItems = new ArrayList<>();
+
+                        // Add existing items to ArrayList;
+                        String itemLine = "";
+                        while ((itemLine = itemReader.readLine()) != null) {
+                            FMItems.add(itemLine);
+                        }
+                        itemReader.close();
+
+                        PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+                        for (int j = 0; j < FMItems.size(); j++) {
+                            if (FMItems.get(j).contains(itemName)) {
+                                String changeLine = FMItems.get(j);
+                                String[] splitLine2 = changeLine.split(",");
+                                int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                                quantity = quantity + quantityToAdd;
+                                pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2], quantity, splitLine2[4]);
+                            } else {
+                                pwTwo.println(FMItems.get(j));
+                            }
+                        }
+                        pwTwo.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            for (int i = 0; i < output.size(); i++) {
+                pw.println(output.get(i));
             }
             pw.close();
         } catch (Exception e) {
