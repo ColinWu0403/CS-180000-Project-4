@@ -14,6 +14,9 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 ### Step 3 - Main Dashboard
 - If the account type is a Buyer, the Buyer Dashboard is shown with available options and all available items displayed to purchase.
 > Sample Dashboard
+
+![Buyer Dashboard](images/Buyer Dashboard.png "Buyer Dashboard")
+
 - If the account type is a Seller, the Seller dasboard is shown will all available items 
 > (1) Manage Stores
 
