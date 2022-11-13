@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.io.*;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * A store class, contains pertinent information about the store
@@ -10,6 +11,7 @@ public class Store {
     private String owner;
     private String storeName;
     private ArrayList<Item> items;
+
     public Store(String owner, String storeName) {
         this.owner = owner;
         this.storeName = storeName;
@@ -33,6 +35,10 @@ public class Store {
         }
     }
 
+    public static void main(String[] args) {
+        Store store = new Store("seller", "store");
+        saveSale("buyer", store.items.get(0), 5);
+    }
     public String getOwner() {
         return owner;
     }
@@ -85,7 +91,7 @@ public class Store {
         items.get(itemNumber - 1).printItemInfo();
     }
 
-//    public static void main(String[] args) { // testing
+    //    public static void main(String[] args) { // testing
 ////        saveSale("JOhn DOe", new Item("John's Desks", "Cedar desk", "desk", 10, 299.99), 2);
 //        ArrayList<String> showStats = showStats();
 //        for (int i = 0; i < showStats.size(); i++) {
@@ -93,7 +99,7 @@ public class Store {
 //        }
 //    }
     // Method to save sale information for seller
-    public static boolean saveSale(String buyer, Item item, int amountSold) {
+    public static void saveSale(String buyer, Item item, int amountSold) {
         try {
             // Read FMStores to find the correct store to add sale information to
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMStores.csv"));
@@ -105,7 +111,7 @@ public class Store {
                 if (splitLine[1].equals(item.getStore())) {
                     // Creates sale section if it doesn't already exist, else adds new sale to end of sale section
                     if (splitLine.length == 2) {
-                        line = String.format(",%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
+                        line += String.format(",%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
                     } else {
                         line += String.format("~%s!%s!%d!%f", buyer, item.getName(), amountSold, item.getPrice());
                     }
@@ -162,7 +168,6 @@ public class Store {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     // Method to print sale history of a store for seller
@@ -186,7 +191,7 @@ public class Store {
                 if (FMStores.get(i).contains(storeName)) {
                     String[] strSplit = FMStores.get(i).split(",");
                     String saleHistoryStr = strSplit[2];
-                    String [] saleHistoryLine = saleHistoryStr.split("~");
+                    String[] saleHistoryLine = saleHistoryStr.split("~");
                     return new ArrayList<>(Arrays.asList(saleHistoryLine));
                 }
             }
@@ -205,9 +210,9 @@ public class Store {
             String line = statsReader.readLine();
             while (line != null) {
                 String[] splitLine = line.split(",");
-                 if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
+                if (splitLine[0].equals(storeName) && splitLine[3].equals(type)) {
                     stats.add(splitLine[1] + "," + splitLine[2]);
-                 }
+                }
                 line = statsReader.readLine();
             }
             return stats;
