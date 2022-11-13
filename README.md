@@ -9,7 +9,9 @@ This is a furniture reselling marketplace where users can buy and sell items. Th
 ### Step 2 - Account Login & Creation
 - Users will have an option to log in to an existing account or create a new account.
 > (1) Sign In
+
 > (2) Create an account
+
 > (3) Exit
 ### Step 3 - Main Dashboard
 - If the account type is a Buyer, the Buyer Dashboard is shown with available options and all available items displayed to purchase.
