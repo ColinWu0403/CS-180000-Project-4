@@ -364,13 +364,13 @@ public class FurnitureMarketplace {
      */
     public static void printBuyerDashboard(Item[] itemList) {
         String[] outputOptions = {"(1) Select Product", "(2) View Cart", "(3) Search",
-                "(4) Review Purchase History", "(5) Manage Account", "(6) Sign Out"};
+                "(4) Review Purchase History", "(5) Manage Account", "(6) View Statistics", "(7) Sign Out"};
 
         System.out.printf("\n%-8s Select Option %-12s Furniture Dashboard\n", "", "");
         int i = 0;
         while (true) {
             if (outputOptions.length <= itemList.length) {
-                if (i < 6) {
+                if (i < 7) {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
                     System.out.printf("(%d) ", i);
                     itemList[i].printItem();
@@ -386,7 +386,7 @@ public class FurnitureMarketplace {
                     System.out.printf("%-30s ||  ", outputOptions[i]);
                     System.out.printf("(%d) ", i);
                     itemList[i].printItem();
-                } else if (i < 6) {
+                } else if (i < 7) {
                     System.out.printf("%-30s ||  \n", outputOptions[i]);
                 } else {
                     break;
@@ -509,20 +509,20 @@ public class FurnitureMarketplace {
                                 checkoutLoop = false;
                                 break;
                             case "2":
-                                System.out.println("Input the number of the item you would like to remove");
-                                while (true) {
-                                    try {
-                                        int userInput = Integer.parseInt(scanner.nextLine());
-                                        if (userInput < 1 || userInput > currentUser.getCart().size()) {
-                                            System.out.println("Please input a valid integer");
-                                        } else {
-                                            currentUser.removeItemFromCart(userInput);
-                                            System.out.println("Item removed successfully");
-                                        }
-                                    } catch (NumberFormatException nfe) {
-                                        System.out.println("Please input an integer");
-                                    }
+                                System.out.println("Input the number of the item you would like to remove: ");
+                                ArrayList<String> removeCartInputOptions = new ArrayList<>();
+
+                                for (int i = 0; i < currentUser.getCart().size(); i++) {
+                                    removeCartInputOptions.add(Integer.toString(i + 1));
                                 }
+                                String[] cartInputOptions = new String[removeCartInputOptions.size()];
+                                for (int i = 0; i < removeCartInputOptions.size(); i++) {
+                                    cartInputOptions[i] = removeCartInputOptions.get(i);
+                                }
+                                String deleteCartResponse = validUserResponse(scanner, cartInputOptions);
+                                currentUser.removeItemFromCart(Integer.parseInt(deleteCartResponse));
+                                System.out.println("Item removed successfully");
+                                break;
                             case "3":
                                 checkoutLoop = false;
                                 break;
@@ -658,17 +658,25 @@ public class FurnitureMarketplace {
                 System.out.print("(1) View Purchase History\n(2) Export Purchase History\n");
                 String[] validInputs = {"1", "2"};
                 String purchaseOption = validUserResponse(scanner, validInputs);
+                //make sure hte formatting looks good and check if it is empty
 
                 if (purchaseOption.equals("1")) {
                     try {
                         System.out.println("Purchase History:"); // review Purchase History
-                        ArrayList<String> purchaseHistoryOutput = new ArrayList<>();
                         ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
+                        ArrayList<String> purchaseHistoryOutput = new ArrayList<>();
 
                         if (purchaseHistory != null) {
                             for (int i = 0; i < purchaseHistory.size(); i++) {
-                                System.out.printf("(%d) %s\n", i, purchaseHistory.get(i));
+                                String[] splitLine = purchaseHistory.get(i).split("!");
+                                double totalCost = Double.parseDouble(splitLine[3]) * Double.parseDouble(splitLine[4]);
+
+                                System.out.printf("(%d) Store bought from:%s Item bought:%s Description:%s " +
+                                        "Quantity bought=%s Total Cost=$%.2f\n", i + 1, splitLine[0],splitLine[1],
+                                        splitLine[2], splitLine[3], totalCost);
                             }
+                        } else {
+                            System.out.println("Error: This account has no purchases");
                         }
                     } catch (Exception e) {
                         System.out.println("Error: Purchase History does not exist");
@@ -682,8 +690,9 @@ public class FurnitureMarketplace {
                         \t\tManage Account
                         (1) Change Username
                         (2) Change Password
-                        (3) Return""");
-                String[] validInputs = {"1", "2", "3"};
+                        (3) Delete Account
+                        (4) Return""");
+                String[] validInputs = {"1", "2", "3","4"};
                 String response = validUserResponse(scanner, validInputs);
 
                 switch (response) {
@@ -734,7 +743,7 @@ public class FurnitureMarketplace {
                             System.out.println("Error: Account NOT updated");
                         }
                     }
-                    case "2" -> {
+                    case "2" -> {       //change password
                         System.out.println("Enter new password: ");
                         String newPassword = scanner.nextLine();
                         currentUser.setPassword(newPassword);
@@ -772,9 +781,21 @@ public class FurnitureMarketplace {
                             System.out.println("Error: Account NOT updated");
                         }
                     }
+                    case "3" -> {               //delete account
+                        currentUser.deleteAccount();
+                        System.out.println("Deleted Account");
+                        return "AccountDeleted";
+
+                    }
+                    case "4" -> {               //return
+
+                    }
                 }
             }
-            case "6" -> { // Sign Out
+            case "6" -> {                       // view statistics
+
+            }
+            case "7" -> {                   //// Sign Out
                 System.out.println("Signing Out!");
                 return "Sign out";
             }
@@ -840,9 +861,12 @@ public class FurnitureMarketplace {
                                         System.out.print("Enter item quantity: ");
                                         try {
                                             itemQuantity = scanner.nextLine();
-                                            Integer.parseInt(itemQuantity);
+                                            if (Integer.parseInt(itemQuantity) <= 0) {
+                                                throw new NumberFormatException();
+                                            }
+
                                         } catch (NumberFormatException e) {
-                                            System.out.println("Error: Please enter a number");
+                                            System.out.println("Error: Please enter a valid number");
                                             continue;
                                         }
                                         break;
@@ -853,7 +877,7 @@ public class FurnitureMarketplace {
                                         try {
                                             double doubleItemPrice = scanner.nextDouble();
                                             itemPrice = Double.toString(doubleItemPrice);
-                                            if ((doubleItemPrice * 100) % 1 != 0) {
+                                            if (((doubleItemPrice * 100) % 1 != 0) || (doubleItemPrice < 0)) {
                                                 throw new InputMismatchException();
                                             }
                                             scanner.nextLine();
@@ -916,7 +940,9 @@ public class FurnitureMarketplace {
                                                         System.out.print("Enter new item quantity: ");
                                                         try {
                                                             newItemQuantity = scanner.nextLine();
-                                                            Integer.parseInt(newItemQuantity);
+                                                            if (Integer.parseInt(newItemQuantity) <= 0) {
+                                                                throw new NumberFormatException();
+                                                            }
                                                         } catch (NumberFormatException e) {
                                                             System.out.println("Error: Please enter a number");
                                                             continue;
@@ -932,7 +958,7 @@ public class FurnitureMarketplace {
                                                         try {
                                                             double doubleItemPrice = scanner.nextDouble();
                                                             newItemPrice = Double.toString(doubleItemPrice);
-                                                            if ((doubleItemPrice * 100) % 1 != 0) {
+                                                            if (((doubleItemPrice * 100) % 1 != 0) || (doubleItemPrice < 0)) {
                                                                 throw new InputMismatchException();
                                                             }
                                                             scanner.nextLine();
@@ -1158,7 +1184,7 @@ public class FurnitureMarketplace {
                     }
                 }
             }
-            case "6" -> {                                                       //Sign out
+            case "6" -> {
                 System.out.println("Signing Out!");
                 return "Sign out";
             }
