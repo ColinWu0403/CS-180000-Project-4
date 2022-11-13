@@ -66,21 +66,25 @@ Sample Dashboard
 # Project Members & Roles Contributed
 ### Colin Wu
 - Buyers class
-- Statistics (Buyers)
-- Shopping Cart
+- FurnitureMarketplace class : (1) Select Product, (2) View Cart (Only printing), (4) Review Purchase History, and (6) View Statistics
+- Statistics methods in Buyers
+- Showing purchase history in Buyers
 ### Andrei Deaconescu
 - Sellers class
-- Statistics (Sellers)
-- InvalidItem class
+- ItemTest class
+- StoreTest class
+- SellerTest class 
 ### Dakota Baldwin
 - Store class
 - Item class
+- Statistics methods in Sellers
 ### Benjamin Herrington
 - User Class
-- FurnitureMarketplace class
-- CSV file formatting guide, flowcharts
+- FurnitureMarketplace class : (2) View Cart
+- CSV file formatting guide
+- Buyer and Seller flowcharts
 ### Nathan Schneider
-- FurnitureMarketplace class
+- FurnitureMarketplace class : Most of the Buyer and Seller dashboard formatting, 
 - Main marketplace interface
 
 # Class Information
@@ -143,11 +147,150 @@ public static String sellerDashboardNavigation(Scanner scanner, String userChoic
   
 ## Seller.java
 - Contains all methods sellers may use
+
+### Important methods
+public Item publishItem(String item, String store) throws IOException
+- Returns new item to be created, writes the new item to FMItems.csv
+- @param item : Name of item to be written
+- @param store : Name of store to be written
+  
+public void createStore(Store store)
+- Adds new store object to Store arraylist, initializes store in FMStores.csv
+- @param store : Store object to be created
+
+public void deleteStore(Store currentStore)
+- Deletes store object from Store arraylist, removes store in FMStores.csv
+- @param store : Store object to be removed
+
+public void exportPublishedItems(String storeName)
+- Reads through FMItems.csv, writes all entries with specific store name to a new file
+- @param storeName : Name of store to be searched for
+
+public static void viewCustomerShoppingCart()
+- Prints customer shopping cart info for Sellers
+
+public void deleteAccount()
+- Deletes Seller account
+
+public int importItems(String fileName, Store[] stores)
+- Adds imported items to stores and returns number of incorrectly formatted items
+- @param fileName : Name of file to be imported
+- @param stores : Store[] object array to store to
+
 ## Buyer.java
 - Contains all methods buyers may use
+
+### Important Methods
+public static void exportPurchaseHistory(String email)
+- Creates a new file of purchase history
+- @param email : Email to search for when exporting
+
+public static ArrayList<String> showPurchaseHistory(String email)
+- Returns an ArrayList to be printed as the purchase history
+- @param email : Email to search for when adding to array list
+
+public static ArrayList<String> showItemsInCart(String email)
+- Returns an ArrayList of all the items in a buyer's cart
+- @param email : Email to search for when adding to array list
+
+public ArrayList<String> storesFromBuyerProducts(String email)
+- Returns Arraylist of stores by the products purchased by that particular customer
+- @param email : Email to search for when adding to array list
+  
+public ArrayList<String> sortStoresFromBuyerProducts(String email)
+- Returns Arraylist of stores by the products purchased by that particular customer sorted by products sold.
+- @param email : Email to search for when adding to array list
+  
+public ArrayList<String> storesFromProductsSold()
+- Returns ArrayList of stores by number of products sold
+- @param email : Email to search for when adding to array list
+  
+public ArrayList<String> sortStoresProductsSold()
+- Returns sorted ArrayList of stores by number of products sold from most to least
+- @param email : Email to search for when adding to array list
+  
+public void addItem(String itemToAdd, String itemName, int quantityToPurchase)
+- Adds item to shopping cart
+- @param itemToAdd : Other information of item to add
+- @param itemName : Name of item to add
+- @param quantityToPurchase : Amount to purchase
+ 
+public String printCart()
+- Returns string of the cart
+  
+public void checkout()
+- Removes items from cart, adds them purchase history, and adds purchases to respective Store History
+  
+public void removeItemFromCart(int userChoice)
+- Removes an item from a user's cart.
+- @param userChoice : Number that the user selects in the main method.
+  
+public ArrayList<String> csvTemporaryStorage()
+- Reads all data that isn't related to the user from the Credentials file and stores it for easy rewriting; returns arraylist of temporary storage
+  
+public void deleteAccount()
+- Deletes Buyer account
+  
+public ArrayList<String> parseItem()
+- Reads through FMItems.csv and returns a String ArrayList of items
+  
+public ArrayList<String> parseStore()
+- Reads through FMStores.csv and returns a String ArrayList of items
+  
 ## User.java
 - User interface with shared methods for Seller.java and Buyer.java
+String getEmail()
+- Gets user email
+  
+String getName()
+- Gets name of user
+  
+void setName(String name)
+- Sets userName to new name
+  
+String getPassword()
+- Gets user password
+  
+void setPassword(String password)
+- Sets user password to new password
+
+void deleteAccount()
+- Deletes user account
 ## Item.java
-- Contains all relevant information for an item and print it when necessary
+- Contains all relevant information and methods for items.
+
+### Important methods
+public void deleteItem()
+- Deletes item from FMItems.csv
+  
+public void changeField(String field, String newValue)
+- Changes field in of item FMItems.csv
+- @param field : Field type to change
+- @param newValue : New value to change it to
+  
+public void printItem()
+- Prints store name, name, price, quantity, and description of item
+  
 ## Store.java
-- Contains pertinent information about the store
+- Contains inportant information methods about the store of the items
+
+### Important methods
+public void addItem(String itemName, String description, int quantity, double price)
+- Writes new item to FMItems.csv
+- @param itemName : Name of item to be written 
+- @param description : Item description to be written
+- @param quantity : Quantity of items to be written
+- @param price : Price of item to be written
+  
+public void printItems()
+- Prints items in a store so buyers can see there options and sellers can see what items they have listed
+  
+public String printItemNames()
+- Returns string of items names to be printed in FurnitureMarketplace
+
+public static void saveSale(String buyer, Item item, int amountSold)
+- Saves sale information for seller; Writes a copy of the information to FMStats.csv
+- @param buyer : Buyer name
+- @param item : Item object to be accessed
+- @param amountSold : Amount sold to be written
+
