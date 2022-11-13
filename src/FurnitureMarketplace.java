@@ -799,8 +799,63 @@ public class FurnitureMarketplace {
                     }
                 }
             }
-            case "6" -> {                       // view statistics
+            case "6" -> {
+                System.out.println("Buyer Statistics");// view statistics
+                System.out.print("(1) View all stores by products sold\n(2) View all stores that you have purchased from\n");
+                String[] validResponse = {"1", "2"};
+                boolean viewStats = true;
+                while (viewStats) {
+                    String response = validUserResponse(scanner, validResponse);
+                    switch (response) {
+                        case "1" -> { // list of stores by number of products sold
+                            ArrayList<String> storeProductSold = currentUser.storesFromProductsSold();
+                            for (String s : storeProductSold) {
+                                System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                        s.split(",")[1]);
+                            }
 
+                            System.out.print("\n(1) Sort stores from most products sold to least\n(2) Back to dashboard\n");
+                            String statResponse = validUserResponse(scanner, validResponse);
+
+                            if (statResponse.equals("1")) {
+                                ArrayList<String> sortedStoreProductSold = currentUser.sortStoresProductsSold();
+                                for (String s : sortedStoreProductSold) {
+                                    System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                            s.split(",")[1]);
+                                }
+                                viewStats = false;
+                            } else if (statResponse.equals("2")) {
+                                viewStats = false;
+                            }
+                        }
+                        case "2" -> { // list of stores by the products purchased by user.
+                            ArrayList<String> storeBuyerProduct = currentUser.storesFromBuyerProducts(currentUser.getEmail());
+                            if (storeBuyerProduct != null) {
+                                for (String s : storeBuyerProduct) {
+                                    System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                            s.split(",")[1]);
+                                }
+
+                                System.out.print("\n(1) Sort stores from most products purchased to least\n(2) Back to dashboard\n");
+                                String statResponse = validUserResponse(scanner, validResponse);
+
+                                if (statResponse.equals("1")) {
+                                    ArrayList<String> sortStoreBuyerProduct = currentUser.sortStoresFromBuyerProducts(currentUser.getEmail());
+                                    for (String s : sortStoreBuyerProduct) {
+                                        System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                                s.split(",")[1]);
+                                    }
+                                    viewStats = false;
+                                } else if (statResponse.equals("2")) {
+                                    viewStats = false;
+                                }
+                            } else {
+                                System.out.println("No purchases made yet");
+                                viewStats = false;
+                            }
+                        }
+                    }
+                }
             }
             case "7" -> {                   //// Sign Out
                 System.out.println("Signing Out!");
