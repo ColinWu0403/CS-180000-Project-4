@@ -1074,9 +1074,40 @@ public class FurnitureMarketplace {
                     String[] saleInfo = sales.get(i).split("!");
                     System.out.printf("%s bought %s of %s for %s each\n", saleInfo[0], saleInfo[2], saleInfo[1], saleInfo[3]);
                 }
+                System.out.println();
             }
             case "3" -> {                                                //View Statistics Dashboard
-
+                Store[] currentUserStores = currentUser.getStore();
+                ArrayList<String> numberOptions = new ArrayList<>();
+                if (currentUserStores.length == 0) {
+                    System.out.println("Error: You have no stores");
+                    break;
+                }
+                for (int i = 0; i < currentUserStores.length; i++) {
+                    numberOptions.add(Integer.toString((i + 1)));
+                    System.out.println("(" + (i + 1) + ") " + currentUserStores[i].getStoreName());
+                }
+                System.out.println("Which store's statistics would you like to view?");
+                String[] manageCatalogueOptions = new String[numberOptions.size()];
+                for (int i = 0; i < numberOptions.size(); i++) {
+                    manageCatalogueOptions[i] = numberOptions.get(i);
+                }
+                String manageCatalogueResponse = validUserResponse(scanner, manageCatalogueOptions);
+                Store currentStore = currentUserStores[Integer.parseInt(manageCatalogueResponse) - 1];
+                System.out.println("What would you like to view?\n(1) Buyers\n(2) Items");
+                String buyerOrItem;
+                if (validUserResponse(scanner, new String[]{"1", "2"}).equals("1")) {
+                    buyerOrItem = "buyer";
+                } else buyerOrItem = "item";
+                ArrayList<String> stats = new ArrayList<>();
+                System.out.println("Would you like the results sorted?\n(1) Yes\n(2) No");
+                if (validUserResponse(scanner, new String[]{"1", "2"}).equals("1")) {
+                    stats = Store.showSortedStats(currentStore.getStoreName(), buyerOrItem);
+                } else stats = Store.showStats(currentStore.getStoreName(), buyerOrItem);
+                for (int i = 0; i < stats.size(); i++) {
+                    String[] splitLine = stats.get(i).split(",");
+                    System.out.println(splitLine[0] + ": " + splitLine[1]);
+                }
             }
             case "4" -> {                                                //View Current Carts
                 Seller.viewCustomerShoppingCart();
