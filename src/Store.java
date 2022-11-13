@@ -93,12 +93,8 @@ public class Store {
 //        }
 //    }
     // Method to save sale information for seller
-    public boolean saveSale(String buyer, Item item, int amountSold) { // Executes sale for store, returns true if successful
+    public static boolean saveSale(String buyer, Item item, int amountSold) {
         try {
-            // Reduce quantity of item by amount bought
-            boolean successful = item.changeField("quantity", Integer.toString(item.getQuantity() - amountSold));
-            // Only go on if enough items were available to be purchased
-            if (!successful) { return false; }
             // Read FMStores to find the correct store to add sale information to
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMStores.csv"));
             String line = bfrOne.readLine();
@@ -118,6 +114,7 @@ public class Store {
                 line = bfrOne.readLine();
             }
             bfrOne.close();
+
             // Prints FMStores file with added sale
             PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMStores.csv", false));
             for (int i = 0; i < storeFile.size(); i++) {
@@ -165,7 +162,7 @@ public class Store {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     // Method to print sale history of a store for seller
