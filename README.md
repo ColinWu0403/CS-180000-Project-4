@@ -80,11 +80,13 @@ Sample Dashboard
 - FurnitureMarketplace class : Seller options -> (4) View Current Carts
 - Statistics methods in Buyers
 - Showing purchase history in Buyers
+- BuyerTest class
 ### Andrei Deaconescu
 - Seller class : Created class & many of the early structure
 - ItemTest class
 - StoreTest class
 - SellerTest class 
+- BuyerTest class
 ### Dakota Baldwin
 - Store class : Created class & many of the early structure
 - Item class : Created class & many of the early structure
@@ -95,8 +97,11 @@ Sample Dashboard
 - FurnitureMarketplace class : Buyer options -> (2) View Cart
 - CSV file formatting guide
 - Buyer and Seller flowcharts
+- FurnitureMarketplaceTest class
 ### Nathan Schneider
 - FurnitureMarketplace class : Main Buyer dashboard and Seller dashboard, Seller options -> (1) Manage Stores, (2) Sales List, (5) Manage Account
+- FurnitureMarketplaceTest class
+- BuyerTest class
 - Adding products in Buyers
 - Purchasing products in Buyers
 - Main method for the marketplace interface in FurnitureMarketplace
