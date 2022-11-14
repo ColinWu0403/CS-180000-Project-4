@@ -240,10 +240,7 @@ public ArrayList<String> csvTemporaryStorage()
   
 public void deleteAccount()
 - Deletes Buyer account
-  
-public ArrayList<String> parseItem()
-- Reads through FMItems.csv and returns a String ArrayList of items
-  
+
 public ArrayList<String> parseStore()
 - Reads through FMStores.csv and returns a String ArrayList of items
   
