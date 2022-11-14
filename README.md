@@ -3,6 +3,8 @@
 ### Colin Wu - Submitted Vocareum Workspace
 ### Nathan Schneider - Submitted Project 4 Report
 
+**Note: To check for codestyle errors in Vocareum, we had moved all the java files outside of the folder. To be able to run the main function, just move all the .java files back into the src folder**
+
 ### Description
 This is a furniture reselling marketplace where users can buy and sell items. Users can create an account that is either a Buyer or Seller with their information saved between sessions. To access their account after creation, users just have to log into their account by inputting the correct credentials. 
 
