@@ -10,7 +10,7 @@ import java.util.Collections;
  * @author Colin Wu
  * @version 2022-3-11
  */
-public class Buyer {
+public class Buyer implements User {
     private String name; // Buyer username
     private final String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password

@@ -113,10 +113,10 @@ class FurnitureMarketplaceTest {
     @Test
     void createItemList() {
         Store input = new Store("new@gmail.com", "myStore");
-        Item item1 = new Item("input", "itemName", "description",4, 5.55);
-        input.addItem("itemName", "description", 4,5.55);
-        Item item2 = new Item("input", "Table", "very good table",10, 39.99);
-        input.addItem("Table", "very good table", 10,39.99);
+        Item item1 = new Item("input", "itemName", "description", 4, 5.55);
+        input.addItem("itemName", "description", 4, 5.55);
+        Item item2 = new Item("input", "Table", "very good table", 10, 39.99);
+        input.addItem("Table", "very good table", 10, 39.99);
 
         //Checks if an item list can be retrieved from FMItems.csv
         Item[] expectedOutputList = {item1, item2};
@@ -137,13 +137,14 @@ class FurnitureMarketplaceTest {
         } catch (IOException e) {
         }
     }
+
     @Test
-    void createItemListString () {
+    void createItemListString() {
         Store input = new Store("new@gmail.com", "myStore");
-        Item item1 = new Item("input", "itemName", "description",4, 5.55);
-        input.addItem("itemName", "description", 4,5.55);
-        Item item2 = new Item("input", "Table", "very good table",10, 39.99);
-        input.addItem("Table", "very good table", 10,39.99);
+        Item item1 = new Item("input", "itemName", "description", 4, 5.55);
+        input.addItem("itemName", "description", 4, 5.55);
+        Item item2 = new Item("input", "Table", "very good table", 10, 39.99);
+        input.addItem("Table", "very good table", 10, 39.99);
 
         ArrayList<String> expectedOutput = new ArrayList<>();
         expectedOutput.add("myStore,itemName,description,4,5.55");
@@ -160,7 +161,7 @@ class FurnitureMarketplaceTest {
     }
 
     @Test
-    void buyerDataArray () {
+    void buyerDataArray() {
         try {
             //Create initial user
             PrintWriter pw = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));

@@ -128,8 +128,9 @@ class StoreTest {
             PrintWriter pw = new PrintWriter(new FileOutputStream("FMItems.csv", false));
             pw.print("");
             pw.close();
-            assertEquals(expectedOutput,outputToCSV);
-        } catch (Exception e) {}
+            assertEquals(expectedOutput, outputToCSV);
+        } catch (Exception e) {
+        }
     }
 
     @Test
@@ -225,8 +226,9 @@ class StoreTest {
             PrintWriter pw = new PrintWriter(new FileOutputStream("FMStats.csv", false));
             pw.print("");
             pw.close();
-            assertEquals(expectedOutput,outputToCSV);
-        } catch (Exception e) {}
+            assertEquals(expectedOutput, outputToCSV);
+        } catch (Exception e) {
+        }
 
         //Check if item is printed to FMStores.csv purchase history successfully after a purchase is made
         try {
@@ -242,7 +244,8 @@ class StoreTest {
             PrintWriter pw = new PrintWriter(new FileOutputStream("FMStores.csv", false));
             pw.print("");
             pw.close();
-            assertEquals(expectedOutput,outputToCSV);
-        } catch (Exception e) {}
+            assertEquals(expectedOutput, outputToCSV);
+        } catch (Exception e) {
+        }
     }
 }
