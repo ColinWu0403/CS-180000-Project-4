@@ -246,6 +246,7 @@ public ArrayList<String> parseStore()
   
 ## User.java
 - User interface with shared methods for Seller.java and Buyer.java
+
 String getEmail()
 - Gets user email
   
