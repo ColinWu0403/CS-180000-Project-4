@@ -2,9 +2,12 @@ import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.*;
 import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A Test class for the Item class.
  *
@@ -154,7 +157,8 @@ class ItemTest {
             BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));
             actualCSVLine = bfr.readLine();
             bfr.close();
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
         String expectedCSVLine = "newStore,something else nice,a different real nice item,2,9.99";
         assertEquals(actualCSVLine, expectedCSVLine);
     }

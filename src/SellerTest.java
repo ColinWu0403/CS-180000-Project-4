@@ -2,11 +2,13 @@ import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A Test class for the Seller class.
  *
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SellerTest {
     private final PrintStream out = System.out;
     private ByteArrayOutputStream outputStream;
+
     @BeforeEach
     public void setup() {                   // to check methods that print to the console
         outputStream = new ByteArrayOutputStream();
@@ -56,12 +59,12 @@ class SellerTest {
         input.createStore(new Store("a@bc.com", "astore"));
         input.createStore(new Store("a@bc.com", "bstore"));
 
-        String[] expectedNames = new String[] { "astore", "bstore" };
-        String[] expectedOwners = new String[] { "a@bc.com", "a@bc.com" };
+        String[] expectedNames = new String[]{"astore", "bstore"};
+        String[] expectedOwners = new String[]{"a@bc.com", "a@bc.com"};
 
         Store[] stores = input.getStore();
-        String[] actualNames = new String[] { stores[0].getStoreName(), stores[1].getStoreName() };
-        String[] actualOwners = new String[] { stores[0].getOwner(), stores[1].getOwner() };
+        String[] actualNames = new String[]{stores[0].getStoreName(), stores[1].getStoreName()};
+        String[] actualOwners = new String[]{stores[0].getOwner(), stores[1].getOwner()};
 
         for (int i = 0; i < 1; i++) {
             assertEquals(expectedNames[i], actualNames[i]);
@@ -96,8 +99,8 @@ class SellerTest {
 
         input.exportPublishedItems("astore");
 
-        String[] expectedOutput = new String[] { "astore,cool table,really cool table,4,0.99",
-                "astore,cool chair,really cool chair,5,1.99" };
+        String[] expectedOutput = new String[]{"astore,cool table,really cool table,4,0.99",
+                "astore,cool chair,really cool chair,5,1.99"};
         try {
             File file = new File("astore—Items.csv");
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -176,8 +179,8 @@ class SellerTest {
         input.createStore(store2);
 
         Store[] stores = input.getStore();
-        String[] expected = new String[] { "jim's store", "jim's store two" };
-        String[] actual = new String[] { stores[0].getStoreName(), stores[1].getStoreName() };
+        String[] expected = new String[]{"jim's store", "jim's store two"};
+        String[] actual = new String[]{stores[0].getStoreName(), stores[1].getStoreName()};
 
         assertEquals(expected[0], actual[0]);
         assertEquals(expected[1], actual[1]);
@@ -227,15 +230,15 @@ class SellerTest {
             Store amazon2 = new Store("a@bc.com", "amazon2");
             input.createStore(amazon);
             input.createStore(amazon2);
-            input.importItems(file.getName(), new Store[] { amazon, amazon2 });
+            input.importItems(file.getName(), new Store[]{amazon, amazon2});
             Store[] stores = input.getStore();
             ArrayList<Item> amazonItems = stores[0].getItems();
             ArrayList<Item> amazon2Items = stores[1].getItems();
 
-            String[] amazonNames = new String[] { amazonItems.get(0).getName(), amazonItems.get(1).getName() };
+            String[] amazonNames = new String[]{amazonItems.get(0).getName(), amazonItems.get(1).getName()};
             String amazon2Name = amazon2Items.get(0).getName();
 
-            String[] expected1 = new String[] { "cool something", "another cool something" };
+            String[] expected1 = new String[]{"cool something", "another cool something"};
             String expected2 = "yet another cool something";
             assertEquals(expected1[0], amazonNames[0]);
             assertEquals(expected1[1], amazonNames[1]);
