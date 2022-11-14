@@ -115,7 +115,7 @@ public class FurnitureMarketplace {
             newPassword = scanner.nextLine();
 
             if (newUsername.length() <= 6 || newEmail.length() <= 6 || newPassword.length() <= 6) {
-                System.out.println("Error: Username, email, and password must all be at least 6 " +
+                System.out.println("Error: Username, email, and password must all be more than 6 " +
                         "characters to ensure security");
             } else if (checkExistingCredentials(newEmail, newUsername, "newAccount").equals("DuplicateEmail")) {
                 System.out.println("Error: Email already exists");
