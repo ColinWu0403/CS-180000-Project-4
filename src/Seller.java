@@ -38,42 +38,11 @@ public class Seller implements User {
         }
     }
 
-    public String createItem() {
-        return null;
-    }
-
-    public Item publishItem(String item, String store) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("FMItems.csv"));
-        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("FMItems.csv")));
-
-        StringBuilder fileContents = new StringBuilder();
-
-        // appends all the contents of the marketplace file to a StringBuilder object
-        String line;
-        do {
-            line = reader.readLine();
-            if (line != null) {
-                fileContents.append(line).append("\n");
-                // if statement not to append the last line of the file which is blank
-            }
-        } while (line != null);
-
-        // append the new item line to the file contents
-        String toAppend = store + ";" + item; // store name in front of item as per formatting guidelines
-        fileContents.append(toAppend);
-
-        // write the new file back to the main marketplace text file
-        writer.println(fileContents);
-
-        // create a new Item object and return it
-        String name = item.split(",")[0];
-        String description = item.split(",")[1];
-        int quantity = Integer.parseInt(item.split(",")[2]);
-        double price = Double.parseDouble(item.split(",")[3]);
-
-        return new Item(store, name, description, quantity, price);
-    }
-
+    /**
+     * Purpose: prints the new store to FMStores.csv
+     *
+     * @param store contains the object for store that is to be added
+     */
     public void createStore(Store store) {
         stores.add(store);
         try {
@@ -86,6 +55,12 @@ public class Seller implements User {
         }
     }
 
+    /**
+     * Purpose: deletes the store from the current users array of stores and deletes the stores from the csv along with
+     * its items.
+     *
+     * @param currentStore contains the object for current store that is to be deleted
+     */
     public void deleteStore(Store currentStore) {
         stores.remove(currentStore);
         String line;
@@ -146,6 +121,11 @@ public class Seller implements User {
         }
     }
 
+    /**
+     * Purpose: exports a file containing the stores items
+     *
+     * @param storeName The name of the store that should have its items exported to a file
+     */
     public void exportPublishedItems(String storeName) {
         try {
             BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
@@ -181,7 +161,10 @@ public class Seller implements User {
         }
     }
 
-    public static void viewCustomerShoppingCart() { // Prints customer shopping cart info for Sellers
+    /**
+     * Purpose: Prints customer shopping cart info for Sellers
+     */
+    public static void viewCustomerShoppingCart() {
         try {
             // Read through CSV file
             BufferedReader fmReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -223,8 +206,8 @@ public class Seller implements User {
                             String itemName = itemFields[1];
                             String quantity = itemFields[3];
                             String price = itemFields[4];
-                            String itemInfoLine = "Store Name: " + storeName + ", Item Name: " + itemName + ", Quantity: "
-                                    + quantity + ", Price bought at: $" + price;
+                            String itemInfoLine = "Store Name: " + storeName + ", Item Name: " + itemName +
+                                    ", Quantity: " + quantity + ", Price bought at: $" + price;
                             cartInfoLine.add(itemInfoLine);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -286,12 +269,15 @@ public class Seller implements User {
         this.password = password;
     }
 
+    /**
+     * Purpose: Deletes the current seller's account. This deletes all the sellers information from the csv files
+     * as well. This includes FMCredentials, FMStores, and FMItems.
+     */
     @Override
     public void deleteAccount() {
         String line;
         StringBuilder credentialsFile = new StringBuilder();
         StringBuilder storesFile = new StringBuilder();
-        //StringBuilder itemsFile = new StringBuilder();
         ArrayList<String> itemsFileOutput = new ArrayList<>();
         try {
             // First remove user from credentials file
@@ -312,7 +298,8 @@ public class Seller implements User {
                         String[] cartItems = cart.split("~");
                         for (int i = 0; i < cartItems.length; i++) {
                             for (int j = 0; j < stores.size(); j++) {
-                                if (cartItems[i].substring(0, cartItems[i].indexOf("!")).equals(stores.get(j).getStoreName())) {
+                                if (cartItems[i].substring(0,
+                                        cartItems[i].indexOf("!")).equals(stores.get(j).getStoreName())) {
                                     if (!cart.contains("~")) {
                                         cart = "x";
                                     }else if (cart.contains("~" + cartItems[i])) {
@@ -401,6 +388,11 @@ public class Seller implements User {
         }
     }
 
+    /**
+     * Purpose: Prints customer shopping cart info for Sellers
+     * @param fileName Contains the file name that the imported files should be read from.
+     * @param stores Array containing all the stores of the current seller
+     */
     public int importItems(String fileName, Store[] stores) { // Adds imported items to stores
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(fileName));

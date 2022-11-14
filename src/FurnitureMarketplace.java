@@ -2,7 +2,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Contains the main method and currently deals with user login
+ * Contains the main method and contains the main methods for the application: sellerDashboard and buyerDashboard. All
+ * functionality in the program stems from these two methods, and they call the other methods.
  *
  * @author Nathan Schneider
  * @version 2022 3-11
@@ -25,7 +26,7 @@ public class FurnitureMarketplace {
 
             String[] inputOptions = {"1", "2", "3"};                            //Valid options for first user input
             String loginResponse = validUserResponse(scanner, inputOptions);    //User response to account options
-            Object currentUser = null;                                          //object of Buyer or Seller for current user
+            Object currentUser = null;                                     //object of Buyer or Seller for current user
 
             switch (loginResponse) {
                 case "1" -> {                //user chooses to sign in
@@ -53,14 +54,12 @@ public class FurnitureMarketplace {
                     String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6", "7"};
                     String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
 
-                    if (!buyerDashboardNavigation(scanner, userChoiceFromDashboard, userB).equals("repromptDashboard")) {
+                    if (!buyerDashboardNavigation(scanner, userChoiceFromDashboard,
+                            userB).equals("repromptDashboard")) {
                         break;
                     }
                 }
             } else if (currentUser instanceof Seller userS) {
-
-                //createStoresList()        this method has to be made?
-                //printSellerDashboard() this method has to be made
                 while (true) {
                     System.out.println("""
                             \t\tSeller Dashboard
@@ -73,7 +72,8 @@ public class FurnitureMarketplace {
                     String[] choicesFromDashboard = {"1", "2", "3", "4", "5", "6"};
                     String userChoiceFromDashboard = validUserResponse(scanner, choicesFromDashboard);
 
-                    if (!sellerDashboardNavigation(scanner, userChoiceFromDashboard, userS).equals("repromptDashboard")) {
+                    if (!sellerDashboardNavigation(scanner, userChoiceFromDashboard,
+                            userS).equals("repromptDashboard")) {
                         break;
                     }
                 }
@@ -97,7 +97,7 @@ public class FurnitureMarketplace {
         this.itemList = itemList;
     }
 
-    //creates an account that is appended to FMCredentials.csv and returns either a Buyer or Seller object
+    //Purpose: creates an account that is appended to FMCredentials.csv and returns either a Buyer or Seller object
     public static Object createAccount(Scanner scanner) {
         String newUsername = "";            //Username created by the user
         String newEmail = "";               //Email created by the user
@@ -115,7 +115,8 @@ public class FurnitureMarketplace {
             newPassword = scanner.nextLine();
 
             if (newUsername.length() <= 6 || newEmail.length() <= 6 || newPassword.length() <= 6) {
-                System.out.println("Error: Username, email, and password must all be at least 6 characters to ensure security");
+                System.out.println("Error: Username, email, and password must all be at least 6 " +
+                        "characters to ensure security");
             } else if (checkExistingCredentials(newEmail, newUsername, "newAccount").equals("DuplicateEmail")) {
                 System.out.println("Error: Email already exists");
             } else if (checkExistingCredentials(newEmail, newUsername,
@@ -168,7 +169,7 @@ public class FurnitureMarketplace {
         return null;
     }
 
-    //checks if the user has an account with the email and password and returns that Buyer or Seller object
+    //Purpose: checks if the user has an account with the email and password and returns that Buyer or Seller object
     public static Object signInAccount(Scanner scanner) {
         String signInEmail = "";            //User inputted email when signing in to an account
         String signInPassword = "";         //User inputted password when signing in to an account
@@ -182,7 +183,9 @@ public class FurnitureMarketplace {
                 accountSearch = accountSearch.substring(1, accountSearch.length() - 1);
                 String[] accountDetails = accountSearch.split(", ");
                 if (accountDetails[3].equals("buyer")) {
-                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2], buyerDataArray(accountDetails[0], "hist"), buyerDataArray(accountDetails[0], "cart"));
+                    return new Buyer(accountDetails[1], accountDetails[0], accountDetails[2],
+                            buyerDataArray(accountDetails[0], "hist"),
+                            buyerDataArray(accountDetails[0], "cart"));
                 } else if (accountDetails[3].equals("seller")) {
                     return new Seller(accountDetails[1], accountDetails[0], accountDetails[2]);
                 }
@@ -190,7 +193,7 @@ public class FurnitureMarketplace {
                 System.out.println("No account found. Would you like to try again?");
                 System.out.println("(1) Try again");
                 System.out.println("(2) Return to dashboard");
-                String[] inputOptions = {"1","2"};
+                String[] inputOptions = {"1", "2"};
                 String continueSignIn = validUserResponse(scanner, inputOptions);
                 if (continueSignIn.equals("1")) {
                     continue;
@@ -201,10 +204,13 @@ public class FurnitureMarketplace {
         }
     }
 
-    /* Purpose: Returns a string to tell whether the user's inputted username or email already exists
-    @param String email : string with the user inputted email
-    @param String username : string with the user inputted username
-    @param String purpose : contains a string with "newAccount" or "signIn"*/
+    /**
+     * Purpose: Returns a string to tell whether the user's inputted username or email already exists
+     *
+     * @param email              : string with the user inputted email
+     * @param usernameOrPassword : string with the user inputted username
+     * @param purpose            : contains a string with "newAccount" or "signIn"
+     */
     public static String checkExistingCredentials(String email, String usernameOrPassword, String purpose) {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -231,6 +237,7 @@ public class FurnitureMarketplace {
         }
     }
 
+    //Purpose: Reads through the FMItems.csv and makes sure that the desired item name does not already exist
     public static String validItemName(Scanner scanner) {
         boolean invalidItemName = true;
         String itemName = "";
@@ -260,8 +267,8 @@ public class FurnitureMarketplace {
         return itemName;
     }
 
-    /* Purpose: returns the response from the user if it is a valid response.
-    @param String[] inputOptions : possible options that can be accepted the by the user*/
+    /** Purpose: returns the response from the user if it is a valid response.
+     *@param inputOptions : possible options that can be accepted the by the user*/
     public static String validUserResponse(Scanner scanner, String[] inputOptions) {
         String userResponse = "";  //User response to account options
         while (true) {
@@ -277,8 +284,7 @@ public class FurnitureMarketplace {
 
 
     /**
-     * Returns a list of Item objects to be accessed throughout the program.
-     */
+     * Returns a list of Item objects to be accessed throughout the program.*/
     public static Item[] createItemList() {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));
@@ -411,6 +417,7 @@ public class FurnitureMarketplace {
         }
     }
 
+    //Reads through FMStores.csv and checks makes sure the user inputs a nonexisting store name.
     public static String validStoreName(Scanner scanner) {
         boolean invalidStoreName = true;
         String storeName = "";
@@ -441,11 +448,23 @@ public class FurnitureMarketplace {
         return storeName;
     }
 
+    /**
+     * Contains all functionality if the user signs in as a buyer or creates a buyer account
+     *
+     * @param scanner                 Allows the usage of scanner.nextLine
+     * @param userChoiceFromDashboard Contains an integer that tells what part of the method to run based on what the
+     *                                user selected
+     * @param currentUser             Contains the current Buyer Object
+     */
     public static String buyerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Buyer currentUser) {
         switch (userChoiceFromDashboard) {
             case "1" -> { // Product Selection - Adds product to cart
                 boolean itemSelectLoop = true;
                 while (itemSelectLoop) {
+                    if (itemList.length == 0) {
+                        System.out.println("Error: No items are listed on the marketplace");
+                        break;
+                    }
                     System.out.println("Which Item would you like to select: ");
                     String[] validResponse = new String[itemList.length];
                     try {
@@ -464,8 +483,9 @@ public class FurnitureMarketplace {
                             String quantityAvailable = itemStrSplit[3];
                             String price = itemStrSplit[4];
                             System.out.println("\tItem information:");
-                            System.out.printf("Store Name: %s\nItem Name: %s\nDescription: %s\nQuantity Available: %s\nPrice: $%s\n",
-                                    storeName, itemName, description, quantityAvailable, price);
+                            System.out.printf("Store Name: %s\nItem Name: %s\nDescription: %s\nQuantity " +
+                                            "Available: %s\nPrice: $%s\n", storeName, itemName, description,
+                                    quantityAvailable, price);
 
                             System.out.print("(1) Add item to shopping cart\n(2) Cancel\n");
                             String[] validCartResponse = {"1", "2"};
@@ -478,7 +498,8 @@ public class FurnitureMarketplace {
                                     System.out.print("How many would you like to add to cart: ");
                                     quantityToPurchase = scanner.nextInt();
                                     scanner.nextLine();
-                                    if ((quantityToPurchase > Integer.parseInt(quantityAvailable)) || (quantityToPurchase <= 0)) {
+                                    if ((quantityToPurchase > Integer.parseInt(quantityAvailable)) ||
+                                            (quantityToPurchase <= 0)) {
                                         System.out.println("Error: Invalid quantity input");
                                         continue;
                                     }
@@ -518,7 +539,8 @@ public class FurnitureMarketplace {
                             //save sales
                             for (int i = 0; i < currentUser.getCart().size(); i++) {
                                 String[] splitLine = currentUser.getCart().get(i).split("!");
-                                Item saleItem = new Item(splitLine[0], splitLine[1], splitLine[2], Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
+                                Item saleItem = new Item(splitLine[0], splitLine[1], splitLine[2],
+                                        Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
                                 Store.saveSale(currentUser.getEmail(), saleItem, Integer.parseInt(splitLine[3]));
                             }
                             ArrayList<String> temp = new ArrayList<>();
@@ -677,7 +699,6 @@ public class FurnitureMarketplace {
                 System.out.print("(1) View Purchase History\n(2) Export Purchase History\n");
                 String[] validInputs = {"1", "2"};
                 String purchaseOption = validUserResponse(scanner, validInputs);
-                //make sure hte formatting looks good and check if it is empty
 
                 if (purchaseOption.equals("1")) {
                     try {
@@ -692,8 +713,8 @@ public class FurnitureMarketplace {
                                                 "%-5sItem bought: %s\n" +
                                                 "%-5sDescription: %s\n" +
                                                 "%-5sQuantity bought = %s\n" +
-                                                "%-5sTotal Cost = $%.2f\n", i + 1, "", splitLine[0], "", splitLine[1], "",
-                                        splitLine[2], "", splitLine[3], "", totalCost);
+                                                "%-5sTotal Cost = $%.2f\n", i + 1, "", splitLine[0], "",
+                                        splitLine[1], "", splitLine[2], "", splitLine[3], "", totalCost);
                             }
                         } else {
                             System.out.println("Error: This account has no purchases");
@@ -760,7 +781,7 @@ public class FurnitureMarketplace {
 
                             writer.close();
                         } catch (Exception e) {
-                            System.out.println("Error: Account NOT updated");
+                            System.out.println("Error: Account not updated");
                         }
                     }
                     case "2" -> {       //change password
@@ -814,7 +835,8 @@ public class FurnitureMarketplace {
             }
             case "6" -> {
                 System.out.println("Buyer Statistics");// view statistics
-                System.out.print("(1) View all current stores by products sold\n(2) View all current stores that you have purchased from\n");
+                System.out.print("(1) View all current stores by products sold\n(2) " +
+                        "View all current stores that you have purchased from\n");
                 String[] validResponse = {"1", "2"};
                 boolean viewStats = true;
                 while (viewStats) {
@@ -827,7 +849,8 @@ public class FurnitureMarketplace {
                                         s.split(",")[1]);
                             }
 
-                            System.out.print("\n(1) Sort stores from most products sold to least\n(2) Back to dashboard\n");
+                            System.out.print("\n(1) Sort stores from most products sold to least\n(2) " +
+                                    "Back to dashboard\n");
                             String statResponse = validUserResponse(scanner, validResponse);
 
                             if (statResponse.equals("1")) {
@@ -842,21 +865,24 @@ public class FurnitureMarketplace {
                             }
                         }
                         case "2" -> { // list of stores by the products purchased by user.
-                            ArrayList<String> storeBuyerProduct = currentUser.storesFromBuyerProducts(currentUser.getEmail());
+                            ArrayList<String> storeBuyerProduct =
+                                    currentUser.storesFromBuyerProducts(currentUser.getEmail());
                             if (storeBuyerProduct != null) {
                                 for (String s : storeBuyerProduct) {
                                     System.out.printf("You have purchased %s items from %s\n", s.split(",")[1],
                                             s.split(",")[0]);
                                 }
 
-                                System.out.print("\n(1) Sort stores from most products purchased to least\n(2) Back to dashboard\n");
+                                System.out.print("\n(1) Sort stores from most products purchased to least\n(2) " +
+                                        "Back to dashboard\n");
                                 String statResponse = validUserResponse(scanner, validResponse);
 
                                 if (statResponse.equals("1")) {
-                                    ArrayList<String> sortStoreBuyerProduct = currentUser.sortStoresFromBuyerProducts(currentUser.getEmail());
+                                    ArrayList<String> sortStoreBuyerProduct =
+                                            currentUser.sortStoresFromBuyerProducts(currentUser.getEmail());
                                     for (String s : sortStoreBuyerProduct) {
-                                        System.out.printf("You have purchased %s items from %s\n", s.split(",")[1],
-                                                s.split(",")[0]);
+                                        System.out.printf("You have purchased %s items from %s\n",
+                                                s.split(",")[1], s.split(",")[0]);
                                     }
                                     viewStats = false;
                                 } else if (statResponse.equals("2")) {
@@ -878,6 +904,14 @@ public class FurnitureMarketplace {
         return "repromptDashboard";
     }
 
+    /**
+     * Contains all functionality if the user signs in as a seller or creates a seller account
+     *
+     * @param scanner                 Allows the usage of scanner.nextLine
+     * @param userChoiceFromDashboard Contains an integer that tells what part of the method to run based on what the
+     *                                user selected
+     * @param currentUser             Contains the current Seller Object
+     */
     public static String sellerDashboardNavigation(Scanner scanner, String userChoiceFromDashboard, Seller currentUser)
             throws IOException {
         switch (userChoiceFromDashboard) {
@@ -950,14 +984,15 @@ public class FurnitureMarketplace {
                                     while (true) {
                                         System.out.print("Enter item price (ex. 49.99): ");
                                         try {
-                                            double doubleItemPrice = scanner.nextDouble();
-                                            itemPrice = Double.toString(doubleItemPrice);
-                                            if (((doubleItemPrice * 100) % 1 != 0) || (doubleItemPrice < 0)) {
+                                            float floatItemPrice = scanner.nextFloat();
+                                            itemPrice = Float.toString(floatItemPrice);
+                                            if (((floatItemPrice * 100) % 1 != 0) || (floatItemPrice < 0)) {
                                                 throw new InputMismatchException();
                                             }
                                             scanner.nextLine();
                                         } catch (InputMismatchException e) {
-                                            System.out.println("Error: Please enter a number with two decimals (ex. 49.99)");
+                                            System.out.println("Error: Please enter a number with two decimals " +
+                                                    "(ex. 49.99)");
                                             scanner.nextLine();
                                             continue;
                                         }
@@ -984,8 +1019,11 @@ public class FurnitureMarketplace {
                                         }
 
                                         System.out.print("What product would you like to modify: ");
-                                        String productSelectionResponse = validUserResponse(scanner, productSelectionOptions);
-                                        Item currentItem = currentStore.getItems().get(Integer.parseInt(productSelectionResponse) - 1);
+                                        String productSelectionResponse = validUserResponse(scanner,
+                                                productSelectionOptions);
+                                        Item currentItem =
+                                                currentStore.getItems().get(Integer.parseInt
+                                                        (productSelectionResponse) - 1);
 
 
                                         boolean continueEditItem = true;
@@ -997,7 +1035,8 @@ public class FurnitureMarketplace {
                                                     (4) Edit item price
                                                     (5) Return to Dash""");
                                             String[] editProductOptions = {"1", "2", "3", "4", "5"};
-                                            System.out.print("What piece of product information would you like to modify: ");
+                                            System.out.print("What piece of product information would " +
+                                                    "you like to modify: ");
                                             String editProductResponse = validUserResponse(scanner, editProductOptions);
                                             switch (editProductResponse) {
                                                 case "1" -> {       //1-1-2-1 Edit item name : DONE
@@ -1031,14 +1070,16 @@ public class FurnitureMarketplace {
                                                     while (true) {
                                                         System.out.print("Enter new item price (ex. 49.99): ");
                                                         try {
-                                                            double doubleItemPrice = scanner.nextDouble();
-                                                            newItemPrice = Double.toString(doubleItemPrice);
-                                                            if (((doubleItemPrice * 100) % 1 != 0) || (doubleItemPrice < 0)) {
+                                                            float floatItemPrice = scanner.nextFloat();
+                                                            newItemPrice = Float.toString(floatItemPrice);
+                                                            if (((floatItemPrice * 100) % 1 != 0) ||
+                                                                    (floatItemPrice < 0)) {
                                                                 throw new InputMismatchException();
                                                             }
                                                             scanner.nextLine();
                                                         } catch (InputMismatchException e) {
-                                                            System.out.println("Error: Please enter a number with two decimals (ex. 49.99)");
+                                                            System.out.println("Error: Please enter a number with " +
+                                                                    "two decimals (ex. 49.99)");
                                                             scanner.nextLine();
                                                             continue;
                                                         }
@@ -1067,8 +1108,10 @@ public class FurnitureMarketplace {
                                         }
 
                                         System.out.print("What product would you like to Delete: ");
-                                        String productToDeleteResponse = validUserResponse(scanner, productDeleteOptions);
-                                        Item currentItem = currentStore.getItems().get(Integer.parseInt(productToDeleteResponse) - 1);
+                                        String productToDeleteResponse =
+                                                validUserResponse(scanner, productDeleteOptions);
+                                        Item currentItem = currentStore.getItems().get
+                                                (Integer.parseInt(productToDeleteResponse) - 1);
                                         currentItem.deleteItem();
                                         System.out.println("Deleted Item");
                                     }
@@ -1085,7 +1128,6 @@ public class FurnitureMarketplace {
                                     } else {
                                         System.out.println("Imported " + numberOfFiles + " files successfuly");
                                     }
-
 
                                     break;
                                 case "6":               //1-1-6 Return to dashboard
@@ -1193,9 +1235,11 @@ public class FurnitureMarketplace {
                 for (int i = 0; i < stats.size(); i++) {
                     String[] splitLine = stats.get(i).split(",");
                     if (buyerOrItem.equals("buyer")) {
-                        System.out.printf("%-20s %-20s\n", "Customer: " + splitLine[0], "Items Purchased = " + splitLine[1]);
+                        System.out.printf("%-20s %-20s\n", "Customer: " + splitLine[0],
+                                "Items Purchased = " + splitLine[1]);
                     } else {
-                        System.out.printf("%-25s %-25s\n", "Itemname: " + splitLine[0], "Number of Sales = " + splitLine[1]);
+                        System.out.printf("%-25s %-25s\n", "Itemname: " + splitLine[0],
+                                "Number of Sales = " + splitLine[1]);
                     }
                 }
             }
