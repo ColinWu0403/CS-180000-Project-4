@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -220,10 +221,10 @@ public class Seller implements User {
                             String[] itemFields = cartItems[j].split("!");
                             String storeName = itemFields[0];
                             String itemName = itemFields[1];
-                            String quantity = itemFields[2];
-                            String price = itemFields[3];
+                            String quantity = itemFields[3];
+                            String price = itemFields[4];
                             String itemInfoLine = "Store Name: " + storeName + ", Item Name: " + itemName + ", Quantity: "
-                                    + quantity + ", Price: $" + price;
+                                    + quantity + ", Price bought at: $" + price;
                             cartInfoLine.add(itemInfoLine);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -290,7 +291,8 @@ public class Seller implements User {
         String line;
         StringBuilder credentialsFile = new StringBuilder();
         StringBuilder storesFile = new StringBuilder();
-        StringBuilder itemsFile = new StringBuilder();
+        //StringBuilder itemsFile = new StringBuilder();
+        ArrayList<String> itemsFileOutput = new ArrayList<>();
         try {
             // First remove user from credentials file
             BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -302,6 +304,32 @@ public class Seller implements User {
                     if (counter >= 1) {
                         credentialsFile.append("\n");
                     }
+
+                    // Also deletes items from seller's stores from shopping carts
+                    String[] splitLine = line.split(",");
+                    String cart = splitLine[5];
+                    if (cart.contains("~")) {
+                        String[] cartItems = cart.split("~");
+                        for (int i = 0; i < cartItems.length; i++) {
+                            for (int j = 0; j < stores.size(); j++) {
+                                if (cartItems[i].substring(0, cartItems[i].indexOf("!")).equals(stores.get(j).getStoreName())) {
+                                    if (!cart.contains("~")) {
+                                        cart = "x";
+                                    }else if (cart.contains("~" + cartItems[i])) {
+                                        cart = cart.replaceFirst("~" + cartItems[i], "");
+                                    } else cart = cart.replaceFirst(cartItems[i] + "~", "");
+                                }
+                            }
+                        }
+                    } else if (cart.contains("!")) {
+                        for (int i = 0; i < stores.size(); i++) {
+                            if (cart.substring(0, cart.indexOf("!")).equals(stores.get(i).getStoreName())) {
+                                cart = "x";
+                            }
+                        }
+                    }
+                    line = line.replaceAll(splitLine[5], cart);
+
                     credentialsFile.append(line);
                     counter++;
                 }
@@ -324,8 +352,8 @@ public class Seller implements User {
             int counter = 0;
             while (line != null) {
                 // Only saves stores that don't use this users email
-                String shortLine = line.substring(line.indexOf(","));
-                if (!email.equals(shortLine.substring(0, shortLine.indexOf(",")))) {
+                String[] splitLine = line.split(",");
+                if (!email.equals(splitLine[1])) {
                     if (counter >= 1) {
                         storesFile.append("\n");
                     }
@@ -347,30 +375,24 @@ public class Seller implements User {
         try {
             // Third, remove all items belonging to this owner's stores from items file
             BufferedReader bfrThree = new BufferedReader(new FileReader("FMItems.csv"));
-            line = bfrThree.readLine();
-            int counter = 0;
-            while (line != null) {
+            String itemLine = "";
+            while ((itemLine = bfrThree.readLine()) != null) {
                 boolean keep = true;
                 // Only saves items whose store doesn't match any of this owner's stores
                 for (int i = 0; i < stores.size(); i++) {
-                    if (stores.get(i).getStoreName().equals(line.substring(0, line.indexOf(",")))) {
+                    String[] splitLine = itemLine.split(",");
+                    if (stores.get(i).getStoreName().equals(splitLine[0])) {
                         keep = false;
-                        break;
                     }
                 }
                 if (keep) {
-                    if (counter >= 1) {
-                        itemsFile.append("\n");
-                    }
-                    itemsFile.append(line);
+                    itemsFileOutput.add(itemLine);
                 }
-                counter++;
-                line = bfrThree.readLine();
             }
             bfrThree.close();
             PrintWriter pwThree = new PrintWriter(new FileOutputStream("FMItems.csv", false));
-            if (itemsFile.length() != 0) {
-                pwThree.println(itemsFile);
+            for (int i = 0; i < itemsFileOutput.size(); i++) {
+                pwThree.println(itemsFileOutput.get(i));
             }
             pwThree.close();
         } catch (Exception e) {
@@ -379,32 +401,25 @@ public class Seller implements User {
         }
     }
 
-    public int importItems(String fileName, Store[] stores) { // Adds imported items to stores and returns number of incorrectly formatted items
+    public int importItems(String fileName, Store[] stores) { // Adds imported items to stores
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(fileName));
             String line = "";
             int numberSuccess = 0;
-            int numberIncorrectFormat = 0;
             while ((line = bfr.readLine()) != null) {
-                int counter = 0;
                 String[] splitLine = line.split(",");
                 for (int i = 0; i < stores.length; i++) {
                     // Tests against all store names until one works
                     if (splitLine[0].equals(stores[i].getStoreName())) {
-                        counter++;
                         try {
                             stores[i].addItem(splitLine[1], splitLine[2],
                                     Integer.parseInt(splitLine[3]), Double.parseDouble(splitLine[4]));
                             numberSuccess++;
                             break;
                         } catch (Exception e) {
-                            // If item is formatted incorrectly, adds to counter
-                            numberIncorrectFormat++;
+
                         }
                     }
-                }
-                if (counter == 0) {
-                    numberIncorrectFormat++;
                 }
             }
             return numberSuccess;

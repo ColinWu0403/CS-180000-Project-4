@@ -28,8 +28,12 @@ public class FurnitureMarketplace {
             Object currentUser = null;                                          //object of Buyer or Seller for current user
 
             switch (loginResponse) {
-                case "1" ->                //user chooses to sign in
-                        currentUser = signInAccount(scanner);
+                case "1" -> {                //user chooses to sign in
+                    currentUser = signInAccount(scanner);
+                    if (currentUser == null) {
+                        continue;
+                    }
+                }
                 case "2" ->                //user chooses to create an account
                         currentUser = createAccount(scanner);
                 case "3" -> {                 //user chooses to exit the program
@@ -110,8 +114,8 @@ public class FurnitureMarketplace {
             System.out.print("Password: ");
             newPassword = scanner.nextLine();
 
-            if (newUsername.length() == 0 || newEmail.length() == 0 || newPassword.length() == 0) {
-                System.out.println("Error: Ensure username, email, and password are entered");
+            if (newUsername.length() <= 6 || newEmail.length() <= 6 || newPassword.length() <= 6) {
+                System.out.println("Error: Username, email, and password must all be at least 6 characters to ensure security");
             } else if (checkExistingCredentials(newEmail, newUsername, "newAccount").equals("DuplicateEmail")) {
                 System.out.println("Error: Email already exists");
             } else if (checkExistingCredentials(newEmail, newUsername,
@@ -181,7 +185,16 @@ public class FurnitureMarketplace {
                     return new Seller(accountDetails[1], accountDetails[0], accountDetails[2]);
                 }
             } else {
-                System.out.println("No account found, try again");
+                System.out.println("No account found. Would you like to try again?");
+                System.out.println("(1) Try again");
+                System.out.println("(2) Return to dashboard");
+                String[] inputOptions = {"1","2"};
+                String continueSignIn = validUserResponse(scanner, inputOptions);
+                if (continueSignIn.equals("1")) {
+                    continue;
+                } else if (continueSignIn.equals("2")) {
+                    return null;
+                }
             }
         }
     }
@@ -666,11 +679,9 @@ public class FurnitureMarketplace {
 
                 if (purchaseOption.equals("1")) {
                     try {
-                        System.out.println("\t\tPurchase History:"); // review Purchase History
                         ArrayList<String> purchaseHistory = Buyer.showPurchaseHistory(currentUser.getEmail());
-                        ArrayList<String> purchaseHistoryOutput = new ArrayList<>();
-
-                        if (purchaseHistory != null) {
+                        if (purchaseHistory.size() != 0) {
+                            System.out.println("\t\tPurchase History:"); // review Purchase History
                             for (int i = 0; i < purchaseHistory.size(); i++) {
                                 String[] splitLine = purchaseHistory.get(i).split("!");
                                 double totalCost = Double.parseDouble(splitLine[3]) * Double.parseDouble(splitLine[4]);
@@ -801,7 +812,7 @@ public class FurnitureMarketplace {
             }
             case "6" -> {
                 System.out.println("Buyer Statistics");// view statistics
-                System.out.print("(1) View all stores by products sold\n(2) View all stores that you have purchased from\n");
+                System.out.print("(1) View all current stores by products sold\n(2) View all current stores that you have purchased from\n");
                 String[] validResponse = {"1", "2"};
                 boolean viewStats = true;
                 while (viewStats) {
@@ -810,7 +821,7 @@ public class FurnitureMarketplace {
                         case "1" -> { // list of stores by number of products sold
                             ArrayList<String> storeProductSold = currentUser.storesFromProductsSold();
                             for (String s : storeProductSold) {
-                                System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                System.out.printf("%s has sold %s items to customers\n", s.split(",")[0],
                                         s.split(",")[1]);
                             }
 
@@ -820,7 +831,7 @@ public class FurnitureMarketplace {
                             if (statResponse.equals("1")) {
                                 ArrayList<String> sortedStoreProductSold = currentUser.sortStoresProductsSold();
                                 for (String s : sortedStoreProductSold) {
-                                    System.out.printf("%s: %s sold\n", s.split(",")[0],
+                                    System.out.printf("%s has sold %s items to customers\n", s.split(",")[0],
                                             s.split(",")[1]);
                                 }
                                 viewStats = false;
@@ -832,8 +843,8 @@ public class FurnitureMarketplace {
                             ArrayList<String> storeBuyerProduct = currentUser.storesFromBuyerProducts(currentUser.getEmail());
                             if (storeBuyerProduct != null) {
                                 for (String s : storeBuyerProduct) {
-                                    System.out.printf("%s: %s sold\n", s.split(",")[0],
-                                            s.split(",")[1]);
+                                    System.out.printf("You have purchased %s items from %s\n", s.split(",")[1],
+                                            s.split(",")[0]);
                                 }
 
                                 System.out.print("\n(1) Sort stores from most products purchased to least\n(2) Back to dashboard\n");
@@ -842,8 +853,8 @@ public class FurnitureMarketplace {
                                 if (statResponse.equals("1")) {
                                     ArrayList<String> sortStoreBuyerProduct = currentUser.sortStoresFromBuyerProducts(currentUser.getEmail());
                                     for (String s : sortStoreBuyerProduct) {
-                                        System.out.printf("%s: %s sold\n", s.split(",")[0],
-                                                s.split(",")[1]);
+                                        System.out.printf("You have purchased %s items from %s\n", s.split(",")[1],
+                                                s.split(",")[0]);
                                     }
                                     viewStats = false;
                                 } else if (statResponse.equals("2")) {
@@ -1061,6 +1072,9 @@ public class FurnitureMarketplace {
                                     }
                                     break;
                                 case "5":               //1-1-5 Import product file
+                                    System.out.println("Ensure each line in the imported file is formatted correctly");
+                                    System.out.println("Example: storeName,itemName,description,quantity,price");
+                                    System.out.println("Walmart,Table,strong wooden table in great condition,10,99.99");
                                     System.out.print("Enter name of file: ");
                                     String filename = scanner.nextLine();
                                     int numberOfFiles = currentUser.importItems(filename, currentUserStores);
@@ -1141,7 +1155,7 @@ public class FurnitureMarketplace {
                         String[] saleInfo = sales.get(i).split("!");
                         System.out.printf("%-25s  %-25s  %-25s  %-25s\n",
                                 "Customer:" + saleInfo[0], "Product:" + saleInfo[1], "Quantity bought:" + saleInfo[2],
-                                "Price bought at:" + saleInfo[3]);
+                                "Price bought at:$" + saleInfo[3]);
                     }
                 }
                 System.out.println();
