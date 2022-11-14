@@ -7,7 +7,6 @@ import java.io.*;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * A Test class for the Buyer class.
  *
@@ -16,31 +15,30 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Andrei Deaconescu
  * @version Nov 13, 2022
  */
-class BuyerTest {                   // some of the methods only work if content is added manually to the file
+class BuyerTest {                   // some methods only work if content is added manually to the file
     private final PrintStream out = System.out;
     private ByteArrayOutputStream outputStream;
-
     @BeforeEach
     public void setup() {                   // to check methods that print to the console
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
     }
 
-    @AfterEach
-    void reset() {                  // resets files after testing
-        try {
-            FileWriter itemWriter = new FileWriter("FMItems.csv", false);
-            FileWriter storeWriter = new FileWriter("FMStores.csv", false);
-            itemWriter.write("");
-            storeWriter.write("");
-
-            itemWriter.close();
-            storeWriter.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    @AfterEach
+//    void reset() {                  // resets files after testing
+//        try {
+//            FileWriter itemWriter = new FileWriter("FMItems.csv", false);
+//            FileWriter storeWriter = new FileWriter("FMStores.csv", false);
+//            itemWriter.write("");
+//            storeWriter.write("");
+//
+//            itemWriter.close();
+//            storeWriter.close();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @After
     public void closeReader() {
@@ -79,8 +77,8 @@ class BuyerTest {                   // some of the methods only work if content 
             while ((line = reader.readLine()) != null) {
                 actual.add(line);
             }
-            String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                    "neat desks!real neat desk!a really neat desk!1!299.99"};
+            String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                    "neat desks!real neat desk!a really neat desk!1!299.99" };
 
             assertEquals(expected[0], actual.get(0));
             assertEquals(expected[1], actual.get(1));
@@ -99,8 +97,8 @@ class BuyerTest {                   // some of the methods only work if content 
         purchaseHistory.add("neat desks!real neat desk!a really neat desk!1!299.99");
         Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, null);
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
         ArrayList<String> actual = Buyer.showPurchaseHistory("a@bc.com");
 
         assert actual != null;
@@ -120,8 +118,8 @@ class BuyerTest {                   // some of the methods only work if content 
         input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
                 "real neat desk", 1);
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
         ArrayList<String> actual = Buyer.showItemsInCart("a@bc.com");
 
         assert actual != null;
@@ -134,27 +132,23 @@ class BuyerTest {                   // some of the methods only work if content 
     @Test
     void storesFromBuyerProducts() throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter("FMStores.csv"));
-        writer.println("neat desks,4");
+        writer.println("neat desks,sample");
         writer.flush();
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("neat desks!neat desk!a neat desk!4!29.99");
-        Buyer input = new Buyer("jimmy neutron", "a123456@bc.com", "qwertyuiop", null, null);
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 1);
         input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
                 "real neat desk", 1);
-        input.checkout();
-        writer.close();
 
-        ArrayList<String> stores = input.storesFromBuyerProducts("a123456@bc.com");
+        ArrayList<String> stores = input.storesFromBuyerProducts("sample");
 
-        String expected = "neat desks,5";
+        String expected = "neat desks";
         String actual = stores.get(0).split(",")[0];
 
         assertEquals(expected, actual);
 
         PrintWriter reset = new PrintWriter(new FileWriter("FMStores.csv", false));
 //        reset.write("");
-
+        writer.close();
         reset.close();
 
         // incomplete
@@ -173,17 +167,8 @@ class BuyerTest {                   // some of the methods only work if content 
     }
 
     @Test
-    void addItem() throws FileNotFoundException {
-        FileOutputStream fos = new FileOutputStream("FMCredentials.csv");
-        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+    void addItem() {
 
-        writer.println("a@bc.com,jim,ff,x,x");
-        writer.close();
-
-        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 2);
-
-        // incomplete
     }
 
     @Test
@@ -230,8 +215,8 @@ class BuyerTest {                   // some of the methods only work if content 
         cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
         Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
         ArrayList<String> actual = input.getCart();
 
         assertEquals(expected[0], actual.get(0));
@@ -257,8 +242,8 @@ class BuyerTest {                   // some of the methods only work if content 
         Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
         ArrayList<String> actual = input.getCart();
 
         assertEquals(expected[0], actual.get(0));
@@ -268,14 +253,16 @@ class BuyerTest {                   // some of the methods only work if content 
     @Test
     void printCart() {
         ArrayList<String> cart = new ArrayList<>();
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        cart.add("neat desks!neat desk!a neat desk!2!25.00");
-        purchaseHistory.add("x");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, cart);
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
 
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
 
-        String expected = "(1) neat desk from neat desks; Quantity: 2; Total Price: $50.00\n";
+        String expected = """
+        (1) neat desk from neat desks; Quantity: 4; Total Price: $119.96
+        (2) real neat desk from neat desks; Quantity: 1; Total Price: $299.99
+        """;
         String actual = input.printCart();
 
         assertEquals(expected, actual);
@@ -283,102 +270,114 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void checkout() {
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
 
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
 
+        input.checkout();
+
+        ArrayList<String> history = input.getPurchaseHistory();
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
+
+        assertEquals(expected[0], history.get(0));
+        assertEquals(expected[1], history.get(1));
     }
 
     @Test
-    void removeItemFromCart() throws FileNotFoundException {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        FileOutputStream fos = new FileOutputStream("FMCredentials.csv", false);
-        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
+    void removeItemFromCart() {
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
 
-        writer.println("a@bc.com,jim,ff,x,John's Chairs!awesome chair!5!39.99~Brad's Tables!ok table!3!29.99");
-        writer.close();
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
 
         input.removeItemFromCart(1);
+        ArrayList<String> newCart = input.getCart();
+        String expected = "neat desks!real neat desk!a really neat desk!1!299.99";
 
-        // incomplete
+        assertEquals(expected, newCart.get(0));
     }
 
     @Test
-    void csvTemporaryStorage() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMCredentials.csv"));
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("a@bc.com,jim,ff,x,x");
-        writer.println("brad@bc.com,brad,11,x,x");
-        writer.println("jake@bc.com,jake,33,x,x");
-        writer.flush();
-        writer.close();
-
-        ArrayList<String> expected = new ArrayList<>();
-
-        expected.add("brad@bc.com,brad,11,x,x");
-        expected.add("jake@bc.com,jake,33,x,x");
-
-        ArrayList<String> actual = input.csvTemporaryStorage();
-
-        assertEquals(expected.get(0), actual.get(0));
-        assertEquals(expected.get(1), actual.get(1));
+    void csvTemporaryStorage() {
     }
 
     @Test
     void getPurchaseHistory() {
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("John's Chairs!awesome chair!5!39.99");
-
-        Buyer input = new Buyer("jake", "jake@bc.com", "ff", purchaseHistory, null);
-
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("John's Chairs!awesome chair!5!39.99");
-
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
+        input.checkout();
         ArrayList<String> actual = input.getPurchaseHistory();
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
 
-        assertEquals(expected, actual);
-
-        // test fails :(
+        assertEquals(expected[0], actual.get(0));
+        assertEquals(expected[1], actual.get(1));
     }
 
     @Test
     void deleteAccount() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("FMCredentials.csv"));
+            BufferedReader reader2 = new BufferedReader(new FileReader("FMCredentials.csv"));
+            PrintWriter writer = new PrintWriter(new FileWriter("FMCredentials.csv"));
+            writer.println("a@bc.com,jim,ff,x,x");
+            writer.flush();
 
+            Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+            String confirmed = reader.readLine();
+            input.deleteAccount();
+            String confirmed2 = reader2.readLine();
+            System.setOut(out);
 
+            System.out.println(confirmed);
+            System.out.println(confirmed2);
+
+            String expected = "a@bc.com,jim,ff,x,x";
+            String expected2 = "";
+            
+            assertEquals(expected, confirmed);
+            assertEquals(expected2, confirmed2);
+
+            reader.close();
+            reader2.close();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    void parseItem() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMItems.csv"));
-
-        ArrayList<String> expectedList = new ArrayList<>();
-        ArrayList<String> actualList = new ArrayList<>();
-
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
-        writer.close();
-
-        expectedList.add("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
-        actualList = input.parseItem();
-
-        assertEquals(expectedList.get(0), actualList.get(0));
+    void parseItem() {
+        // parseItem is never used in the project
     }
 
     @Test
-    void parseStore() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMStores.csv"));
+    void parseStore() {
+        try {
+            Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("FMStores.csv")));
+            writer.println("sample store,sample@sample.com");
+            writer.flush();
+            writer.println("amazon,jeff_bezos@amazon.com");
+            writer.flush();
+            ArrayList<String> actual = input.parseStore();
+            String[] expected = new String[] { "sample store,sample@sample.com", "amazon,jeff_bezos@amazon.com" };
 
-        ArrayList<String> expectedList = new ArrayList<>();
-        ArrayList<String> actualList = new ArrayList<>();
+            assertEquals(expected[0], actual.get(0));
+            assertEquals(expected[1], actual.get(1));
 
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("Cedar Tables,a@bc.com");
-        writer.close();
-
-        expectedList.add("Cedar Tables,a@bc.com");
-        actualList = input.parseStore();
-
-        assertEquals(expectedList.get(0), actualList.get(0));
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
