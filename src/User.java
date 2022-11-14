@@ -1,22 +1,41 @@
 import java.io.IOException;
 
+/**
+ * User interface with shared methods for Seller.java and Buyer.java
+ *
+ * @author Benjamin Herrington
+ * **/
 public interface User {
+
+    /**
+     * Gets user email
+     * **/
     String getEmail();
-    //Email cannot be changed.
 
+
+    /**
+     * Gets name
+     * **/
     String getName();
+
+    /**
+     * Sets name
+     * **/
     void setName(String name);
-    //Users may decide to edit their account Username
 
+    /**
+     * Get password
+     * **/
     String getPassword();
-    void setPassword(String password);
-    //Users may decide to edit their account password.
 
+    /**
+     * Sets password
+     * **/
+    void setPassword(String password);
+
+
+    /**
+     * Deletes account
+     * **/
     void deleteAccount() throws IOException;
-    // Deletes User From Credentials list
-    //
-    // If Seller, all stores owned by that seller will be deleted from csv file, as well as the items
-    // associated with that store. Associated "PurchaseListing.csv" files is deleted
-    //
-    // If Buyer, Associated PurchaseHistory.csv file is deleted
 }
