@@ -51,6 +51,8 @@ class ItemTest {
         }
     }
 
+    //Verifies the deleteItem method works probably which is used when a seller deletes an item, a seller deletes a
+    //store than contains items, or a seller deletes an account that contains a store that contains items
     @Test
     void deleteItem() throws IOException {
         Item input = new Item("store", "plate", "a plate", 10, 4.99);
@@ -125,8 +127,11 @@ class ItemTest {
 
     @Test
     void changeField() {
-        Item input = new Item("store", "something nice", "a real nice item",
+        Store newStore = new Store("a@bc.com", "newStore");
+        Item input = new Item("newStore", "itemName", "description",
                 1, 0.99);
+        newStore.addItem(input.getName(), input.getDescription(), input.getQuantity(), input.getPrice());
+        String actualCSVLine = "";
 
         input.changeField("name", "something else nice");
         String name = input.getName();
@@ -143,13 +148,23 @@ class ItemTest {
         input.changeField("price", "9.99");
         double price = input.getPrice();
         assertEquals(9.99, price);
+
+        //checks if all the changed values printed to the FMItems.csv correctly
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));
+            actualCSVLine = bfr.readLine();
+            bfr.close();
+        } catch (IOException e) {}
+        String expectedCSVLine = "newStore,something else nice,a different real nice item,2,9.99";
+        assertEquals(actualCSVLine, expectedCSVLine);
     }
 
     @Test
     void printItem() {
         Item input = new Item("store", "something nice", "a real nice item",
                 1, 0.99);
-        String expected = "something nice selling at 0.99\n";
+        String expected = "Store: store :Product: something nice :Price: $0.99 :Quantity: 1 :" +
+                "Description: a real nice item\n";
 
         input.printItem();
 
@@ -160,7 +175,8 @@ class ItemTest {
     void printItemInfo() {
         Item input = new Item("store", "something nice", "a real nice item",
                 1, 0.99);
-        String expected = "something nice selling at 0.99. 1 in stock.\na real nice item\n";
+        String expected = "something nice selling at 0.99. 1 in stock.\n" +
+                "a real nice item\n";
 
         input.printItemInfo();
 
