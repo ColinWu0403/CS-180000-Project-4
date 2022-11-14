@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A Test class for the Buyer class.
  *
@@ -18,27 +19,28 @@ import static org.junit.jupiter.api.Assertions.*;
 class BuyerTest {                   // some of the methods only work if content is added manually to the file
     private final PrintStream out = System.out;
     private ByteArrayOutputStream outputStream;
+
     @BeforeEach
     public void setup() {                   // to check methods that print to the console
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
     }
 
-//    @AfterEach
-//    void reset() {                  // resets files after testing
-//        try {
-//            FileWriter itemWriter = new FileWriter("FMItems.csv", false);
-//            FileWriter storeWriter = new FileWriter("FMStores.csv", false);
-//            itemWriter.write("");
-//            storeWriter.write("");
-//
-//            itemWriter.close();
-//            storeWriter.close();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @AfterEach
+    void reset() {                  // resets files after testing
+        try {
+            FileWriter itemWriter = new FileWriter("FMItems.csv", false);
+            FileWriter storeWriter = new FileWriter("FMStores.csv", false);
+            itemWriter.write("");
+            storeWriter.write("");
+
+            itemWriter.close();
+            storeWriter.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @After
     public void closeReader() {
@@ -77,8 +79,8 @@ class BuyerTest {                   // some of the methods only work if content 
             while ((line = reader.readLine()) != null) {
                 actual.add(line);
             }
-            String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
-                    "neat desks!real neat desk!a really neat desk!1!299.99" };
+            String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
+                    "neat desks!real neat desk!a really neat desk!1!299.99"};
 
             assertEquals(expected[0], actual.get(0));
             assertEquals(expected[1], actual.get(1));
@@ -97,8 +99,8 @@ class BuyerTest {                   // some of the methods only work if content 
         purchaseHistory.add("neat desks!real neat desk!a really neat desk!1!299.99");
         Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, null);
 
-        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99" };
+        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99"};
         ArrayList<String> actual = Buyer.showPurchaseHistory("a@bc.com");
 
         assert actual != null;
@@ -118,8 +120,8 @@ class BuyerTest {                   // some of the methods only work if content 
         input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
                 "real neat desk", 1);
 
-        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99" };
+        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99"};
         ArrayList<String> actual = Buyer.showItemsInCart("a@bc.com");
 
         assert actual != null;
@@ -132,23 +134,27 @@ class BuyerTest {                   // some of the methods only work if content 
     @Test
     void storesFromBuyerProducts() throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter("FMStores.csv"));
-        writer.println("neat desks,sample");
+        writer.println("neat desks,4");
         writer.flush();
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        ArrayList<String> purchaseHistory = new ArrayList<>();
+        purchaseHistory.add("neat desks!neat desk!a neat desk!4!29.99");
+        Buyer input = new Buyer("jimmy neutron", "a123456@bc.com", "qwertyuiop", null, null);
         input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 1);
         input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
                 "real neat desk", 1);
+        input.checkout();
+        writer.close();
 
-        ArrayList<String> stores = input.storesFromBuyerProducts("sample");
+        ArrayList<String> stores = input.storesFromBuyerProducts("a123456@bc.com");
 
-        String expected = "neat desks";
+        String expected = "neat desks,5";
         String actual = stores.get(0).split(",")[0];
 
         assertEquals(expected, actual);
 
         PrintWriter reset = new PrintWriter(new FileWriter("FMStores.csv", false));
 //        reset.write("");
-        writer.close();
+
         reset.close();
 
         // incomplete
@@ -167,8 +173,17 @@ class BuyerTest {                   // some of the methods only work if content 
     }
 
     @Test
-    void addItem() {
+    void addItem() throws FileNotFoundException {
+        FileOutputStream fos = new FileOutputStream("FMCredentials.csv");
+        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
 
+        writer.println("a@bc.com,jim,ff,x,x");
+        writer.close();
+
+        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 2);
+
+        // incomplete
     }
 
     @Test
@@ -215,8 +230,8 @@ class BuyerTest {                   // some of the methods only work if content 
         cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
         Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
-        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99" };
+        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99"};
         ArrayList<String> actual = input.getCart();
 
         assertEquals(expected[0], actual.get(0));
@@ -242,8 +257,8 @@ class BuyerTest {                   // some of the methods only work if content 
         Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
 
-        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99" };
+        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99"};
         ArrayList<String> actual = input.getCart();
 
         assertEquals(expected[0], actual.get(0));
@@ -252,34 +267,118 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void printCart() {
-        
+        ArrayList<String> cart = new ArrayList<>();
+        ArrayList<String> purchaseHistory = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!2!25.00");
+        purchaseHistory.add("x");
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, cart);
+
+        input.setCart(cart);
+
+        String expected = "(1) neat desk from neat desks; Quantity: 2; Total Price: $50.00\n";
+        String actual = input.printCart();
+
+        assertEquals(expected, actual);
     }
 
     @Test
     void checkout() {
+
+
     }
 
     @Test
-    void removeItemFromCart() {
+    void removeItemFromCart() throws FileNotFoundException {
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        FileOutputStream fos = new FileOutputStream("FMCredentials.csv", false);
+        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
+
+        writer.println("a@bc.com,jim,ff,x,John's Chairs!awesome chair!5!39.99~Brad's Tables!ok table!3!29.99");
+        writer.close();
+
+        input.removeItemFromCart(1);
+
+        // incomplete
     }
 
     @Test
-    void csvTemporaryStorage() {
+    void csvTemporaryStorage() throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(new PrintWriter("FMCredentials.csv"));
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+
+        writer.println("a@bc.com,jim,ff,x,x");
+        writer.println("brad@bc.com,brad,11,x,x");
+        writer.println("jake@bc.com,jake,33,x,x");
+        writer.flush();
+        writer.close();
+
+        ArrayList<String> expected = new ArrayList<>();
+
+        expected.add("brad@bc.com,brad,11,x,x");
+        expected.add("jake@bc.com,jake,33,x,x");
+
+        ArrayList<String> actual = input.csvTemporaryStorage();
+
+        assertEquals(expected.get(0), actual.get(0));
+        assertEquals(expected.get(1), actual.get(1));
     }
 
     @Test
     void getPurchaseHistory() {
+        ArrayList<String> purchaseHistory = new ArrayList<>();
+        purchaseHistory.add("John's Chairs!awesome chair!5!39.99");
+
+        Buyer input = new Buyer("jake", "jake@bc.com", "ff", purchaseHistory, null);
+
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("John's Chairs!awesome chair!5!39.99");
+
+        ArrayList<String> actual = input.getPurchaseHistory();
+
+        assertEquals(expected, actual);
+
+        // test fails :(
     }
 
     @Test
     void deleteAccount() {
+
+
     }
 
     @Test
-    void parseItem() {
+    void parseItem() throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(new PrintWriter("FMItems.csv"));
+
+        ArrayList<String> expectedList = new ArrayList<>();
+        ArrayList<String> actualList = new ArrayList<>();
+
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+
+        writer.println("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
+        writer.close();
+
+        expectedList.add("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
+        actualList = input.parseItem();
+
+        assertEquals(expectedList.get(0), actualList.get(0));
     }
 
     @Test
-    void parseStore() {
+    void parseStore() throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(new PrintWriter("FMStores.csv"));
+
+        ArrayList<String> expectedList = new ArrayList<>();
+        ArrayList<String> actualList = new ArrayList<>();
+
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+
+        writer.println("Cedar Tables,a@bc.com");
+        writer.close();
+
+        expectedList.add("Cedar Tables,a@bc.com");
+        actualList = input.parseStore();
+
+        assertEquals(expectedList.get(0), actualList.get(0));
     }
 }
