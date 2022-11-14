@@ -92,7 +92,7 @@ public class Buyer {
                         PrintWriter purchaseWriter = new PrintWriter(fos);
 
                         // Write to file
-                        for (int j = 1; j < purchaseHistoryLine.length; j++) {
+                        for (int j = 0; j < purchaseHistoryLine.length; j++) {
                             purchaseWriter.println(purchaseHistoryLine[j]);
                         }
 
@@ -464,7 +464,7 @@ public class Buyer {
     /**
      * Sets Buyer name
      **/
-    public void setName(String Name) {
+    public void setName(String name) {
         this.name = name;
     }
 
