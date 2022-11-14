@@ -18,9 +18,9 @@ public class Store {
     /**
      * Store constructor
      *
-     * @param owner Store owner
+     * @param owner     Store owner
      * @param storeName Store name
-     * **/
+     **/
     public Store(String owner, String storeName) {
         this.owner = owner;
         this.storeName = storeName;
@@ -46,21 +46,21 @@ public class Store {
 
     /**
      * Returns owner
-     * **/
+     **/
     public String getOwner() {
         return owner;
     }
 
     /**
      * Returns store name
-     * **/
+     **/
     public String getStoreName() {
         return storeName;
     }
 
     /**
      * Returns item ArrayList
-     * **/
+     **/
     public ArrayList<Item> getItems() {
         return items;
     }
@@ -68,11 +68,11 @@ public class Store {
     /**
      * Writes new item to FMItems.csv
      *
-     * @param itemName Name of item to be written
+     * @param itemName    Name of item to be written
      * @param description Item description to be written
-     * @param quantity Quantity of items to be written
-     * @param price Price of item to be written
-      * **/
+     * @param quantity    Quantity of items to be written
+     * @param price       Price of item to be written
+     **/
     public void addItem(String itemName, String description, int quantity, double price) {
         items.add(new Item(storeName, itemName, description, quantity, price));
         // Also print item into csv file
@@ -88,7 +88,7 @@ public class Store {
 
     /**
      * Prints items in a store so buyers can see there options and sellers can see what items they have listed
-     * **/
+     **/
     public void printItems() {
         for (int i = 0; i < items.size(); i++) {
             System.out.print((i + 1) + ". ");
@@ -98,7 +98,7 @@ public class Store {
 
     /**
      * Returns string in main; Prints items in FurnitureMarketplace
-     * **/
+     **/
     public String printItemNames() {
         if (items.size() == 0) {
             System.out.println("Error: No products in this store");
@@ -113,7 +113,7 @@ public class Store {
 
     /**
      * Prints specifics of a single item within a store
-     * **/
+     **/
     public void viewItem(int itemNumber) {
         items.get(itemNumber - 1).printItemInfo();
     }
@@ -121,10 +121,10 @@ public class Store {
     /**
      * Saves sale information for seller; Writes a copy of the information to FMStats.csv
      *
-     * @param buyer Buyer name
-     * @param item Item object to be accessed
+     * @param buyer      Buyer name
+     * @param item       Item object to be accessed
      * @param amountSold Amount sold to be written
-     * **/
+     **/
     public static void saveSale(String buyer, Item item, int amountSold) {
         try {
             // Read FMStores to find the correct store to add sale information to
@@ -198,7 +198,7 @@ public class Store {
 
     /**
      * Returns an ArrayList to be printed as the store's sale history
-     * **/
+     **/
     public ArrayList<String> showSales() {
         try {
             // Read through CSV file
@@ -233,8 +233,8 @@ public class Store {
      * Returns arraylist to be printed as store's statistics
      *
      * @param storeName Name of store to search for
-     * @param type Type of statistic to show
-     * **/
+     * @param type      Type of statistic to show
+     **/
     public static ArrayList<String> showStats(String storeName, String type) {
         // type should be either buyer or item
         ArrayList<String> stats = new ArrayList<>();
@@ -259,9 +259,10 @@ public class Store {
 
     /**
      * Returns arraylist to be printed as store's statistics sorted by amount from most to least
+     *
      * @param storeName Name of store to search for
-     * @param type Type of statistic to show
-     * **/
+     * @param type      Type of statistic to show
+     **/
     public static ArrayList<String> showSortedStats(String storeName, String type) {
         ArrayList<String> unsorted = showStats(storeName, type);
         ArrayList<Integer> amounts = new ArrayList<>();
