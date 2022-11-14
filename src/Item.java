@@ -18,12 +18,12 @@ public class Item {
     /**
      * Item constructor
      *
-     * @param store Item store name
-     * @param name Item name
+     * @param store       Item store name
+     * @param name        Item name
      * @param description Item description
-     * @param price Item price
-     * @param quantity Item quantity
-     * **/
+     * @param price       Item price
+     * @param quantity    Item quantity
+     **/
     public Item(String store, String name, String description, int quantity, double price) {
         this.store = store;
         this.name = name;
@@ -32,9 +32,9 @@ public class Item {
         this.price = price;
     }
 
-   /**
-    * Deletes Item from FMItems.csv
-    * **/
+    /**
+     * Deletes Item from FMItems.csv
+     **/
     public void deleteItem() {
         ArrayList<String> lines = new ArrayList<>();
         try {
@@ -62,35 +62,45 @@ public class Item {
 
     /**
      * Returns store
-     * **/
-    public String getStore() { return store; }
+     **/
+    public String getStore() {
+        return store;
+    }
 
     /**
      * Returns name
-     * **/
-    public String getName() { return name; }
+     **/
+    public String getName() {
+        return name;
+    }
 
     /**
      * Returns description
-     * **/
-    public String getDescription() { return description; }
+     **/
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * Returns quantity
-     * **/
-    public int getQuantity() { return quantity; }
+     **/
+    public int getQuantity() {
+        return quantity;
+    }
 
     /**
      * Returns price
-     * **/
-    public double getPrice() { return price; }
+     **/
+    public double getPrice() {
+        return price;
+    }
 
     /**
      * Changes field in of item FMItems.csv
      *
-     * @param field : Field type to change
+     * @param field    : Field type to change
      * @param newValue : New value to change it to
-     * **/
+     **/
     public void changeField(String field, String newValue) {
         // Write quantity change to csv file
         File f = new File("FMItems.csv");
@@ -150,7 +160,7 @@ public class Item {
 
     /**
      * Prints store name, name, price, quantity, and description of item
-     * **/
+     **/
     public void printItem() {
         System.out.printf("Store: %s :Product: %s :Price: $%.2f :Quantity: %d :Description: %s\n",
                 store, name, price, quantity, description);
@@ -159,7 +169,7 @@ public class Item {
 
     /**
      * Prints shorter information of Item
-     * **/
+     **/
     public void printItemInfo() {
         System.out.printf("%s selling at %.2f. %d in stock.\n%s\n", name, price, quantity, description);
     }
