@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Andrei Deaconescu
  * @version Nov 13, 2022
  */
-class BuyerTest {                   // some of the methods only work if content is added manually to the file
+class BuyerTest {                   // some methods only work if content is added manually to the file
     private final PrintStream out = System.out;
     private ByteArrayOutputStream outputStream;
 
@@ -94,13 +94,15 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void showPurchaseHistory() {
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("neat desks!neat desk!a neat desk!4!29.99");
-        purchaseHistory.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, null);
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
+        input.checkout();
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
         ArrayList<String> actual = Buyer.showPurchaseHistory("a@bc.com");
 
         assert actual != null;
@@ -112,13 +114,12 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void showItemsInCart() {
+
         ArrayList<String> cart = new ArrayList<>();
         cart.add("neat desks!neat desk!a neat desk!4!29.99");
         cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, cart);
-        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 1);
-        input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
-                "real neat desk", 1);
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
 
         String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
                 "neat desks!real neat desk!a really neat desk!1!299.99"};
@@ -268,11 +269,9 @@ class BuyerTest {                   // some of the methods only work if content 
     @Test
     void printCart() {
         ArrayList<String> cart = new ArrayList<>();
-        ArrayList<String> purchaseHistory = new ArrayList<>();
         cart.add("neat desks!neat desk!a neat desk!2!25.00");
-        purchaseHistory.add("x");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, cart);
 
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
         input.setCart(cart);
 
         String expected = "(1) neat desk from neat desks; Quantity: 2; Total Price: $50.00\n";
@@ -283,8 +282,18 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void checkout() {
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("neat desks!neat desk!a neat desk!4!29.99");
+        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
+        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+        input.setCart(cart);
+        input.checkout();
+        ArrayList<String> actual = input.getPurchaseHistory();
+        String[] expected = new String[] { "neat desks!neat desk!a neat desk!4!29.99",
+                "neat desks!real neat desk!a really neat desk!1!299.99" };
 
-
+        assertEquals(expected[0], actual.get(0));
+        assertEquals(expected[1], actual.get(1));
     }
 
     @Test
@@ -325,10 +334,12 @@ class BuyerTest {                   // some of the methods only work if content 
 
     @Test
     void getPurchaseHistory() {
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("John's Chairs!awesome chair!5!39.99");
+        ArrayList<String> cart = new ArrayList<>();
+        cart.add("John's Chairs!awesome chair!5!39.99");
 
-        Buyer input = new Buyer("jake", "jake@bc.com", "ff", purchaseHistory, null);
+        Buyer input = new Buyer("jake", "jake@bc.com", "ff", null, null);
+        input.setCart(cart);
+        input.checkout();
 
         ArrayList<String> expected = new ArrayList<>();
         expected.add("John's Chairs!awesome chair!5!39.99");
@@ -336,14 +347,37 @@ class BuyerTest {                   // some of the methods only work if content 
         ArrayList<String> actual = input.getPurchaseHistory();
 
         assertEquals(expected, actual);
-
-        // test fails :(
     }
 
     @Test
     void deleteAccount() {
+        try {
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("FMCredentials.csv")));
+            writer.println("a@bc.com,jim,ff,buyer,,x");
+            writer.flush();
+            BufferedReader reader = new BufferedReader(new FileReader("FMCredentials.csv"));
+            BufferedReader reader2 = new BufferedReader(new FileReader("FMCredentials.csv"));
+            Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
 
+            String actual = reader.readLine();
+            input.deleteAccount();
+            String actual2 = reader2.readLine();
+            System.setOut(out);
+            System.out.println(actual);
+            System.out.println(actual2);
 
+            String expected = "a@bc.com,jim,ff,buyer,,x";
+            String expected2 = "";
+
+            assertEquals(expected, actual);
+            assertEquals(expected2, actual2);
+
+            reader.close();
+            reader2.close();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
