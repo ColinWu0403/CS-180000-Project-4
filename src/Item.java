@@ -14,7 +14,16 @@ public class Item {
     private String description;
     private int quantity;
     private double price;
-    // Standard constructor
+
+    /**
+     * Item constructor
+     *
+     * @param store Item store name
+     * @param name Item name
+     * @param description Item description
+     * @param price Item price
+     * @param quantity Item quantity
+     * **/
     public Item(String store, String name, String description, int quantity, double price) {
         this.store = store;
         this.name = name;
@@ -23,7 +32,9 @@ public class Item {
         this.price = price;
     }
 
-    //only deletes item from FMItems.csv: need more?
+   /**
+    * Deletes Item from FMItems.csv
+    * **/
     public void deleteItem() {
         ArrayList<String> lines = new ArrayList<>();
         try {
@@ -47,12 +58,39 @@ public class Item {
         }
 
     }
-    // Standard getters and a setter for quantity
+
+
+    /**
+     * Returns store
+     * **/
     public String getStore() { return store; }
+
+    /**
+     * Returns name
+     * **/
     public String getName() { return name; }
+
+    /**
+     * Returns description
+     * **/
     public String getDescription() { return description; }
+
+    /**
+     * Returns quantity
+     * **/
     public int getQuantity() { return quantity; }
+
+    /**
+     * Returns price
+     * **/
     public double getPrice() { return price; }
+
+    /**
+     * Changes field in of item FMItems.csv
+     *
+     * @param field : Field type to change
+     * @param newValue : New value to change it to
+     * **/
     public void changeField(String field, String newValue) {
         // Write quantity change to csv file
         File f = new File("FMItems.csv");
@@ -76,13 +114,15 @@ public class Item {
                     line = bfr.readLine();
                 } else if (field.equals("quantity")) {
                     if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, name, description, this.quantity, price))) {
-                        line = String.format("%s,%s,%s,%d,%.2f", store, name, description, Integer.parseInt(newValue), price);
+                        line = String.format("%s,%s,%s,%d,%.2f", store, name, description,
+                                Integer.parseInt(newValue), price);
                     }
                     lines.add(line);
                     line = bfr.readLine();
                 } else if (field.equals("price")) {
                     if (line.equals(String.format("%s,%s,%s,%d,%.2f", store, name, description, quantity, this.price))) {
-                        line = String.format("%s,%s,%s,%d,%.2f", store, name, description, quantity, Double.parseDouble(newValue));
+                        line = String.format("%s,%s,%s,%d,%.2f", store, name, description, quantity,
+                                Double.parseDouble(newValue));
                     }
                     lines.add(line);
                     line = bfr.readLine();
@@ -108,11 +148,18 @@ public class Item {
         }
     }
 
-    // Method to print product name and price of an item
+    /**
+     * Prints store name, name, price, quantity, and description of item
+     * **/
     public void printItem() {
-        System.out.printf("Store: %s :Product: %s :Price: $%.2f :Quantity: %d :Description: %s\n", store, name, price, quantity, description);
+        System.out.printf("Store: %s :Product: %s :Price: $%.2f :Quantity: %d :Description: %s\n",
+                store, name, price, quantity, description);
     }
-    // Method to print more detailed information about an item
+
+
+    /**
+     * Prints shorter information of Item
+     * **/
     public void printItemInfo() {
         System.out.printf("%s selling at %.2f. %d in stock.\n%s\n", name, price, quantity, description);
     }
