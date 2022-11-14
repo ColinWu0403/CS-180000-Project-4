@@ -1,7 +1,7 @@
 # CS 18000 GLD Project 4 - Furniture Marketplace
 
-## Colin Wu - Submitted Vocareum Workspace
-## Nathan Schneider - Submitted Project 4 Report
+### Colin Wu - Submitted Vocareum Workspace
+### Nathan Schneider - Submitted Project 4 Report
 
 ### Description
 This is a furniture reselling marketplace where users can buy and sell items. Users can create an account that is either a Buyer or Seller with their information saved between sessions. To access their account after creation, users just have to log into their account by inputting the correct credentials. 
