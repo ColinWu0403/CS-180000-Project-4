@@ -215,11 +215,9 @@ public ArrayList<String> sortStoresFromBuyerProducts(String email)
   
 public ArrayList<String> storesFromProductsSold()
 - Returns ArrayList of stores by number of products sold
-- @param email : Email to search for when adding to array list
   
 public ArrayList<String> sortStoresProductsSold()
 - Returns sorted ArrayList of stores by number of products sold from most to least
-- @param email : Email to search for when adding to array list
   
 public void addItem(String itemToAdd, String itemName, int quantityToPurchase)
 - Adds item to shopping cart
