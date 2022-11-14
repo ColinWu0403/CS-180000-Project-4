@@ -267,8 +267,11 @@ public class FurnitureMarketplace {
         return itemName;
     }
 
-    /** Purpose: returns the response from the user if it is a valid response.
-     *@param inputOptions : possible options that can be accepted the by the user*/
+    /**
+     * Purpose: returns the response from the user if it is a valid response.
+     *
+     * @param inputOptions : possible options that can be accepted the by the user
+     */
     public static String validUserResponse(Scanner scanner, String[] inputOptions) {
         String userResponse = "";  //User response to account options
         while (true) {
@@ -284,7 +287,8 @@ public class FurnitureMarketplace {
 
 
     /**
-     * Returns a list of Item objects to be accessed throughout the program.*/
+     * Returns a list of Item objects to be accessed throughout the program.
+     */
     public static Item[] createItemList() {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader("FMItems.csv"));

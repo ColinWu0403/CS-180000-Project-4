@@ -302,7 +302,7 @@ public class Seller implements User {
                                         cartItems[i].indexOf("!")).equals(stores.get(j).getStoreName())) {
                                     if (!cart.contains("~")) {
                                         cart = "x";
-                                    }else if (cart.contains("~" + cartItems[i])) {
+                                    } else if (cart.contains("~" + cartItems[i])) {
                                         cart = cart.replaceFirst("~" + cartItems[i], "");
                                     } else cart = cart.replaceFirst(cartItems[i] + "~", "");
                                 }
@@ -390,8 +390,9 @@ public class Seller implements User {
 
     /**
      * Purpose: Prints customer shopping cart info for Sellers
+     *
      * @param fileName Contains the file name that the imported files should be read from.
-     * @param stores Array containing all the stores of the current seller
+     * @param stores   Array containing all the stores of the current seller
      */
     public int importItems(String fileName, Store[] stores) { // Adds imported items to stores
         try {
@@ -416,7 +417,7 @@ public class Seller implements User {
             }
             return numberSuccess;
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
         return -1;
     }
