@@ -20,12 +20,12 @@ public class Buyer {
     /**
      * Buyer constructor
      *
-     * @param name Buyer name
-     * @param email Buyer email
-     * @param password Buyer password
+     * @param name            Buyer name
+     * @param email           Buyer email
+     * @param password        Buyer password
      * @param purchaseHistory Buyer ArrayList storing purchase history
-     * @param cart Buyer ArrayList storing shopping cart items
-     * **/
+     * @param cart            Buyer ArrayList storing shopping cart items
+     **/
     public Buyer(String name, String email, String password, ArrayList<String> purchaseHistory, ArrayList<String> cart) {
         this.name = name;
         this.email = email;
@@ -156,7 +156,7 @@ public class Buyer {
      * Returns an ArrayList of all the items in a buyer's cart
      *
      * @param email Email to search for when adding to array list
-     * **/
+     **/
     public static ArrayList<String> showItemsInCart(String email) {
         try {
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -190,7 +190,7 @@ public class Buyer {
      * Returns Arraylist of stores by the products purchased by that particular customer
      *
      * @param email Email to search for when adding to array list
-     * **/
+     **/
     public ArrayList<String> storesFromBuyerProducts(String email) {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
@@ -255,7 +255,7 @@ public class Buyer {
      * Returns Arraylist of stores by the products purchased by that particular customer sorted by products sold.
      *
      * @param email Email to search for when adding to array list
-     * **/
+     **/
     public ArrayList<String> sortStoresFromBuyerProducts(String email) {
         try {
             ArrayList<String> unsortedList = storesFromBuyerProducts(email);
@@ -287,8 +287,7 @@ public class Buyer {
 
     /**
      * Returns ArrayList of stores by number of products sold
-     *
-     * **/
+     **/
     public ArrayList<String> storesFromProductsSold() {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
@@ -337,8 +336,7 @@ public class Buyer {
 
     /**
      * Returns sorted ArrayList of stores by number of products sold from most to least
-     *
-     * **/
+     **/
     public ArrayList<String> sortStoresProductsSold() {
         ArrayList<String> unsortedList = storesFromProductsSold();
         ArrayList<Integer> productAmt = new ArrayList<>();
@@ -368,10 +366,10 @@ public class Buyer {
     /**
      * Adds item to shopping cart
      *
-     * @param itemToAdd : Other information of item to add
-     * @param itemName : Name of item to add
+     * @param itemToAdd          : Other information of item to add
+     * @param itemName           : Name of item to add
      * @param quantityToPurchase : Amount to purchase
-     * **/
+     **/
     public void addItem(String itemToAdd, String itemName, int quantityToPurchase) { // add item to shopping cart
         try {
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -444,56 +442,56 @@ public class Buyer {
 
     /**
      * Returns Buyer name
-     * **/
+     **/
     public String getName() {
         return name;
     }
 
     /**
      * Returns Buyer email
-     * **/
+     **/
     public String getEmail() {
         return email;
     }
 
     /**
      * Returns Buyer password
-     * **/
+     **/
     public String getPassword() {
         return password;
     }
 
     /**
      * Sets Buyer name
-     * **/
+     **/
     public void setName(String Name) {
         this.name = name;
     }
 
     /**
      * Sets Buyer cart
-     * **/
+     **/
     public void setCart(ArrayList<String> input) {
         this.cart = input;
     }
 
     /**
      * Sets Buyer password
-     * **/
+     **/
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
      * Returns string ArrayList of the cart
-     * **/
+     **/
     public ArrayList<String> getCart() {
         return this.cart;
     }
 
     /**
      * Returns string of the cart
-     * **/
+     **/
     public String printCart() {
         String cartString = "";
         for (int i = 0; i < cart.size(); i++) {
@@ -574,7 +572,7 @@ public class Buyer {
             for (int i = 0; i < storedCSVData.size(); i++) {
                 String[] splitLine = storedCSVData.get(i).split(",");
                 if (!email.equals(splitLine[0])) {
-                        output.add(storedCSVData.get(i));
+                    output.add(storedCSVData.get(i));
                 } else {
                     String[] cart = splitLine[5].split("~");
                     String currentCart = "";
@@ -667,14 +665,14 @@ public class Buyer {
 
     /**
      * Returns purchaseHistory
-     * **/
+     **/
     public ArrayList<String> getPurchaseHistory() {
         return this.purchaseHistory;
     }
 
     /**
      * Deletes Buyer account
-     * **/
+     **/
     public void deleteAccount() {
         String line;
         StringBuilder credentialsFile = new StringBuilder();
@@ -684,7 +682,7 @@ public class Buyer {
             line = bfrOne.readLine();
             int counter = -1;
             while (line != null) {
-                counter ++;
+                counter++;
                 // Only saves account to reprint to the file if they don't have the email belonging to this account
                 if (!email.equals(line.substring(0, line.indexOf(",")))) {
                     if (counter == 0) {
@@ -693,7 +691,7 @@ public class Buyer {
                         credentialsFile.append("\n").append(line);
                     }
                 } else {
-                    counter --;
+                    counter--;
                     if (!getCart().get(0).equals("x")) {
                         for (int i = 0; i < getCart().size(); i++) {
                             String currentCartItem = getCart().get(i);
@@ -746,7 +744,7 @@ public class Buyer {
 
     /**
      * Reads through FMItems.csv and returns a String ArrayList of items
-     * **/
+     **/
     public ArrayList<String> parseItem() {
         try {
             // Read through CSV file
@@ -771,7 +769,7 @@ public class Buyer {
 
     /**
      * Reads through FMStores.csv and returns a String ArrayList of items
-     * **/
+     **/
     public ArrayList<String> parseStore() {
         try {
             // Read through CSV file
