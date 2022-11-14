@@ -415,6 +415,7 @@ public class Seller implements User {
                     }
                 }
             }
+            bfr.close();
             return numberSuccess;
         } catch (Exception e) {
 

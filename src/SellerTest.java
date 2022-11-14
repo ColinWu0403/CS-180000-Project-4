@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -112,6 +113,7 @@ class SellerTest {
             for (int i = 0; i < actualOutput.size(); i++) {
                 assertEquals(expectedOutput[i], actualOutput.get(i));
             }
+            reader.close();
             boolean deleted = file.delete();
 
         } catch (Exception e) {
@@ -215,22 +217,24 @@ class SellerTest {
 
     @Test
     void importItems() {
-        try {
-            File file = new File("toImport.csv");
-            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("toImport.csv")));
-            writer.println("amazon,cool something,a cool something,4,6.99");
-            writer.flush();
-            writer.println("amazon,another cool something,a second cool something,6,7.99");
-            writer.flush();
-            writer.println("amazon2,yet another cool something,a third cool something,2,10.99");
-            writer.flush();
 
+            File file = new File("toImport.csv");
+            try {
+                PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+                writer.println("amazon,cool something,a cool something,4,6.99");
+                writer.println("amazon,another cool something,a second cool something,6,7.99");
+                writer.println("amazon2,yet another cool something,a third cool something,2,10.99");
+                writer.close();
+            } catch (IOException e) {
+
+            }
             Seller input = new Seller("jim", "a@bc.com", "ff");
             Store amazon = new Store("a@bc.com", "amazon");
             Store amazon2 = new Store("a@bc.com", "amazon2");
             input.createStore(amazon);
             input.createStore(amazon2);
-            input.importItems(file.getName(), new Store[]{amazon, amazon2});
+            String fileString = "toImport.csv";
+            input.importItems(fileString, new Store[]{amazon, amazon2});
             Store[] stores = input.getStore();
             ArrayList<Item> amazonItems = stores[0].getItems();
             ArrayList<Item> amazon2Items = stores[1].getItems();
@@ -244,10 +248,6 @@ class SellerTest {
             assertEquals(expected1[1], amazonNames[1]);
             assertEquals(expected2, amazon2Name);
 
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+            file.delete();
     }
 }
