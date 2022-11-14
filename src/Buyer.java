@@ -14,10 +14,19 @@ public class Buyer {
     private String name; // Buyer username
     private final String email; // Buyer email - This is the unique identifier (Cannot be changed)
     private String password; // Account Password
-    private ArrayList<String> purchaseHistory;
-    private ArrayList<String> cart;
+    private ArrayList<String> purchaseHistory; // ArrayList of purchase history
+    private ArrayList<String> cart; // Buyer shopping cart
 
-    public Buyer(String name, String email, String password, ArrayList<String> purchaseHistory, ArrayList<String> cart) { // Construct Buyers Object
+    /**
+     * Buyer constructor
+     *
+     * @param name Buyer name
+     * @param email Buyer email
+     * @param password Buyer password
+     * @param purchaseHistory Buyer ArrayList storing purchase history
+     * @param cart Buyer ArrayList storing shopping cart items
+     * **/
+    public Buyer(String name, String email, String password, ArrayList<String> purchaseHistory, ArrayList<String> cart) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -35,11 +44,20 @@ public class Buyer {
         }
     }
 
+    /**
+     * Adds item string to purchaseHistory
+     *
+     * @param itemToPurchase String to add to purchaseHistory
+     */
     public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
         purchaseHistory.add(itemToPurchase);
     }
 
-    // Creates a new file of purchase history
+    /**
+     * Creates a new file of purchase history
+     *
+     * @param email Email to search for when exporting
+     */
     public static void exportPurchaseHistory(String email) {
         try {
 
@@ -90,7 +108,13 @@ public class Buyer {
         }
     }
 
-    public static ArrayList<String> showPurchaseHistory(String email) { // returns an ArrayList to be printed as the purchase history
+
+    /**
+     * Returns an ArrayList to be printed as the purchase history
+     *
+     * @param email Email to search for when adding to array list
+     */
+    public static ArrayList<String> showPurchaseHistory(String email) {
         try {
             // Read through CSV file
             BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -127,6 +151,12 @@ public class Buyer {
         return null;
     }
 
+
+    /**
+     * Returns an ArrayList of all the items in a buyer's cart
+     *
+     * @param email Email to search for when adding to array list
+     * **/
     public static ArrayList<String> showItemsInCart(String email) {
         try {
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -156,7 +186,11 @@ public class Buyer {
         return null;
     }
 
-    // returns Arraylist of stores by the products purchased by that particular customer.
+    /**
+     * Returns Arraylist of stores by the products purchased by that particular customer
+     *
+     * @param email Email to search for when adding to array list
+     * **/
     public ArrayList<String> storesFromBuyerProducts(String email) {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
@@ -216,6 +250,12 @@ public class Buyer {
         return null;
     }
 
+
+    /**
+     * Returns Arraylist of stores by the products purchased by that particular customer sorted by products sold.
+     *
+     * @param email Email to search for when adding to array list
+     * **/
     public ArrayList<String> sortStoresFromBuyerProducts(String email) {
         try {
             ArrayList<String> unsortedList = storesFromBuyerProducts(email);
@@ -245,7 +285,10 @@ public class Buyer {
         return null;
     }
 
-    // returns ArrayList of stores by number of products sold
+    /**
+     * Returns ArrayList of stores by number of products sold
+     *
+     * **/
     public ArrayList<String> storesFromProductsSold() {
         try {
             ArrayList<String> stores = parseStore(); // parses store and get ArrayList
@@ -292,7 +335,10 @@ public class Buyer {
         return null;
     }
 
-    // Returns sorted ArrayList of stores by number of products sold from most to least
+    /**
+     * Returns sorted ArrayList of stores by number of products sold from most to least
+     *
+     * **/
     public ArrayList<String> sortStoresProductsSold() {
         ArrayList<String> unsortedList = storesFromProductsSold();
         ArrayList<Integer> productAmt = new ArrayList<>();
@@ -317,7 +363,15 @@ public class Buyer {
         }
         return sortedList;
     }
-    
+
+
+    /**
+     * Adds item to shopping cart
+     *
+     * @param itemToAdd : Other information of item to add
+     * @param itemName : Name of item to add
+     * @param quantityToPurchase : Amount to purchase
+     * **/
     public void addItem(String itemToAdd, String itemName, int quantityToPurchase) { // add item to shopping cart
         try {
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
@@ -388,57 +442,77 @@ public class Buyer {
 
     }
 
+    /**
+     * Returns Buyer name
+     * **/
     public String getName() {
         return name;
     }
 
-
+    /**
+     * Returns Buyer email
+     * **/
     public String getEmail() {
         return email;
     }
 
-
+    /**
+     * Returns Buyer password
+     * **/
     public String getPassword() {
         return password;
     }
 
-
+    /**
+     * Sets Buyer name
+     * **/
     public void setName(String Name) {
         this.name = name;
     }
 
+    /**
+     * Sets Buyer cart
+     * **/
     public void setCart(ArrayList<String> input) {
         this.cart = input;
     }
 
-
+    /**
+     * Sets Buyer password
+     * **/
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * Returns string ArrayList of the cart
+     * **/
     public ArrayList<String> getCart() {
         return this.cart;
     }
 
-    public String printCart() { //@"Bob's Tables"!"solid table"!"1"!"79.99"
+    /**
+     * Returns string of the cart
+     * **/
+    public String printCart() {
         String cartString = "";
         for (int i = 0; i < cart.size(); i++) {
             String[] splitList = cart.get(i).split("!");
             double totalPrice = Double.parseDouble(splitList[3]) * Double.parseDouble(splitList[4]);
-            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: $%.2f\n", (i + 1), splitList[1], splitList[0], splitList[3], totalPrice));
+            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: $%.2f\n",
+                    (i + 1), splitList[1], splitList[0], splitList[3], totalPrice));
         }
         return cartString;
     }
 
     /**
-     * User checks out Items.
+     * Removes items from cart, adds them purchase history, and adds purchases to respective Store History
      */
-    public void checkout() { //Removes items from cart, puts them in purchase history, adds purchases to respective Store History
+    public void checkout() {
         try {
             String currentCartCSVInfo = "";
             String currentHistoryCSVInfo = "";
             BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
-
 
             // Add existing items to ArrayList;
             String line = "";
@@ -458,7 +532,8 @@ public class Buyer {
             if (purchaseHistory.size() == cartSize) {
                 pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," + currentCartCSVInfo + ",x");
             } else {
-                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," + currentHistoryCSVInfo + "~" + currentCartCSVInfo + ",x");
+                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," +
+                        currentHistoryCSVInfo + "~" + currentCartCSVInfo + ",x");
             }
 
             for (int i = 0; i < storedCSVData.size(); i++) {
@@ -475,8 +550,6 @@ public class Buyer {
      *
      * @param userChoice Number that the user selects in the main method.
      */
-
-    //TODONATHAN
     public void removeItemFromCart(int userChoice) {
         try {
             String cartRemove = cart.get(userChoice - 1);
@@ -518,7 +591,8 @@ public class Buyer {
                     if (currentCart.equals("")) {
                         currentCart = "x";
                     }
-                    String addLine = splitLine[0] + "," + splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4] + "," + currentCart;
+                    String addLine = splitLine[0] + "," + splitLine[1] + "," + splitLine[2] + "," + splitLine[3] +
+                            "," + splitLine[4] + "," + currentCart;
 
                     output.add(addLine);
                     int quantityToAdd = Integer.parseInt(cartRemove.split("!")[3]);
@@ -544,7 +618,8 @@ public class Buyer {
                                 String[] splitLine2 = changeLine.split(",");
                                 int quantity = Integer.parseInt(changeLine.split(",")[3]);
                                 quantity = quantity + quantityToAdd;
-                                pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2], quantity, splitLine2[4]);
+                                pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2],
+                                        quantity, splitLine2[4]);
                             } else {
                                 pwTwo.println(FMItems.get(j));
                             }
@@ -566,8 +641,8 @@ public class Buyer {
     }
 
     /**
-     * This method reads all data that isn't related to the user from the Credentials file and stores it
-     * for easy rewriting
+     * Reads all data that isn't related to the user from the Credentials file
+     * and stores it for easy rewriting; returns arraylist of temporary storage
      *
      * @return stored csv to be used in other buyer Functions
      */
@@ -590,10 +665,16 @@ public class Buyer {
         return csvStorage;
     }
 
+    /**
+     * Returns purchaseHistory
+     * **/
     public ArrayList<String> getPurchaseHistory() {
         return this.purchaseHistory;
     }
 
+    /**
+     * Deletes Buyer account
+     * **/
     public void deleteAccount() {
         String line;
         StringBuilder credentialsFile = new StringBuilder();
@@ -638,7 +719,8 @@ public class Buyer {
                                         String[] splitLine2 = changeLine.split(",");
                                         int quantity = Integer.parseInt(changeLine.split(",")[3]);
                                         quantity = quantity + quantityToAdd;
-                                        pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2], quantity, splitLine2[4]);
+                                        pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2],
+                                                quantity, splitLine2[4]);
                                     } else {
                                         pwTwo.println(FMItems.get(j));
                                     }
@@ -662,7 +744,9 @@ public class Buyer {
         }
     }
 
-    // Reads through FMItems.csv and returns a String ArrayList of items
+    /**
+     * Reads through FMItems.csv and returns a String ArrayList of items
+     * **/
     public ArrayList<String> parseItem() {
         try {
             // Read through CSV file
@@ -685,7 +769,9 @@ public class Buyer {
         return null;
     }
 
-    // Reads through FMStores.csv and returns a String ArrayList of items
+    /**
+     * Reads through FMStores.csv and returns a String ArrayList of items
+     * **/
     public ArrayList<String> parseStore() {
         try {
             // Read through CSV file
