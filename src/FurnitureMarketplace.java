@@ -15,6 +15,11 @@ public class FurnitureMarketplace {
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
+        //Create all files in the case that they do not already exist
+        File items = new File("FMItems.csv");
+        File stores = new File("FMStores.csv");
+        File credentials = new File("FMCredentials.csv");
+        File statistics = new File("FMStats.csv");
         System.out.println("Welcome to Furniture Marketplace");
 
         boolean programIsRunning = true;
