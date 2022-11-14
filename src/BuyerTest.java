@@ -1,384 +1,793 @@
-import org.junit.After;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * A Test class for the Buyer class.
+ * Buyers class - contains all methods the buyers may use
  *
- * <p>Purdue University -- CS18000 -- Fall 2022 -- Project 4</p>
- *
- * @author Andrei Deaconescu
- * @version Nov 13, 2022
+ * @author Colin Wu
+ * @version 2022-3-11
  */
-class BuyerTest {                   // some of the methods only work if content is added manually to the file
-    private final PrintStream out = System.out;
-    private ByteArrayOutputStream outputStream;
+public class Buyer {
+    private String name; // Buyer username
+    private final String email; // Buyer email - This is the unique identifier (Cannot be changed)
+    private String password; // Account Password
+    private ArrayList<String> purchaseHistory; // ArrayList of purchase history
+    private ArrayList<String> cart; // Buyer shopping cart
 
-    @BeforeEach
-    public void setup() {                   // to check methods that print to the console
-        outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
+    /**
+     * Buyer constructor
+     *
+     * @param name            Buyer name
+     * @param email           Buyer email
+     * @param password        Buyer password
+     * @param purchaseHistory Buyer ArrayList storing purchase history
+     * @param cart            Buyer ArrayList storing shopping cart items
+     **/
+    public Buyer(String name, String email, String password, ArrayList<String> purchaseHistory, ArrayList<String> cart) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        if (purchaseHistory == null) { //creating account
+            this.purchaseHistory = new ArrayList<>();
+        } else {                        //signing in
+            this.purchaseHistory = showPurchaseHistory(email);
+        }
+        if (cart == null) {
+            ArrayList<String> temp = new ArrayList<>();
+            temp.add("x");
+            this.cart = temp;
+        } else {
+            this.cart = showItemsInCart(email);
+        }
     }
 
-    @AfterEach
-    void reset() {                  // resets files after testing
+    /**
+     * Adds item string to purchaseHistory
+     *
+     * @param itemToPurchase String to add to purchaseHistory
+     */
+    public void purchaseItem(String itemToPurchase) { // Adds item to purchaseHistoryCSV file
+        purchaseHistory.add(itemToPurchase);
+    }
+
+    /**
+     * Creates a new file of purchase history
+     *
+     * @param email Email to search for when exporting
+     */
+    public static void exportPurchaseHistory(String email) {
         try {
-            FileWriter itemWriter = new FileWriter("FMItems.csv", false);
-            FileWriter storeWriter = new FileWriter("FMStores.csv", false);
-            itemWriter.write("");
-            storeWriter.write("");
 
-            itemWriter.close();
-            storeWriter.close();
+            BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
 
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Read through FMCredentials and append to arraylist
+            String line = purchasesReader.readLine();
+            while (line != null) {
+                FMCredentials.add(line);
+                line = purchasesReader.readLine();
+            }
+
+            purchasesReader.close();
+
+            // loop through arraylist and find the correct account
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String purchaseHistoryStr = strSplit[4];
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
+
+                    // Create export file
+                    try {
+                        String[] emailSplit = email.split("~");
+                        String fileName = emailSplit[0] + "PurchaseHistory.csv";
+                        File export = new File(fileName);
+
+                        FileOutputStream fos = new FileOutputStream(export, false);
+                        PrintWriter purchaseWriter = new PrintWriter(fos);
+
+                        // Write to file
+                        for (int j = 1; j < purchaseHistoryLine.length; j++) {
+                            purchaseWriter.println(purchaseHistoryLine[j]);
+                        }
+
+                        purchaseWriter.close();
+                        System.out.println("File Exported!");
+                    } catch (Exception e) {
+                        System.out.println("File NOT Exported");
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @After
-    public void closeReader() {
-        System.setOut(out);
+
+    /**
+     * Returns an ArrayList to be printed as the purchase history
+     *
+     * @param email Email to search for when adding to array list
+     */
+    public static ArrayList<String> showPurchaseHistory(String email) {
         try {
-            outputStream.close();
+            // Read through CSV file
+            BufferedReader purchasesReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = purchasesReader.readLine();
+            while (line != null) {
+                FMCredentials.add(line);
+                line = purchasesReader.readLine();
+            }
+
+            purchasesReader.close();
+
+            // loop through arraylist and find the correct account
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String purchaseHistoryStr = strSplit[4];
+                    if (purchaseHistoryStr.equals("x")) {
+                        return new ArrayList<>();
+                    }
+                    String[] purchaseHistoryLine = purchaseHistoryStr.split("~");
+
+                    // Return new ArrayList
+                    return new ArrayList<>(Arrays.asList(purchaseHistoryLine));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    /**
+     * Returns an ArrayList of all the items in a buyer's cart
+     *
+     * @param email Email to search for when adding to array list
+     **/
+    public static ArrayList<String> showItemsInCart(String email) {
+        try {
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line;
+            while ((line = cartReader.readLine()) != null) {
+                FMCredentials.add(line);
+            }
+            cartReader.close();
+
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                // If arraylist index has email
+                if (FMCredentials.get(i).contains(email)) {
+                    String[] strSplit = FMCredentials.get(i).split(",");
+                    String shoppingCartInfo = strSplit[5];
+                    String[] shoppingCartLine = shoppingCartInfo.split("~");
+
+                    return new ArrayList<>(Arrays.asList(shoppingCartLine));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    @Test
-    void purchaseItem() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        input.purchaseItem("neat desks,neat desk,a neat desk,4,29.99");
-        String expected = "neat desks,neat desk,a neat desk,4,29.99";
-        String actual = input.getPurchaseHistory().get(0);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void exportPurchaseHistory() {
+    /**
+     * Returns Arraylist of stores by the products purchased by that particular customer
+     *
+     * @param email Email to search for when adding to array list
+     **/
+    public ArrayList<String> storesFromBuyerProducts(String email) {
         try {
-            Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-            input.purchaseItem("neat desks,neat desk,a neat desk,4,29.99");
-            input.purchaseItem("neat desks,real neat desk,a really neat desk,1,299.99");
-            Buyer.exportPurchaseHistory("a@bc.com");
+            ArrayList<String> stores = parseStore(); // parses store and get ArrayList
+            ArrayList<String> relevantStores = new ArrayList<>();
+            ArrayList<String> storesProductsList = new ArrayList<>();
 
-            File file = new File("aPurchaseHistory.csv");
-            boolean r = file.createNewFile();
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            ArrayList<String> actual = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                actual.add(line);
+            boolean containsUser = false;
+            for (int i = 0; i < stores.size(); i++) { // check if stores has buyer email
+                if (stores.get(i).contains(email)) {
+                    containsUser = true;
+                    relevantStores.add(stores.get(i));
+                }
             }
-            String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                    "neat desks!real neat desk!a really neat desk!1!299.99"};
 
-            assertEquals(expected[0], actual.get(0));
-            assertEquals(expected[1], actual.get(1));
+            if (!containsUser) {
+                return null;
+            }
 
-            boolean res = file.delete();
-            reader.close();
+            for (int i = 0; i < relevantStores.size(); i++) {
+                String[] storeSplit = relevantStores.get(i).split(",");
+                String storeName = storeSplit[0];
+                String productsSold = storeSplit[2];
+                storesProductsList.add(storeName + "," + productsSold);
+            }
+
+            ArrayList<String> productsPurchased = new ArrayList<>();
+
+            for (int i = 0; i < storesProductsList.size(); i++) {
+                String[] listSplit = storesProductsList.get(i).split(",");
+                // add number of products sold to Integer list
+                String[] productsSplit = listSplit[1].split("~");
+                String storeName = listSplit[0];
+
+                int quantity = 0;
+                for (int j = 0; j < productsSplit.length; j++) {
+                    if (productsSplit[j].contains(email)) {
+                        String[] formatProductSplit = productsSplit[j].split("!");
+                        quantity += Integer.parseInt(formatProductSplit[2]);
+                    }
+                }
+                if (quantity != 0) {
+                    productsPurchased.add(storeName + "," + quantity);
+                }
+            }
+
+            for (int i = 0; i < productsPurchased.size(); i++) {
+                String[] productsPurchasedSplit = productsPurchased.get(i).split(",");
+                if (productsPurchasedSplit[1].equals("0")) {
+                    productsPurchased.remove(i);
+                }
+            }
+            return productsPurchased;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Returns Arraylist of stores by the products purchased by that particular customer sorted by products sold.
+     *
+     * @param email Email to search for when adding to array list
+     **/
+    public ArrayList<String> sortStoresFromBuyerProducts(String email) {
+        try {
+            ArrayList<String> unsortedList = storesFromBuyerProducts(email);
+            ArrayList<Double> prices = new ArrayList<>();
+            ArrayList<String> sortedList = new ArrayList<>();
+
+            for (int i = 0; i < unsortedList.size(); i++) {
+                String[] listSplit = unsortedList.get(i).split(",");
+                prices.add(Double.parseDouble(listSplit[1]));
+            }
+
+            prices.sort(Collections.reverseOrder());
+
+            for (int i = 0; i < prices.size(); i++) {
+                for (int j = 0; j < unsortedList.size(); j++) {
+                    if (prices.get(i) == Double.parseDouble(unsortedList.get(j).split(",")[1])) {
+                        sortedList.add(unsortedList.get(j));
+                        unsortedList.remove(j);
+                        break;
+                    }
+                }
+            }
+            return sortedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Returns ArrayList of stores by number of products sold
+     **/
+    public ArrayList<String> storesFromProductsSold() {
+        try {
+            ArrayList<String> stores = parseStore(); // parses store and get ArrayList
+
+            ArrayList<String> storesProductsList = new ArrayList<>();
+            ArrayList<String> storesProductsSold = new ArrayList<>();
+
+            for (int i = 0; i < stores.size(); i++) {
+                String[] storeSplit = stores.get(i).split(",");
+                String storeName = storeSplit[0];
+                if (storeSplit.length == 2) {
+                    storesProductsList.add(storeName);
+                } else {
+                    String productsSold = storeSplit[2];
+                    storesProductsList.add(storeName + "," + productsSold);
+                }
+            }
+
+            for (int i = 0; i < storesProductsList.size(); i++) {
+                String[] listSplit = storesProductsList.get(i).split(",");
+                String storeName = listSplit[0];
+                // add number of products sold to Integer list
+                if (listSplit.length == 1) {
+                    storesProductsSold.add(storeName + "," + 0);
+                } else {
+                    String[] productsSplit = listSplit[1].split("~");
+                    int quantity = 0;
+                    for (int j = 0; j < productsSplit.length; j++) {
+                        if (productsSplit[j].length() > 1) {
+                            String[] formatProductSplit = productsSplit[j].split("!");
+                            if (formatProductSplit.length > 1) {
+                                quantity += Integer.parseInt(formatProductSplit[2]);
+                            }
+                        }
+                    }
+                    storesProductsSold.add(storeName + "," + quantity);
+                }
+            }
+
+            return storesProductsSold;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Returns sorted ArrayList of stores by number of products sold from most to least
+     **/
+    public ArrayList<String> sortStoresProductsSold() {
+        ArrayList<String> unsortedList = storesFromProductsSold();
+        ArrayList<Integer> productAmt = new ArrayList<>();
+        ArrayList<String> sortedList = new ArrayList<>();
+
+        for (int i = 0; i < unsortedList.size(); i++) {
+            String[] listSplit = unsortedList.get(i).split(",");
+            productAmt.add(Integer.parseInt(listSplit[1]));
+        }
+
+        // Sort from most to least
+        productAmt.sort(Collections.reverseOrder());
+
+        for (int i = 0; i < productAmt.size(); i++) {
+            for (int j = 0; j < unsortedList.size(); j++) {
+                if (productAmt.get(i) == Integer.parseInt(unsortedList.get(j).split(",")[1])) {
+                    sortedList.add(unsortedList.get(j));
+                    unsortedList.remove(j);
+                    break;
+                }
+            }
+        }
+        return sortedList;
+    }
+
+
+    /**
+     * Adds item to shopping cart
+     *
+     * @param itemToAdd          : Other information of item to add
+     * @param itemName           : Name of item to add
+     * @param quantityToPurchase : Amount to purchase
+     **/
+    public void addItem(String itemToAdd, String itemName, int quantityToPurchase) { // add item to shopping cart
+        try {
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            ArrayList<String> FMCredentials = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = "";
+            while ((line = cartReader.readLine()) != null) {
+                FMCredentials.add(line);
+            }
+            cartReader.close();
+
+            PrintWriter pwOne = new PrintWriter(new FileWriter("FMCredentials.csv"));
+
+            for (int i = 0; i < FMCredentials.size(); i++) {
+                if (FMCredentials.get(i).contains(email)) {
+                    String changeLine = FMCredentials.get(i);
+                    String[] splitLine = changeLine.split(",");
+                    String shoppingCart = changeLine.split(",")[5];
+                    if (shoppingCart.equals("x")) {
+                        shoppingCart = itemToAdd;
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.add(itemToAdd);
+                        setCart(temp);
+                    } else {
+                        shoppingCart = shoppingCart + "~" + itemToAdd;
+                        cart.add(itemToAdd);
+                    }
+                    pwOne.printf("%s,%s,%s,%s,%s,%s\n", splitLine[0], splitLine[1], splitLine[2], splitLine[3], splitLine[4], shoppingCart);
+                } else {
+                    pwOne.println(FMCredentials.get(i));
+                }
+            }
+            pwOne.close();
+
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+            ArrayList<String> FMItems = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String itemLine = "";
+            while ((itemLine = itemReader.readLine()) != null) {
+                FMItems.add(itemLine);
+            }
+            itemReader.close();
+
+            PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+            for (int i = 0; i < FMItems.size(); i++) {
+                if (FMItems.get(i).contains(itemName)) {
+                    String changeLine = FMItems.get(i);
+                    String[] splitLine = changeLine.split(",");
+                    int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                    quantity = quantity - quantityToPurchase;
+                    pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine[0], splitLine[1], splitLine[2], quantity, splitLine[4]);
+                } else {
+                    pwTwo.println(FMItems.get(i));
+                }
+            }
+            pwTwo.close();
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * Returns Buyer name
+     **/
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns Buyer email
+     **/
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Returns Buyer password
+     **/
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets Buyer name
+     **/
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets Buyer cart
+     **/
+    public void setCart(ArrayList<String> input) {
+        this.cart = input;
+    }
+
+    /**
+     * Sets Buyer password
+     **/
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Returns string ArrayList of the cart
+     **/
+    public ArrayList<String> getCart() {
+        return this.cart;
+    }
+
+    /**
+     * Returns string of the cart
+     **/
+    public String printCart() {
+        String cartString = "";
+        for (int i = 0; i < cart.size(); i++) {
+            String[] splitList = cart.get(i).split("!");
+            double totalPrice = Double.parseDouble(splitList[3]) * Double.parseDouble(splitList[4]);
+            cartString = cartString.concat(String.format("(%d) %s from %s; Quantity: %s; Total Price: $%.2f\n",
+                    (i + 1), splitList[1], splitList[0], splitList[3], totalPrice));
+        }
+        return cartString;
+    }
+
+    /**
+     * Removes items from cart, adds them purchase history, and adds purchases to respective Store History
+     */
+    public void checkout() {
+        try {
+            String currentCartCSVInfo = "";
+            String currentHistoryCSVInfo = "";
+            BufferedReader cartReader = new BufferedReader(new FileReader("FMCredentials.csv"));
+
+            // Add existing items to ArrayList;
+            String line = "";
+            while ((line = cartReader.readLine()) != null) {
+                if (line.split(",")[0].equals(email)) {
+                    currentCartCSVInfo = line.split(",")[5];
+                    currentHistoryCSVInfo = line.split(",")[4];
+                }
+            }
+            cartReader.close();
+
+            int cartSize = cart.size();
+            purchaseHistory.addAll(cart);
+            ArrayList<String> storedCSVData = csvTemporaryStorage();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
+
+            if (purchaseHistory.size() == cartSize) {
+                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," + currentCartCSVInfo + ",x");
+            } else {
+                pw.println(getEmail() + "," + getName() + "," + getPassword() + ",buyer," +
+                        currentHistoryCSVInfo + "~" + currentCartCSVInfo + ",x");
+            }
+
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                pw.println(storedCSVData.get(i));
+            }
+            pw.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Test
-    void showPurchaseHistory() {
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("neat desks!neat desk!a neat desk!4!29.99");
-        purchaseHistory.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, null);
+    /**
+     * Removes an item from a user's cart.
+     *
+     * @param userChoice Number that the user selects in the main method.
+     */
+    public void removeItemFromCart(int userChoice) {
+        try {
+            String cartRemove = cart.get(userChoice - 1);
+            cart.remove(userChoice - 1);
+            if (cart.size() == 0) {
+                cart.add("x");
+            }
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
-        ArrayList<String> actual = Buyer.showPurchaseHistory("a@bc.com");
+            File file = new File("FMCredentials.csv");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            ArrayList<String> storedCSVData = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                storedCSVData.add(line);
+            }
+            reader.close();
 
-        assert actual != null;
-        assertEquals(expected[0], actual.get(0));
-        assertEquals(expected[1], actual.get(1));
+            ArrayList<String> output = new ArrayList<>();
+            PrintWriter pw = new PrintWriter(new FileWriter("FMCredentials.csv", false));
 
-        // works only if item added manually to FMCredentials purchase history
+            int counter = -1;
+            for (int i = 0; i < storedCSVData.size(); i++) {
+                String[] splitLine = storedCSVData.get(i).split(",");
+                if (!email.equals(splitLine[0])) {
+                    output.add(storedCSVData.get(i));
+                } else {
+                    String[] cart = splitLine[5].split("~");
+                    String currentCart = "";
+                    for (int j = 0; j < cart.length; j++) {
+                        if (!cart[j].equals(cartRemove)) {
+                            counter++;
+                            if (counter == 0) {
+                                currentCart = currentCart + cart[j];
+                            } else {
+                                currentCart = currentCart + "~" + cart[j];
+                            }
+                        }
+                    }
+                    if (currentCart.equals("")) {
+                        currentCart = "x";
+                    }
+                    String addLine = splitLine[0] + "," + splitLine[1] + "," + splitLine[2] + "," + splitLine[3] +
+                            "," + splitLine[4] + "," + currentCart;
+
+                    output.add(addLine);
+                    int quantityToAdd = Integer.parseInt(cartRemove.split("!")[3]);
+                    String itemName = cartRemove.split("!")[1];
+
+
+                    try {
+                        BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+                        ArrayList<String> FMItems = new ArrayList<>();
+
+                        // Add existing items to ArrayList;
+                        String itemLine = "";
+                        while ((itemLine = itemReader.readLine()) != null) {
+                            FMItems.add(itemLine);
+                        }
+                        itemReader.close();
+
+                        PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+                        for (int j = 0; j < FMItems.size(); j++) {
+                            if (FMItems.get(j).contains(itemName)) {
+                                String changeLine = FMItems.get(j);
+                                String[] splitLine2 = changeLine.split(",");
+                                int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                                quantity = quantity + quantityToAdd;
+                                pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2],
+                                        quantity, splitLine2[4]);
+                            } else {
+                                pwTwo.println(FMItems.get(j));
+                            }
+                        }
+                        pwTwo.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            for (int i = 0; i < output.size(); i++) {
+                pw.println(output.get(i));
+            }
+            pw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Test
-    void showItemsInCart() {
-        ArrayList<String> cart = new ArrayList<>();
-        cart.add("neat desks!neat desk!a neat desk!4!29.99");
-        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, cart);
-        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 1);
-        input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
-                "real neat desk", 1);
+    /**
+     * Reads all data that isn't related to the user from the Credentials file
+     * and stores it for easy rewriting; returns arraylist of temporary storage
+     *
+     * @return stored csv to be used in other buyer Functions
+     */
+    public ArrayList<String> csvTemporaryStorage() {
+        ArrayList<String> csvStorage = new ArrayList<>();
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("FMCredentials.csv"));
 
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
-        ArrayList<String> actual = Buyer.showItemsInCart("a@bc.com");
-
-        assert actual != null;
-        assertEquals(expected[0], actual.get(0));
-        assertEquals(expected[1], actual.get(1));
-
-        // works only if item added manually to FMCredentials cart
+            String line = bfr.readLine();
+            while (line != null) {
+                String[] splitLine = line.split(",");
+                if (!splitLine[0].equals(getEmail())) { // saves all data that is not being edited
+                    csvStorage.add(line);
+                }
+                line = bfr.readLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return csvStorage;
     }
 
-    @Test
-    void storesFromBuyerProducts() throws IOException {
-        PrintWriter writer = new PrintWriter(new FileWriter("FMStores.csv"));
-        writer.println("neat desks,4");
-        writer.flush();
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("neat desks!neat desk!a neat desk!4!29.99");
-        Buyer input = new Buyer("jimmy neutron", "a123456@bc.com", "qwertyuiop", null, null);
-        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 1);
-        input.addItem("neat desks!real neat desk!a really neat desk!1!299.99",
-                "real neat desk", 1);
-        input.checkout();
-        writer.close();
-
-        ArrayList<String> stores = input.storesFromBuyerProducts("a123456@bc.com");
-
-        String expected = "neat desks,5";
-        String actual = stores.get(0).split(",")[0];
-
-        assertEquals(expected, actual);
-
-        PrintWriter reset = new PrintWriter(new FileWriter("FMStores.csv", false));
-//        reset.write("");
-
-        reset.close();
-
-        // incomplete
+    /**
+     * Returns purchaseHistory
+     **/
+    public ArrayList<String> getPurchaseHistory() {
+        return this.purchaseHistory;
     }
 
-    @Test
-    void sortStoresFromBuyerProducts() {
+    /**
+     * Deletes Buyer account
+     **/
+    public void deleteAccount() {
+        String line;
+        StringBuilder credentialsFile = new StringBuilder();
+        try {
+            // First remove user from credentials file
+            BufferedReader bfrOne = new BufferedReader(new FileReader("FMCredentials.csv"));
+            line = bfrOne.readLine();
+            int counter = -1;
+            while (line != null) {
+                counter++;
+                // Only saves account to reprint to the file if they don't have the email belonging to this account
+                if (!email.equals(line.substring(0, line.indexOf(",")))) {
+                    if (counter == 0) {
+                        credentialsFile.append(line);
+                    } else {
+                        credentialsFile.append("\n").append(line);
+                    }
+                } else {
+                    counter--;
+                    if (!getCart().get(0).equals("x")) {
+                        for (int i = 0; i < getCart().size(); i++) {
+                            String currentCartItem = getCart().get(i);
+                            String[] splitLine = currentCartItem.split("!");
+                            String itemName = splitLine[1];
+                            int quantityToAdd = Integer.parseInt(splitLine[3]);
+                            try {
+                                BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+                                ArrayList<String> FMItems = new ArrayList<>();
+
+                                // Add existing items to ArrayList;
+                                String itemLine = "";
+                                while ((itemLine = itemReader.readLine()) != null) {
+                                    FMItems.add(itemLine);
+                                }
+                                itemReader.close();
+
+                                PrintWriter pwTwo = new PrintWriter(new FileWriter("FMItems.csv"));
+
+                                for (int j = 0; j < FMItems.size(); j++) {
+                                    if (FMItems.get(j).contains(itemName)) {
+                                        String changeLine = FMItems.get(j);
+                                        String[] splitLine2 = changeLine.split(",");
+                                        int quantity = Integer.parseInt(changeLine.split(",")[3]);
+                                        quantity = quantity + quantityToAdd;
+                                        pwTwo.printf("%s,%s,%s,%d,%s\n", splitLine2[0], splitLine2[1], splitLine2[2],
+                                                quantity, splitLine2[4]);
+                                    } else {
+                                        pwTwo.println(FMItems.get(j));
+                                    }
+                                }
+                                pwTwo.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                line = bfrOne.readLine();
+            }
+            bfrOne.close();
+            PrintWriter pwOne = new PrintWriter(new FileOutputStream("FMCredentials.csv", false));
+            pwOne.println(credentialsFile);
+            pwOne.close();
+        } catch (Exception e) {
+            System.out.println("Error deleting user credentials!");
+            e.printStackTrace();
+        }
     }
 
-    @Test
-    void storesFromProductsSold() {
+    /**
+     * Reads through FMItems.csv and returns a String ArrayList of items
+     **/
+    public ArrayList<String> parseItem() {
+        try {
+            // Read through CSV file
+            BufferedReader itemReader = new BufferedReader(new FileReader("FMItems.csv"));
+
+            ArrayList<String> parsedList = new ArrayList<>();
+
+            // Add existing items to ArrayList;
+            String line = itemReader.readLine();
+            while (line != null) {
+                parsedList.add(line);
+                line = itemReader.readLine();
+            }
+
+            itemReader.close();
+            return parsedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    @Test
-    void sortStoresProductsSold() {
-    }
+    /**
+     * Reads through FMStores.csv and returns a String ArrayList of items
+     **/
+    public ArrayList<String> parseStore() {
+        try {
+            // Read through CSV file
+            BufferedReader storeReader = new BufferedReader(new FileReader("FMStores.csv"));
 
-    @Test
-    void addItem() throws FileNotFoundException {
-        FileOutputStream fos = new FileOutputStream("FMCredentials.csv");
-        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
+            ArrayList<String> parsedList = new ArrayList<>();
 
-        writer.println("a@bc.com,jim,ff,x,x");
-        writer.close();
+            // Add existing items to ArrayList;
+            String line;
+            while ((line = storeReader.readLine()) != null) {
+                parsedList.add(line);
+            }
 
-        input.addItem("neat desks!neat desk!a neat desk!4!29.99", "neat desk", 2);
-
-        // incomplete
-    }
-
-    @Test
-    void getName() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        String expected = "jim";
-        String actual = input.getName();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void getEmail() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        String expected = "a@bc.com";
-        String actual = input.getEmail();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void getPassword() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        String expected = "ff";
-        String actual = input.getPassword();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void setName() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        input.setName("foo");
-        String expected = "foo";
-        String actual = input.getName();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void setCart() {
-        ArrayList<String> cart = new ArrayList<>();
-        cart.add("neat desks!neat desk!a neat desk!4!29.99");
-        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        input.setCart(cart);
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
-        ArrayList<String> actual = input.getCart();
-
-        assertEquals(expected[0], actual.get(0));
-        assertEquals(expected[1], actual.get(1));
-    }
-
-    @Test
-    void setPassword() {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        input.setPassword("gg");
-
-        String expected = "gg";
-        String actual = input.getPassword();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void getCart() {
-        ArrayList<String> cart = new ArrayList<>();
-        cart.add("neat desks!neat desk!a neat desk!4!29.99");
-        cart.add("neat desks!real neat desk!a really neat desk!1!299.99");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        input.setCart(cart);
-
-        String[] expected = new String[]{"neat desks!neat desk!a neat desk!4!29.99",
-                "neat desks!real neat desk!a really neat desk!1!299.99"};
-        ArrayList<String> actual = input.getCart();
-
-        assertEquals(expected[0], actual.get(0));
-        assertEquals(expected[1], actual.get(1));
-    }
-
-    @Test
-    void printCart() {
-        ArrayList<String> cart = new ArrayList<>();
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        cart.add("neat desks!neat desk!a neat desk!2!25.00");
-        purchaseHistory.add("x");
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", purchaseHistory, cart);
-
-        input.setCart(cart);
-
-        String expected = "(1) neat desk from neat desks; Quantity: 2; Total Price: $50.00\n";
-        String actual = input.printCart();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void checkout() {
-
-
-    }
-
-    @Test
-    void removeItemFromCart() throws FileNotFoundException {
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-        FileOutputStream fos = new FileOutputStream("FMCredentials.csv", false);
-        PrintWriter writer = new PrintWriter(new PrintWriter(fos));
-
-        writer.println("a@bc.com,jim,ff,x,John's Chairs!awesome chair!5!39.99~Brad's Tables!ok table!3!29.99");
-        writer.close();
-
-        input.removeItemFromCart(1);
-
-        // incomplete
-    }
-
-    @Test
-    void csvTemporaryStorage() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMCredentials.csv"));
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("a@bc.com,jim,ff,x,x");
-        writer.println("brad@bc.com,brad,11,x,x");
-        writer.println("jake@bc.com,jake,33,x,x");
-        writer.flush();
-        writer.close();
-
-        ArrayList<String> expected = new ArrayList<>();
-
-        expected.add("brad@bc.com,brad,11,x,x");
-        expected.add("jake@bc.com,jake,33,x,x");
-
-        ArrayList<String> actual = input.csvTemporaryStorage();
-
-        assertEquals(expected.get(0), actual.get(0));
-        assertEquals(expected.get(1), actual.get(1));
-    }
-
-    @Test
-    void getPurchaseHistory() {
-        ArrayList<String> purchaseHistory = new ArrayList<>();
-        purchaseHistory.add("John's Chairs!awesome chair!5!39.99");
-
-        Buyer input = new Buyer("jake", "jake@bc.com", "ff", purchaseHistory, null);
-
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("John's Chairs!awesome chair!5!39.99");
-
-        ArrayList<String> actual = input.getPurchaseHistory();
-
-        assertEquals(expected, actual);
-
-        // test fails :(
-    }
-
-    @Test
-    void deleteAccount() {
-
-
-    }
-
-    @Test
-    void parseItem() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMItems.csv"));
-
-        ArrayList<String> expectedList = new ArrayList<>();
-        ArrayList<String> actualList = new ArrayList<>();
-
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
-        writer.close();
-
-        expectedList.add("Jim's Chairs,awesome chair,the best chair your rear has ever neared!,5,39.99");
-        actualList = input.parseItem();
-
-        assertEquals(expectedList.get(0), actualList.get(0));
-    }
-
-    @Test
-    void parseStore() throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(new PrintWriter("FMStores.csv"));
-
-        ArrayList<String> expectedList = new ArrayList<>();
-        ArrayList<String> actualList = new ArrayList<>();
-
-        Buyer input = new Buyer("jim", "a@bc.com", "ff", null, null);
-
-        writer.println("Cedar Tables,a@bc.com");
-        writer.close();
-
-        expectedList.add("Cedar Tables,a@bc.com");
-        actualList = input.parseStore();
-
-        assertEquals(expectedList.get(0), actualList.get(0));
+            storeReader.close();
+            return parsedList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
