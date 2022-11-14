@@ -403,7 +403,7 @@ public class Buyer {
     }
 
 
-    public void setName(String Name) {
+    public void setName(String name) {
         this.name = name;
     }
 

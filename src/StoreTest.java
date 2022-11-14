@@ -89,7 +89,7 @@ class StoreTest {
             assertEquals(output.get(i).getPrice(), expectedPrices[i]);
         }
         seller.deleteStore(input);
-     }
+    }
 
 
         @Test
@@ -126,10 +126,10 @@ class StoreTest {
                     599.99);
 
             String expectedOutput = """
-                1. amazingPad selling at 999.99
-                2. amazingPhone selling at 999.99
-                3. amazingPod selling at 599.99
-                """;
+                    1. Store: amazing stuff :Product: amazingPad :Price: $999.99 :Quantity: 4 :Description: a tablet that can do everything
+                    2. Store: amazing stuff :Product: amazingPhone :Price: $999.99 :Quantity: 10 :Description: a phone as amazing as you
+                    3. Store: amazing stuff :Product: amazingPod :Price: $599.99 :Quantity: 8 :Description: a really amazing mp3 player                 
+                    """;
             input.printItems();
             assertEquals(expectedOutput, outputStream.toString());
             seller.deleteStore(input);
@@ -189,12 +189,11 @@ class StoreTest {
             Store input = new Store("a@bc.com", "aa");
             Buyer buyer = new Buyer("jim", "jim@jim.jim", "ff", null, null);
             input.addItem("something", "some", 3, 9.99);
-            boolean saleSaved = input.saveSale("jim", input.getItems().get(0), 2);
+            Store.saveSale("jim", input.getItems().get(0), 2);
 
             if (input.getItems().get(0).getQuantity() != 1) {
                 fail("error: sale not recorded");
             }
-            assertTrue(saleSaved);
         }
 
 //        @Test                    ------- Method returns null
