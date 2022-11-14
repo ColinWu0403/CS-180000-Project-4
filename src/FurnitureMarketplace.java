@@ -121,6 +121,8 @@ public class FurnitureMarketplace {
             } else if (checkExistingCredentials(newEmail, newUsername,
                     "newAccount").equals("DuplicateUsername")) {
                 System.out.println("Error: Username already exists");
+            } else if (newUsername.contains(",") || newPassword.contains(",") || newEmail.contains(",")) {
+                System.out.println("Error: Invalid Characters Present");
             } else {
                 creatingCredentials = false;
             }
